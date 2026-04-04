@@ -112,7 +112,10 @@
 <div class="header">
   <div class="header-top">
     <div><h1>My Fitness Plan</h1><p>Male · 35 · 72kg · 168cm · ~22% BF</p></div>
-    <div class="header-tags"><span class="tag tg">Recomp</span><span class="tag tb">3 months</span></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+      <div class="header-tags"><span class="tag tg">Recomp</span><span class="tag tb">3 months</span></div>
+      <span id="sync-status" style="font-size:10px;font-family:monospace;color:var(--faint)"></span>
+    </div>
   </div>
   <div class="tabs">
     <button class="tab active" onclick="showTab(&#39;overview&#39;,this)">◎ Overview</button>
@@ -465,9 +468,32 @@
     const open = b.classList.toggle('open');
     c.textContent = open ? '▲' : '▼';
   }
+  var GIST_ID = '05158301a296e8d08403c8f70c2df299';
+  var saveTimer = null;
+
+  function getToken() {
+    var t = localStorage.getItem('gh-token');
+    if (!t) {
+      t = prompt('Enter your GitHub token (stored only in this browser):');
+      if (t) localStorage.setItem('gh-token', t.trim());
+    }
+    return t ? t.trim() : null;
+  }
+
+  function showSyncStatus(msg, color) {
+    var el = document.getElementById('sync-status');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.color = color || 'var(--faint)';
+  }
+
   function saveW(key, val) {
     try { localStorage.setItem('fp-w-' + key, val); } catch(e) {}
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(pushToGist, 1200);
+    showSyncStatus('saving…', 'var(--amber)');
   }
+
   function setMult(key, val) {
     var b1 = document.getElementById('m-' + key + '-1');
     var b2 = document.getElementById('m-' + key + '-2');
@@ -475,8 +501,54 @@
     b1.classList.toggle('on', val === 1);
     b2.classList.toggle('on', val === 2);
     try { localStorage.setItem('fp-m-' + key, val); } catch(e) {}
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(pushToGist, 1200);
+    showSyncStatus('saving…', 'var(--amber)');
   }
+
+  function collectWeights() {
+    var weights = {};
+    document.querySelectorAll('.weight-input').forEach(function(el) {
+      if (el.value) weights['w-' + el.id.replace('w-', '')] = el.value;
+    });
+    document.querySelectorAll('[id^="m-"]').forEach(function(el) {
+      if (el.classList.contains('on')) {
+        var m = el.id.match(/^m-(.+)-([12])$/);
+        if (m) weights['m-' + m[1]] = m[2];
+      }
+    });
+    return weights;
+  }
+
+  function applyWeights(weights) {
+    document.querySelectorAll('.weight-input').forEach(function(el) {
+      var k = 'w-' + el.id.replace('w-', '');
+      if (weights[k] !== undefined) el.value = weights[k];
+    });
+    Object.keys(weights).forEach(function(k) {
+      if (k.startsWith('m-')) {
+        var key = k.replace('m-', '');
+        setMult(key, parseInt(weights[k]));
+      }
+    });
+  }
+
+  function pushToGist() {
+    var token = getToken();
+    if (!token) { showSyncStatus('no token — not saved', 'var(--amber)'); return; }
+    var weights = collectWeights();
+    fetch('https://api.github.com/gists/' + GIST_ID, {
+      method: 'PATCH',
+      headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ files: { 'weights.json': { content: JSON.stringify(weights, null, 2) } } })
+    }).then(function(r) {
+      if (r.ok) showSyncStatus('synced ✓', 'var(--green)');
+      else showSyncStatus('sync failed', 'var(--amber)');
+    }).catch(function() { showSyncStatus('offline — saved locally', 'var(--faint)'); });
+  }
+
   function loadWeights() {
+    // Seed from localStorage immediately for instant display
     document.querySelectorAll('.weight-input').forEach(function(el) {
       var key = el.id.replace('w-', '');
       try {
@@ -486,7 +558,26 @@
         if (m !== null) setMult(key, parseInt(m));
       } catch(e) {}
     });
+    // Then fetch latest from Gist
+    var token = getToken();
+    if (!token) return;
+    showSyncStatus('loading…', 'var(--faint)');
+    fetch('https://api.github.com/gists/' + GIST_ID, {
+      headers: { Authorization: 'token ' + token }
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      var file = data.files && data.files['weights.json'];
+      if (!file) return;
+      var weights = JSON.parse(file.content || '{}');
+      applyWeights(weights);
+      // Update localStorage cache
+      Object.keys(weights).forEach(function(k) {
+        if (k.startsWith('w-')) localStorage.setItem('fp-' + k, weights[k]);
+        if (k.startsWith('m-')) localStorage.setItem('fp-' + k, weights[k]);
+      });
+      showSyncStatus('synced ✓', 'var(--green)');
+    }).catch(function() { showSyncStatus('offline', 'var(--faint)'); });
   }
+
   loadWeights();
 </script>
 
