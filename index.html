@@ -118,6 +118,19 @@
   .mob-ex { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--purple-bd); font-size: 12px; color: var(--muted); }
   .mob-ex:last-child { border-bottom: none; }
   .mob-ex-rp { font-family: monospace; font-size: 11px; color: var(--purple); white-space: nowrap; }
+  .edit-toggle { font-size: 11px; font-weight: 600; padding: 5px 11px; border-radius: 6px; border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); cursor: pointer; margin-top: 10px; }
+  .edit-toggle.active { background: var(--amber-bg); border-color: var(--amber-bd); color: var(--amber); }
+  .del-btn { display: none; width: 22px; height: 22px; background: none; border: 1.5px solid var(--border); border-radius: 50%; color: var(--faint); font-size: 14px; line-height: 1; cursor: pointer; flex-shrink: 0; align-items: center; justify-content: center; padding: 0; }
+  .edit-mode .del-btn { display: flex; }
+  .del-btn:hover, .del-btn:active { background: #fee2e2; border-color: #f87171; color: #dc2626; }
+  .add-ex-btn { width: 100%; margin-top: 10px; padding: 9px; background: none; border: 1.5px dashed var(--border); border-radius: 8px; color: var(--faint); font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; }
+  .add-ex-btn:hover, .add-ex-btn:active { border-color: var(--green); color: var(--green); background: var(--green-bg); }
+  .add-ex-form { display: none; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 8px; }
+  .add-ex-form.open { display: block; }
+  .add-ex-form input { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 13px; margin-bottom: 8px; background: var(--surface); color: var(--text); outline: none; font-family: inherit; }
+  .add-ex-form input:focus { border-color: var(--green); }
+  .add-ex-form-btns { display: flex; gap: 8px; }
+  .add-ex-form-btns button { flex: 1; padding: 8px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; font-family: inherit; }
 </style>
 </head>
 <body>
@@ -257,6 +270,7 @@
     <div class="card">
       <div class="stitle">Your 4-Day Split</div>
       <div style="color:var(--muted);font-size:13px">Each session: pick 4 exercises · 3 sets each · near failure · ~45 min. Tap a day to expand.</div>
+      <button class="edit-toggle" id="edit-toggle" onclick="toggleEditMode()">✏️ Edit exercises</button>
     </div>
     <!-- Day A -->
     <div class="card">
@@ -767,12 +781,168 @@
       if (!file) return;
       gistData = JSON.parse(file.content || '{}');
       applyWeights(gistData);
+      applyDeletions();
+      renderCustomExercises();
       Object.keys(gistData).forEach(function(k) {
         if (k.startsWith('w-')) localStorage.setItem('fp-' + k, gistData[k]);
         if (k.startsWith('m-')) localStorage.setItem('fp-' + k, gistData[k]);
       });
       showSyncStatus('synced ✓', 'var(--green)');
     }).catch(function() { showSyncStatus('offline', 'var(--faint)'); });
+  }
+
+  // ── Edit mode ──────────────────────────────────────────────
+  var editMode = false;
+  function toggleEditMode() {
+    editMode = !editMode;
+    var toggle = document.getElementById('edit-toggle');
+    var training = document.getElementById('training');
+    training.classList.toggle('edit-mode', editMode);
+    toggle.classList.toggle('active', editMode);
+    toggle.textContent = editMode ? '✓ Done editing' : '✏️ Edit exercises';
+  }
+
+  // ── Delete buttons ─────────────────────────────────────────
+  function addDeleteButton(exRow, key) {
+    if (exRow.querySelector('.del-btn')) return;
+    var btn = document.createElement('button');
+    btn.className = 'del-btn';
+    btn.innerHTML = '×';
+    btn.title = 'Remove exercise';
+    btn.onclick = function(e) {
+      e.stopPropagation();
+      var nameEl = exRow.querySelector('.ex-n');
+      var name = nameEl ? nameEl.textContent : 'this exercise';
+      if (confirm('Remove "' + name + '"?')) deleteExercise(key, exRow);
+    };
+    exRow.appendChild(btn);
+  }
+
+  function addDeleteButtons() {
+    document.querySelectorAll('.ex').forEach(function(row) {
+      var input = row.querySelector('.weight-input');
+      if (!input) return;
+      var key = input.id.replace('w-', '');
+      addDeleteButton(row, key);
+    });
+  }
+
+  function deleteExercise(key, exRow) {
+    if (key.startsWith('custom-')) {
+      gistData.custom = (gistData.custom || []).filter(function(ex) { return ex.key !== key; });
+    } else {
+      if (!gistData.deleted) gistData.deleted = [];
+      if (gistData.deleted.indexOf(key) === -1) gistData.deleted.push(key);
+    }
+    exRow.style.display = 'none';
+    clearTimeout(saveTimer);
+    pushToGist();
+  }
+
+  function applyDeletions() {
+    (gistData.deleted || []).forEach(function(key) {
+      var input = document.getElementById('w-' + key);
+      if (input) {
+        var row = input.closest('.ex');
+        if (row) row.style.display = 'none';
+      }
+    });
+  }
+
+  // ── Custom exercises ────────────────────────────────────────
+  function renderCustomExercises() {
+    (gistData.custom || []).forEach(function(ex) {
+      if (document.getElementById('w-' + ex.key)) return;
+      var container = document.getElementById('w' + ex.day);
+      if (!container) return;
+      var row = buildExRow(ex);
+      var addForm = document.getElementById('add-form-' + ex.day);
+      container.insertBefore(row, addForm || container.querySelector('.mob-card') || null);
+      addDeleteButton(row, ex.key);
+      EXERCISES.push({ key: ex.key, name: ex.name });
+    });
+  }
+
+  function buildExRow(ex) {
+    var tc = ex.tagColor || 'tp';
+    var div = document.createElement('div');
+    div.className = 'ex';
+    div.innerHTML =
+      '<div><div class="ex-nr"><span class="ex-n">' + ex.name + '</span>' +
+      '<span class="tag ' + tc + '">' + (ex.tag || 'Custom') + '</span></div>' +
+      '<div class="ex-nt">' + (ex.notes || '') + '</div></div>' +
+      '<div class="weight-wrap">' +
+      '<input class="weight-input" id="w-' + ex.key + '" placeholder="— kg" oninput="saveW(\'' + ex.key + '\',this.value)">' +
+      '<div class="mult-toggle">' +
+      '<button class="mult-btn on" id="m-' + ex.key + '-1" onclick="setMult(\'' + ex.key + '\',1)">×1</button>' +
+      '<button class="mult-btn" id="m-' + ex.key + '-2" onclick="setMult(\'' + ex.key + '\',2)">×2</button>' +
+      '</div></div>';
+    return div;
+  }
+
+  // ── Add exercise form ───────────────────────────────────────
+  function injectAddButtons() {
+    ['A','B','C','D'].forEach(function(day) {
+      var container = document.getElementById('w' + day);
+      if (!container) return;
+      var ref = container.querySelector('.mob-card') || null;
+
+      var form = document.createElement('div');
+      form.className = 'add-ex-form';
+      form.id = 'add-form-' + day;
+      form.innerHTML =
+        '<input type="text" id="anm-' + day + '" placeholder="Exercise name *" autocomplete="off">' +
+        '<input type="text" id="atg-' + day + '" placeholder="Muscle group (e.g. Chest)" autocomplete="off">' +
+        '<input type="text" id="ant-' + day + '" placeholder="Notes (optional)" autocomplete="off">' +
+        '<div class="add-ex-form-btns">' +
+        '<button onclick="submitAdd(\'' + day + '\')" style="background:var(--green);color:#fff">Add</button>' +
+        '<button onclick="closeAdd(\'' + day + '\')" style="background:var(--bg);color:var(--muted);border:1.5px solid var(--border)">Cancel</button>' +
+        '</div>';
+
+      var btn = document.createElement('button');
+      btn.className = 'add-ex-btn';
+      btn.id = 'add-btn-' + day;
+      btn.textContent = '+ Add exercise';
+      btn.onclick = function() { openAdd(day); };
+
+      container.insertBefore(form, ref);
+      container.insertBefore(btn, ref);
+    });
+  }
+
+  function openAdd(day) {
+    document.getElementById('add-form-' + day).classList.add('open');
+    document.getElementById('add-btn-' + day).style.display = 'none';
+    document.getElementById('anm-' + day).focus();
+  }
+
+  function closeAdd(day) {
+    document.getElementById('add-form-' + day).classList.remove('open');
+    document.getElementById('add-btn-' + day).style.display = '';
+    ['anm','atg','ant'].forEach(function(p) {
+      document.getElementById(p + '-' + day).value = '';
+    });
+  }
+
+  function submitAdd(day) {
+    var name  = document.getElementById('anm-' + day).value.trim();
+    var tag   = document.getElementById('atg-' + day).value.trim() || 'Custom';
+    var notes = document.getElementById('ant-' + day).value.trim();
+    if (!name) { document.getElementById('anm-' + day).focus(); return; }
+
+    if (!gistData.custom) gistData.custom = [];
+    var key = 'custom-' + Date.now();
+    var ex = { day: day, key: key, name: name, tag: tag, notes: notes, tagColor: 'tp' };
+    gistData.custom.push(ex);
+    EXERCISES.push({ key: key, name: name });
+
+    var container = document.getElementById('w' + day);
+    var row = buildExRow(ex);
+    container.insertBefore(row, document.getElementById('add-form-' + day));
+    addDeleteButton(row, key);
+    closeAdd(day);
+    clearTimeout(saveTimer);
+    pushToGist();
   }
 
   function renderChart(key) {
@@ -836,8 +1006,10 @@
     EXERCISES.forEach(function(ex) { renderChart(ex.key); });
   }
 
+  injectAddButtons();
   loadWeights();
   addExerciseImages();
+  addDeleteButtons();
 </script>
 
 
