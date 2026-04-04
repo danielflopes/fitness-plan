@@ -112,7 +112,7 @@
   .p-ex-hdr { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; }
   .p-chart-wrap { position: relative; height: 120px; }
   .p-empty { display: flex; align-items: center; justify-content: center; height: 80px; color: var(--faint); font-size: 11px; font-family: monospace; background: var(--bg); border-radius: 8px; border: 1px dashed var(--border); }
-  .yt-btn { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; background: #ff0000; color: #fff; border-radius: 3px; font-size: 8px; text-decoration: none; flex-shrink: 0; line-height: 1; vertical-align: middle; }
+  .ex-thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); flex-shrink: 0; display: block; cursor: pointer; }
   .mob-card { background: var(--purple-bg); border: 1px solid var(--purple-bd); border-radius: 8px; padding: 12px; margin-top: 14px; }
   .mob-card-title { font-size: 9px; font-family: monospace; text-transform: uppercase; letter-spacing: 0.12em; color: var(--purple); margin-bottom: 8px; }
   .mob-ex { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--purple-bd); font-size: 12px; color: var(--muted); }
@@ -562,49 +562,53 @@
   </div>
 
 <script>
-  var YT_IDS = {
-    'wA-0': 'vcBig73ojpE', // Bench Press — Jeff Nippard
-    'wA-1': 'XvNBFyOKPOQ', // Incline DB Press — Jeff Nippard
-    'wA-2': 'eozdVDA78K0', // Chest Fly — ScottHermanFitness
-    'wA-3': 'XB_7En-zf_M', // Pull-ups — AthleanX
-    'wA-4': 'vT2GjY_Umpw', // Bent-Over Row — Jeff Nippard
-    'wA-5': 'GZbfZ033f74', // Seated Cable Row — AthleanX
-    'wA-6': 'hdng3txx6ow', // Hanging Leg Raises — AthleanX
-    'wB-0': 'U5zrloIifow', // Barbell Squat — Alan Thrall
-    'wB-1': 'hCDzSR6bW10', // Romanian Deadlift — Jeff Nippard
-    'wB-2': 'IZxyjW7MPJQ', // Leg Press — ScottHermanFitness
-    'wB-3': 'QOVaHwm-Q6U', // Reverse Lunges — AthleanX
-    'wB-4': 'xDmFkJxPzeM', // Hip Thrust — Bret Contreras
-    'wB-5': '4YGM0Y0pB2c', // Eccentric Calf Raises — Achilles rehab
-    'wC-0': 'qEwKCR5JCog', // Dumbbell OHP — Jeff Nippard
-    'wC-1': 'lsZI_RXFPJk', // Lateral Raises — Jeff Nippard
-    'wC-2': 'ml6cT4AZdqI', // Band Pull-Apart — AthleanX
-    'wC-3': 'l3A_DCpNb8M', // Skull Crushers — ScottHermanFitness
-    'wC-4': 'YbX7Wd8jQ-Q', // Overhead Tricep Ext — AthleanX
-    'wC-5': 'pSHjTRCQxIw', // Plank — AthleanX
-    'wD-0': 'kwG2ipFRgfo', // Barbell Bicep Curl — Jeff Nippard
-    'wD-1': 'zC3nLlEvin4', // Hammer Curls — ScottHermanFitness
-    'wD-2': 'Hgq9oOQ6EMo', // Rear Delt Fly — AthleanX
-    'wD-3': '6TSKgH--LDs', // Bent-Over DB Row — ScottHermanFitness
-    'wD-4': '9YdBMo_Jfbo', // Russian Twists — AthleanX
-    'wD-5': 'K2x8T_8_xoE'  // Side Plank — AthleanX
+  var BASE_IMG = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
+  var EX_IMAGES = {
+    'wA-0': 'Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+    'wA-1': 'Incline_Dumbbell_Press/0.jpg',
+    'wA-2': 'Dumbbell_Flyes/0.jpg',
+    'wA-3': 'Chin-Up/0.jpg',
+    'wA-4': 'Bent_Over_Barbell_Row/0.jpg',
+    'wA-5': 'Seated_Cable_Rows/0.jpg',
+    'wA-6': 'Hanging_Leg_Raise/0.jpg',
+    'wB-0': 'Barbell_Squat/0.jpg',
+    'wB-1': 'Romanian_Deadlift/0.jpg',
+    'wB-2': 'Leg_Press/0.jpg',
+    'wB-3': 'Dumbbell_Lunges/0.jpg',
+    'wB-4': 'Barbell_Glute_Bridge/0.jpg',
+    'wB-5': 'Donkey_Calf_Raises/0.jpg',
+    'wC-0': 'Dumbbell_Shoulder_Press/0.jpg',
+    'wC-1': 'Alternating_Deltoid_Raise/0.jpg',
+    'wC-2': 'Band_Pull_Apart/0.jpg',
+    'wC-3': 'EZ-Bar_Skullcrusher/0.jpg',
+    'wC-4': 'Standing_Dumbbell_Triceps_Extension/0.jpg',
+    'wC-5': 'Plank/0.jpg',
+    'wD-0': 'Barbell_Curl/0.jpg',
+    'wD-1': 'Alternate_Hammer_Curl/0.jpg',
+    'wD-2': 'Bent_Over_Dumbbell_Rear_Delt_Raise_With_Head_On_Bench/0.jpg',
+    'wD-3': 'Bent_Over_Two-Dumbbell_Row/0.jpg',
+    'wD-4': 'Russian_Twist/0.jpg',
+    'wD-5': 'Side_Bridge/0.jpg'
   };
 
-  function addYoutubeButtons() {
+  function addExerciseImages() {
     document.querySelectorAll('.weight-input').forEach(function(el) {
       var key = el.id.replace('w-', '');
-      var vid = YT_IDS[key];
-      if (!vid) return;
-      var nr = el.closest('.ex').querySelector('.ex-nr');
-      if (!nr || nr.querySelector('.yt-btn')) return;
-      var a = document.createElement('a');
-      a.href = 'https://www.youtube.com/watch?v=' + vid;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      a.className = 'yt-btn';
-      a.title = 'Watch form tutorial';
-      a.textContent = '▶';
-      nr.appendChild(a);
+      var imgPath = EX_IMAGES[key];
+      if (!imgPath) return;
+      var exRow = el.closest('.ex');
+      if (!exRow || exRow.querySelector('.ex-thumb')) return;
+      var img = document.createElement('img');
+      img.src = BASE_IMG + imgPath;
+      img.className = 'ex-thumb';
+      img.alt = '';
+      img.onclick = function() {
+        var m = document.getElementById('ex-modal');
+        document.getElementById('ex-modal-img').src = BASE_IMG + imgPath.replace('/0.jpg', '/1.jpg');
+        m.style.display = 'flex';
+      };
+      // Insert thumbnail between the text div and the weight-wrap
+      exRow.insertBefore(img, exRow.querySelector('.weight-wrap'));
     });
   }
 
@@ -833,8 +837,11 @@
   }
 
   loadWeights();
-  addYoutubeButtons();
+  addExerciseImages();
 </script>
 
 
+<div id="ex-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:999;align-items:center;justify-content:center;padding:24px" onclick="this.style.display='none'">
+  <img id="ex-modal-img" src="" style="max-width:100%;max-height:80vh;border-radius:12px;object-fit:contain" alt="">
+</div>
 </body></html>
