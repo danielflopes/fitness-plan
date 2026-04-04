@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="My Fitness Plan">
 <title>My Fitness Plan</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -106,6 +107,11 @@
   .ms-d { color: var(--muted); font-size: 12px; line-height: 1.5; }
   .sec { display: none; }
   .sec.active { display: block; }
+  .p-ex { padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .p-ex:last-child { border-bottom: none; }
+  .p-ex-hdr { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; }
+  .p-chart-wrap { position: relative; height: 120px; }
+  .p-empty { display: flex; align-items: center; justify-content: center; height: 80px; color: var(--faint); font-size: 11px; font-family: monospace; background: var(--bg); border-radius: 8px; border: 1px dashed var(--border); }
 </style>
 </head>
 <body>
@@ -124,6 +130,7 @@
     <button class="tab" onclick="showTab(&#39;mobility&#39;,this)">◯ Mobility</button>
     <button class="tab" onclick="showTab(&#39;nutrition&#39;,this)">◇ Nutrition</button>
     <button class="tab" onclick="showTab(&#39;habits&#39;,this)">◉ Habits</button>
+    <button class="tab" onclick="showTab(&#39;progress&#39;,this)">◑ Progress</button>
   </div>
 </div>
 
@@ -452,7 +459,74 @@
     </div>
   </div>
 
-
+  <!-- PROGRESS -->
+  <div id="progress" class="sec">
+    <div class="card">
+      <div class="stitle">Weight Progress Over Time</div>
+      <div style="color:var(--muted);font-size:13px">Each chart shows your logged weight per session. Updates automatically when you change a weight in the Training tab.</div>
+    </div>
+    <!-- Progress Day A -->
+    <div class="card">
+      <button class="w-hdr" onclick="tw('pA')">
+        <div class="w-tg"><span class="w-dl">Day A</span><span class="w-fc">Chest + Back</span><span class="tag tp">Gym</span></div>
+        <span class="w-cv" id="pA-c">▼</span>
+      </button>
+      <div class="w-body" id="pA">
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Bench Press</span><span class="tag tb">Chest</span></div><div class="p-chart-wrap"><canvas id="chart-wA-0"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Incline DB Press</span><span class="tag tb">Chest</span></div><div class="p-chart-wrap"><canvas id="chart-wA-1"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Chest Fly</span><span class="tag tb">Chest</span></div><div class="p-chart-wrap"><canvas id="chart-wA-2"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Pull-ups</span><span class="tag tb">Back</span></div><div class="p-chart-wrap"><canvas id="chart-wA-3"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Bent-Over Row</span><span class="tag tb">Back</span></div><div class="p-chart-wrap"><canvas id="chart-wA-4"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Seated Cable Row</span><span class="tag tb">Back</span></div><div class="p-chart-wrap"><canvas id="chart-wA-5"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Hanging Leg Raises</span><span class="tag tb">Core</span></div><div class="p-chart-wrap"><canvas id="chart-wA-6"></canvas></div></div>
+      </div>
+    </div>
+    <!-- Progress Day B -->
+    <div class="card">
+      <button class="w-hdr" onclick="tw('pB')">
+        <div class="w-tg"><span class="w-dl">Day B</span><span class="w-fc">Legs</span><span class="tag tp">Gym</span></div>
+        <span class="w-cv" id="pB-c">▼</span>
+      </button>
+      <div class="w-body" id="pB">
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Barbell Back Squat</span><span class="tag tb">Legs</span></div><div class="p-chart-wrap"><canvas id="chart-wB-0"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Romanian Deadlift</span><span class="tag tb">Posterior</span></div><div class="p-chart-wrap"><canvas id="chart-wB-1"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Leg Press</span><span class="tag tb">Legs</span></div><div class="p-chart-wrap"><canvas id="chart-wB-2"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Reverse Lunges</span><span class="tag tb">Legs</span></div><div class="p-chart-wrap"><canvas id="chart-wB-3"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Glute Trainer</span><span class="tag tb">Glutes</span></div><div class="p-chart-wrap"><canvas id="chart-wB-4"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Eccentric Calf Raises</span><span class="tag tb">Achilles</span></div><div class="p-chart-wrap"><canvas id="chart-wB-5"></canvas></div></div>
+      </div>
+    </div>
+    <!-- Progress Day C -->
+    <div class="card">
+      <button class="w-hdr" onclick="tw('pC')">
+        <div class="w-tg"><span class="w-dl">Day C</span><span class="w-fc">Shoulders + Triceps</span><span class="tag tb">Home</span></div>
+        <span class="w-cv" id="pC-c">▼</span>
+      </button>
+      <div class="w-body" id="pC">
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Dumbbell OHP</span><span class="tag tb">Shoulders</span></div><div class="p-chart-wrap"><canvas id="chart-wC-0"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Inclined Lateral Raises</span><span class="tag tb">Shoulders</span></div><div class="p-chart-wrap"><canvas id="chart-wC-1"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Band Pull-Apart</span><span class="tag tb">Shoulders</span></div><div class="p-chart-wrap"><canvas id="chart-wC-2"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Skull Crushers</span><span class="tag tb">Triceps</span></div><div class="p-chart-wrap"><canvas id="chart-wC-3"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Overhead Tricep Ext.</span><span class="tag tb">Triceps</span></div><div class="p-chart-wrap"><canvas id="chart-wC-4"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Plank</span><span class="tag tb">Core</span></div><div class="p-chart-wrap"><canvas id="chart-wC-5"></canvas></div></div>
+      </div>
+    </div>
+    <!-- Progress Day D -->
+    <div class="card">
+      <button class="w-hdr" onclick="tw('pD')">
+        <div class="w-tg"><span class="w-dl">Day D</span><span class="w-fc">Biceps + Rear Delts + Core</span><span class="tag tb">Home</span></div>
+        <span class="w-cv" id="pD-c">▼</span>
+      </button>
+      <div class="w-body" id="pD">
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Barbell Bicep Curl</span><span class="tag tb">Biceps</span></div><div class="p-chart-wrap"><canvas id="chart-wD-0"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Hammer Curls</span><span class="tag tb">Biceps</span></div><div class="p-chart-wrap"><canvas id="chart-wD-1"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Rear Delt Fly</span><span class="tag tb">Rear Delts</span></div><div class="p-chart-wrap"><canvas id="chart-wD-2"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Bent-Over DB Row</span><span class="tag tb">Back</span></div><div class="p-chart-wrap"><canvas id="chart-wD-3"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Russian Twists</span><span class="tag tb">Core</span></div><div class="p-chart-wrap"><canvas id="chart-wD-4"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Lateral Plank</span><span class="tag tb">Core</span></div><div class="p-chart-wrap"><canvas id="chart-wD-5"></canvas></div></div>
+      </div>
+    </div>
+  </div>
 
 <script>
   function showTab(id, el) {
@@ -461,6 +535,7 @@
     document.getElementById(id).classList.add('active');
     el.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (id === 'progress') renderAllCharts();
   }
   function tw(id) {
     const b = document.getElementById(id);
@@ -470,6 +545,35 @@
   }
   var GIST_ID = '05158301a296e8d08403c8f70c2df299';
   var saveTimer = null;
+  var gistData = {};
+  var charts = {};
+  var EXERCISES = [
+    { key: 'wA-0', name: 'Bench Press' },
+    { key: 'wA-1', name: 'Incline DB Press' },
+    { key: 'wA-2', name: 'Chest Fly' },
+    { key: 'wA-3', name: 'Pull-ups (+kg)' },
+    { key: 'wA-4', name: 'Bent-Over Row' },
+    { key: 'wA-5', name: 'Seated Cable Row' },
+    { key: 'wA-6', name: 'Hanging Leg Raises' },
+    { key: 'wB-0', name: 'Barbell Back Squat' },
+    { key: 'wB-1', name: 'Romanian Deadlift' },
+    { key: 'wB-2', name: 'Leg Press' },
+    { key: 'wB-3', name: 'Reverse Lunges' },
+    { key: 'wB-4', name: 'Glute Trainer' },
+    { key: 'wB-5', name: 'Eccentric Calf Raises' },
+    { key: 'wC-0', name: 'Dumbbell OHP' },
+    { key: 'wC-1', name: 'Inclined Lateral Raises' },
+    { key: 'wC-2', name: 'Band Pull-Apart' },
+    { key: 'wC-3', name: 'Skull Crushers' },
+    { key: 'wC-4', name: 'Overhead Tricep Ext.' },
+    { key: 'wC-5', name: 'Plank' },
+    { key: 'wD-0', name: 'Barbell Bicep Curl' },
+    { key: 'wD-1', name: 'Hammer Curls' },
+    { key: 'wD-2', name: 'Rear Delt Fly' },
+    { key: 'wD-3', name: 'Bent-Over DB Row' },
+    { key: 'wD-4', name: 'Russian Twists' },
+    { key: 'wD-5', name: 'Lateral Plank' }
+  ];
 
   function getToken() {
     var t = localStorage.getItem('gh-token');
@@ -536,13 +640,24 @@
   function pushToGist() {
     var token = getToken();
     if (!token) { showSyncStatus('no token — not saved', 'var(--amber)'); return; }
+    var today = new Date().toISOString().split('T')[0];
     var weights = collectWeights();
+    // Merge into cached gistData
+    Object.keys(weights).forEach(function(k) { gistData[k] = weights[k]; });
+    // Log history: for each exercise with a value, record today's entry
+    if (!gistData.history) gistData.history = {};
+    document.querySelectorAll('.weight-input').forEach(function(el) {
+      var key = el.id.replace('w-', '');
+      if (!el.value) return;
+      if (!gistData.history[key]) gistData.history[key] = {};
+      gistData.history[key][today] = el.value;
+    });
     fetch('https://api.github.com/gists/' + GIST_ID, {
       method: 'PATCH',
       headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ files: { 'weights.json': { content: JSON.stringify(weights, null, 2) } } })
+      body: JSON.stringify({ files: { 'weights.json': { content: JSON.stringify(gistData, null, 2) } } })
     }).then(function(r) {
-      if (r.ok) showSyncStatus('synced ✓', 'var(--green)');
+      if (r.ok) { showSyncStatus('synced ✓', 'var(--green)'); renderAllCharts(); }
       else showSyncStatus('sync failed', 'var(--amber)');
     }).catch(function() { showSyncStatus('offline — saved locally', 'var(--faint)'); });
   }
@@ -567,15 +682,75 @@
     }).then(function(r) { return r.json(); }).then(function(data) {
       var file = data.files && data.files['weights.json'];
       if (!file) return;
-      var weights = JSON.parse(file.content || '{}');
-      applyWeights(weights);
-      // Update localStorage cache
-      Object.keys(weights).forEach(function(k) {
-        if (k.startsWith('w-')) localStorage.setItem('fp-' + k, weights[k]);
-        if (k.startsWith('m-')) localStorage.setItem('fp-' + k, weights[k]);
+      gistData = JSON.parse(file.content || '{}');
+      applyWeights(gistData);
+      Object.keys(gistData).forEach(function(k) {
+        if (k.startsWith('w-')) localStorage.setItem('fp-' + k, gistData[k]);
+        if (k.startsWith('m-')) localStorage.setItem('fp-' + k, gistData[k]);
       });
       showSyncStatus('synced ✓', 'var(--green)');
     }).catch(function() { showSyncStatus('offline', 'var(--faint)'); });
+  }
+
+  function renderChart(key) {
+    var canvas = document.getElementById('chart-' + key);
+    if (!canvas) return;
+    var hist = (gistData.history || {})[key] || {};
+    var dates = Object.keys(hist).sort();
+    var wrap = canvas.parentElement;
+    // Remove existing empty state if any
+    var existing = wrap.querySelector('.p-empty');
+    if (existing) existing.remove();
+    if (dates.length === 0) {
+      canvas.style.display = 'none';
+      var msg = document.createElement('div');
+      msg.className = 'p-empty';
+      msg.textContent = 'No history yet — log a workout first';
+      wrap.appendChild(msg);
+      return;
+    }
+    canvas.style.display = '';
+    var values = dates.map(function(d) { return parseFloat(hist[d]); });
+    var labels = dates.map(function(d) {
+      var p = d.split('-'); return p[2] + '/' + p[1];
+    });
+    if (charts[key]) charts[key].destroy();
+    charts[key] = new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values,
+          borderColor: '#0f7f56',
+          backgroundColor: 'rgba(15,127,86,0.08)',
+          borderWidth: 2,
+          pointRadius: dates.length === 1 ? 5 : 4,
+          pointBackgroundColor: '#0f7f56',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: {
+          callbacks: { label: function(ctx) { return ctx.parsed.y + ' kg'; } }
+        }},
+        scales: {
+          x: { grid: { color: '#dde2ec' }, ticks: { font: { size: 10, family: 'monospace' }, color: '#8a91aa' } },
+          y: { grid: { color: '#dde2ec' }, ticks: { font: { size: 10, family: 'monospace' }, color: '#8a91aa' },
+               suggestedMin: function() {
+                 var min = Math.min.apply(null, values);
+                 return Math.max(0, min - 5);
+               }()
+          }
+        }
+      }
+    });
+  }
+
+  function renderAllCharts() {
+    EXERCISES.forEach(function(ex) { renderChart(ex.key); });
   }
 
   loadWeights();
