@@ -123,6 +123,10 @@
   .del-btn { display: none; width: 22px; height: 22px; background: none; border: 1.5px solid var(--border); border-radius: 50%; color: var(--faint); font-size: 14px; line-height: 1; cursor: pointer; flex-shrink: 0; align-items: center; justify-content: center; padding: 0; }
   .edit-mode .del-btn { display: flex; }
   .del-btn:hover, .del-btn:active { background: #fee2e2; border-color: #f87171; color: #dc2626; }
+  .move-btns { display: none; flex-direction: column; gap: 2px; flex-shrink: 0; }
+  .edit-mode .move-btns { display: flex; }
+  .move-btn { width: 20px; height: 20px; background: none; border: 1.5px solid var(--border); border-radius: 4px; color: var(--faint); font-size: 10px; line-height: 1; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; }
+  .move-btn:hover, .move-btn:active { background: var(--blue-bg); border-color: var(--blue-bd); color: var(--blue); }
   .add-ex-btn { width: 100%; margin-top: 10px; padding: 9px; background: none; border: 1.5px dashed var(--border); border-radius: 8px; color: var(--faint); font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; }
   .add-ex-btn:hover, .add-ex-btn:active { border-color: var(--green); color: var(--green); background: var(--green-bg); }
   .add-ex-form { display: none; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 8px; }
@@ -283,6 +287,7 @@
         <div class="wm-t">Dynamic mobility: arm circles, thoracic rotations, band pull-aparts (2×15), shoulder rolls — NO jump rope</div>
         <div class="ep">Pick 4 · 3 sets each · near failure</div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Bench Press</span><span class="tag tb">Chest</span></div><div class="ex-nt">Progress from 25kg. Control descent, full ROM.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wA-0" placeholder="— kg" oninput="saveW(&#39;wA-0&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wA-0-1" onclick="setMult(&#39;wA-0&#39;,1)">×1</button><button class="mult-btn" id="m-wA-0-2" onclick="setMult(&#39;wA-0&#39;,2)">×2</button></div></div></div>
+        <div class="ex"><div><div class="ex-nr"><span class="ex-n">Seated Chest Press</span><span class="tag tb">Chest</span></div><div class="ex-nt">Machine. Controlled press, full ROM.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wA-7" placeholder="— kg" oninput="saveW(&#39;wA-7&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wA-7-1" onclick="setMult(&#39;wA-7&#39;,1)">×1</button><button class="mult-btn" id="m-wA-7-2" onclick="setMult(&#39;wA-7&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Incline Dumbbell Press</span><span class="tag tb">Chest</span></div><div class="ex-nt">Upper chest emphasis.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wA-1" placeholder="— kg" oninput="saveW(&#39;wA-1&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wA-1-1" onclick="setMult(&#39;wA-1&#39;,1)">×1</button><button class="mult-btn" id="m-wA-1-2" onclick="setMult(&#39;wA-1&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Chest Fly</span><span class="tag tb">Chest</span></div><div class="ex-nt">18kg. Slow eccentric, no shoulder pain.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wA-2" placeholder="— kg" oninput="saveW(&#39;wA-2&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wA-2-1" onclick="setMult(&#39;wA-2&#39;,1)">×1</button><button class="mult-btn" id="m-wA-2-2" onclick="setMult(&#39;wA-2&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Pull-ups (BW or +4kg)</span><span class="tag tb">Back</span></div><div class="ex-nt">Full hang to chin over bar.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wA-3" placeholder="— kg" oninput="saveW(&#39;wA-3&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wA-3-1" onclick="setMult(&#39;wA-3&#39;,1)">×1</button><button class="mult-btn" id="m-wA-3-2" onclick="setMult(&#39;wA-3&#39;,2)">×2</button></div></div></div>
@@ -520,6 +525,7 @@
       </button>
       <div class="w-body" id="pA">
         <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Bench Press</span><span class="tag tb">Chest</span></div><div class="p-chart-wrap"><canvas id="chart-wA-0"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Seated Chest Press</span><span class="tag tb">Chest</span></div><div class="p-chart-wrap"><canvas id="chart-wA-7"></canvas></div></div>
         <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Incline DB Press</span><span class="tag tb">Chest</span></div><div class="p-chart-wrap"><canvas id="chart-wA-1"></canvas></div></div>
         <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Chest Fly</span><span class="tag tb">Chest</span></div><div class="p-chart-wrap"><canvas id="chart-wA-2"></canvas></div></div>
         <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Pull-ups</span><span class="tag tb">Back</span></div><div class="p-chart-wrap"><canvas id="chart-wA-3"></canvas></div></div>
@@ -579,6 +585,7 @@
   var BASE_IMG = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
   var EX_IMAGES = {
     'wA-0': 'Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+    'wA-7': 'Lever_Seated_Chest_Press/0.jpg',
     'wA-1': 'Incline_Dumbbell_Press/0.jpg',
     'wA-2': 'Dumbbell_Flyes/0.jpg',
     'wA-3': 'Chin-Up/0.jpg',
@@ -616,6 +623,7 @@
       img.src = BASE_IMG + imgPath;
       img.className = 'ex-thumb';
       img.alt = '';
+      img.onerror = function() { this.style.display = 'none'; };
       img.onclick = function() {
         var m = document.getElementById('ex-modal');
         document.getElementById('ex-modal-img').src = BASE_IMG + imgPath.replace('/0.jpg', '/1.jpg');
@@ -646,6 +654,7 @@
   var charts = {};
   var EXERCISES = [
     { key: 'wA-0', name: 'Bench Press' },
+    { key: 'wA-7', name: 'Seated Chest Press' },
     { key: 'wA-1', name: 'Incline DB Press' },
     { key: 'wA-2', name: 'Chest Fly' },
     { key: 'wA-3', name: 'Pull-ups (+kg)' },
@@ -783,6 +792,7 @@
       applyWeights(gistData);
       applyDeletions();
       renderCustomExercises();
+      applyOrder();
       Object.keys(gistData).forEach(function(k) {
         if (k.startsWith('w-')) localStorage.setItem('fp-' + k, gistData[k]);
         if (k.startsWith('m-')) localStorage.setItem('fp-' + k, gistData[k]);
@@ -859,6 +869,7 @@
       var addForm = document.getElementById('add-form-' + ex.day);
       container.insertBefore(row, addForm || container.querySelector('.mob-card') || null);
       addDeleteButton(row, ex.key);
+      addMoveButtonsToRow(row);
       EXERCISES.push({ key: ex.key, name: ex.name });
     });
   }
@@ -940,6 +951,7 @@
     var row = buildExRow(ex);
     container.insertBefore(row, document.getElementById('add-form-' + day));
     addDeleteButton(row, key);
+    addMoveButtonsToRow(row);
     closeAdd(day);
     clearTimeout(saveTimer);
     pushToGist();
@@ -1006,10 +1018,82 @@
     EXERCISES.forEach(function(ex) { renderChart(ex.key); });
   }
 
+  // ── Move/reorder exercises ──────────────────────────────
+  function addMoveButtonsToRow(row) {
+    if (row.querySelector('.move-btns')) return;
+    var wrap = document.createElement('div');
+    wrap.className = 'move-btns';
+    var up = document.createElement('button');
+    up.className = 'move-btn';
+    up.innerHTML = '▲';
+    up.title = 'Move up';
+    up.onclick = function(e) { e.stopPropagation(); moveExercise(row, -1); };
+    var dn = document.createElement('button');
+    dn.className = 'move-btn';
+    dn.innerHTML = '▼';
+    dn.title = 'Move down';
+    dn.onclick = function(e) { e.stopPropagation(); moveExercise(row, 1); };
+    wrap.appendChild(up);
+    wrap.appendChild(dn);
+    row.appendChild(wrap);
+  }
+
+  function addMoveButtons() {
+    document.querySelectorAll('.ex').forEach(function(row) {
+      if (row.querySelector('.weight-input')) addMoveButtonsToRow(row);
+    });
+  }
+
+  function moveExercise(row, direction) {
+    var parent = row.parentElement;
+    if (!parent) return;
+    var siblings = Array.from(parent.querySelectorAll(':scope > .ex'));
+    var idx = siblings.indexOf(row);
+    if (direction === -1 && idx > 0) {
+      parent.insertBefore(row, siblings[idx - 1]);
+    } else if (direction === 1 && idx < siblings.length - 1) {
+      parent.insertBefore(siblings[idx + 1], row);
+    } else return;
+    saveOrder();
+  }
+
+  function saveOrder() {
+    if (!gistData.order) gistData.order = {};
+    ['A','B','C','D'].forEach(function(day) {
+      var container = document.getElementById('w' + day);
+      if (!container) return;
+      gistData.order[day] = Array.from(container.querySelectorAll(':scope > .ex')).map(function(r) {
+        var input = r.querySelector('.weight-input');
+        return input ? input.id.replace('w-', '') : null;
+      }).filter(Boolean);
+    });
+    clearTimeout(saveTimer);
+    pushToGist();
+  }
+
+  function applyOrder() {
+    if (!gistData.order) return;
+    ['A','B','C','D'].forEach(function(day) {
+      var keys = gistData.order[day];
+      if (!keys || !keys.length) return;
+      var container = document.getElementById('w' + day);
+      if (!container) return;
+      var anchor = document.getElementById('add-form-' + day) || container.querySelector('.mob-card');
+      keys.forEach(function(key) {
+        var input = document.getElementById('w-' + key);
+        if (!input) return;
+        var exRow = input.closest('.ex');
+        if (!exRow || exRow.parentElement !== container) return;
+        container.insertBefore(exRow, anchor);
+      });
+    });
+  }
+
   injectAddButtons();
   loadWeights();
   addExerciseImages();
   addDeleteButtons();
+  addMoveButtons();
 </script>
 
 
