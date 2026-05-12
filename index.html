@@ -293,30 +293,19 @@
       <div class="stitle">Your 4-Day Split</div>
       <div style="color:var(--muted);font-size:13px">Each session: pick 4 exercises · 3 sets each · near failure · ~45 min. Tap a day to expand.</div>
     </div>
-    <div class="card">
-      <div class="stitle">Progressive Overload Rules</div>
-      <div class="bul"><span class="bul-d">▸</span><span><span class="bl">All reps clean</span> <span class="bd">→ add <strong style="color:var(--green)">2.5kg</strong> next session</span></span></div>
-      <div class="bul"><span class="bul-d">▸</span><span><span class="bl">Fail a rep</span> <span class="bd">→ keep same weight until all sets are clean</span></span></div>
-      <div class="bul"><span class="bul-d">▸</span><span><span class="bl">Rest</span> <span class="bd">→ 2–3 min compound · 60–90s isolation</span></span></div>
-      <div class="bul"><span class="bul-d">▸</span><span><span class="bl">Log every session</span> <span class="bd">→ even a notes app works</span></span></div>
-    </div>
     <div class="card amber">
       <button class="w-hdr" onclick="tw('rehab')">
         <div class="w-tg"><span class="w-dl" style="color:var(--amber)">Achilles Rehab</span><span class="w-fc">Daily · AM + PM · Non-Negotiable</span></div>
         <span class="w-cv" id="rehab-c">▼</span>
       </button>
       <div class="w-body" id="rehab">
-        <div style="color:var(--amber);font-weight:600;font-size:13px;margin-bottom:8px;margin-top:4px">Evidence-based. Takes 6–12 weeks. Consistency is everything.</div>
-        <div class="bul"><span class="bul-d">▸</span><span><span class="bl">Protocol</span> <span class="bd">3×15 eccentric calf raises on a step, twice daily (AM + PM).</span></span></div>
+        <div style="color:var(--amber);font-weight:600;font-size:13px;margin-bottom:8px;margin-top:4px">3×15 eccentric calf raises on a step, twice daily.  (AM + PM)</div>
+        <div class="bul"><span class="bul-d">▸</span><span><span class="bl">Protocol</span> <span class="bd">Takes 6–12 weeks. Consistency is everything.</span></span></div>
         <div class="bul"><span class="bul-d">▸</span><span><span class="bl">How</span> <span class="bd">Rise on <strong>both feet</strong>. Lower slowly on <strong>affected leg only</strong> over 3 seconds.</span></span></div>
-        <div class="bul"><span class="bul-d">▸</span><span><span class="bl">Pain rule</span> <span class="bd">Discomfort ≤5/10 acceptable. Stop immediately if sharp.</span></span></div>
         <div class="wm-l" style="margin-top:10px">Phase Progression</div>
         <div class="bul"><span class="bul-d">▸</span><span><span class="bl">Wk 1–2</span> <span class="bd">Bilateral concentric + bilateral eccentric — both feet lower together.</span></span></div>
         <div class="bul"><span class="bul-d">▸</span><span><span class="bl">Wk 3–6</span> <span class="bd">Bilateral concentric + <strong>unilateral eccentric</strong> — alternating sides, 3s down.</span></span></div>
-        <div class="wm-l" style="margin-top:10px">Stop Rules</div>
-        <div class="bul"><span class="bul-d">▸</span><span><span class="bl">Pain &gt;3/10</span> <span class="bd">→ reduce to 3×8, hold 3 sessions, reassess.</span></span></div>
-        <div class="bul"><span class="bul-d">▸</span><span><span class="bl">Sharp pain</span> <span class="bd">→ stop the session and log it in REHAB.md.</span></span></div>
-        <div class="bul"><span class="bul-d">▸</span><span><span class="bl">Pain &gt;24h after</span> <span class="bd">→ drop back one block step.</span></span></div>
+      
         <div style="color:var(--muted);font-size:11px;margin-top:10px">Gate to Block 2: pain ≤2/10 for 5 consecutive sessions + 25+ single-leg calf raises both sides.</div>
       </div>
     </div>
@@ -364,7 +353,6 @@
         <div class="ep">Pick 4 · 3 sets each · near failure</div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Barbell Back Squat</span><span class="tag tb">Legs</span><span class="tag ta">⚠ Knee</span></div><div class="ex-nt">32.5kg. Stop just before lockout — protect knee hyperextension.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wB-0" placeholder="— kg" oninput="saveW(&#39;wB-0&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wB-0-1" onclick="setMult(&#39;wB-0&#39;,1)">×1</button><button class="mult-btn" id="m-wB-0-2" onclick="setMult(&#39;wB-0&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Romanian Deadlift</span><span class="tag tb">Posterior</span></div><div class="ex-nt">34–37kg. Hinge at hip, feel hamstring stretch.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wB-1" placeholder="— kg" oninput="saveW(&#39;wB-1&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wB-1-1" onclick="setMult(&#39;wB-1&#39;,1)">×1</button><button class="mult-btn" id="m-wB-1-2" onclick="setMult(&#39;wB-1&#39;,2)">×2</button></div></div></div>
-        <div class="ex"><div><div class="ex-nr"><span class="ex-n">Leg Press (Machine)</span><span class="tag tb">Legs</span><span class="tag ta">⚠ Knee</span></div><div class="ex-nt">Replaces leg extension. Don't lock knees at top.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wB-2" placeholder="— kg" oninput="saveW(&#39;wB-2&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wB-2-1" onclick="setMult(&#39;wB-2&#39;,1)">×1</button><button class="mult-btn" id="m-wB-2-2" onclick="setMult(&#39;wB-2&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Reverse Lunges</span><span class="tag tb">Legs</span></div><div class="ex-nt">Replaces Bulgarian Split Squats. Kinder on knees &amp; hips.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wB-3" placeholder="— kg" oninput="saveW(&#39;wB-3&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wB-3-1" onclick="setMult(&#39;wB-3&#39;,1)">×1</button><button class="mult-btn" id="m-wB-3-2" onclick="setMult(&#39;wB-3&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Glute Trainer / Hip Thrust</span><span class="tag tb">Glutes</span></div><div class="ex-nt">32.5kg. Squeeze glutes at top for 1s.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wB-4" placeholder="— kg" oninput="saveW(&#39;wB-4&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wB-4-1" onclick="setMult(&#39;wB-4&#39;,1)">×1</button><button class="mult-btn" id="m-wB-4-2" onclick="setMult(&#39;wB-4&#39;,2)">×2</button></div></div></div>
         <div class="mob-card" id="mob-card-B">
@@ -489,9 +477,9 @@
         </div>
       </div>
     </div>
-    <div class="card amber" id="mob-later-card">
+    <div class="card" id="mob-later-card">
       <button class="w-hdr" onclick="tw('later-body')" style="padding:0">
-        <div class="w-tg"><span class="w-fc" style="font-size:13px;font-weight:600;color:var(--amber)">⏳ Later — Phase 3+ Explosive Exercises</span></div>
+        <div class="w-tg"><span class="w-fc" style="font-size:13px;font-weight:600;">⏳ Later — Phase 3+ Explosive Exercises</span></div>
         <span class="w-cv" id="later-body-c">▼</span>
       </button>
       <div class="w-body" id="later-body">
