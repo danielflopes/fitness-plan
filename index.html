@@ -168,13 +168,12 @@
   </div>
   <div class="tabs">
     <button class="tab active" onclick="showTab(&#39;overview&#39;,this)">◎ Overview</button>
+    <button class="tab" onclick="showTab(&#39;progress&#39;,this)">◑ Progress</button>
     <button class="tab" onclick="showTab(&#39;training&#39;,this)">▲ Training</button>
     <button class="tab" onclick="showTab(&#39;flexibility&#39;,this)">🧘 Flexibility</button>
     <button class="tab" onclick="showTab(&#39;achilles&#39;,this)">🦵 Achilles</button>
     <button class="tab" onclick="showTab(&#39;power&#39;,this)">⚡ Power</button>
-    <button class="tab" onclick="showTab(&#39;cardio&#39;,this)">◈ Cardio</button>
     <button class="tab" onclick="showTab(&#39;nutrition&#39;,this)">◇ Nutrition</button>
-    <button class="tab" onclick="showTab(&#39;progress&#39;,this)">◑ Progress</button>
   </div>
 </div>
 
@@ -259,11 +258,11 @@
     </div>
     <div class="card">
       <div class="stitle">Weekly Schedule</div>
-      <div class="week-row ad"><span class="wday">Mon</span><div class="wsess">Day A — Shoulders<span class="wwalk">+ 🧘 mobility · 🏃 cardio (walk/bike/run) · 🦵 Achilles daily</span></div></div>
+      <div class="week-row ad"><span class="wday">Mon</span><div class="wsess">Day A — Shoulders + Chest<span class="wwalk">+ 🧘 mobility · 🏃 cardio (walk/bike/run) · 🦵 Achilles daily</span></div></div>
       <div class="week-row ad"><span class="wday">Tue</span><div class="wsess">Day C — Arms<span class="wwalk">+ 🧘 mobility · 🏃 cardio (walk/bike/run) · 🦵 Achilles daily</span></div></div>
       <div class="week-row rd"><span class="wday">Wed</span><div class="wsess">Rest<span class="wwalk">+ 🧘 mobility · 🏃 cardio (walk/bike/run) · 🦵 Achilles daily</span></div></div>
       <div class="week-row ad"><span class="wday">Thu</span><div class="wsess">Day B — Legs &amp; Glutes<span class="wwalk">+ 🧘 mobility · 🏃 cardio (walk/bike/run) · 🦵 Achilles daily</span></div></div>
-      <div class="week-row ad"><span class="wday">Fri</span><div class="wsess">Day D — Chest + Back (light) + Core<span class="wwalk">+ 🧘 mobility · 🏃 cardio (walk/bike/run) · 🦵 Achilles daily</span></div></div>
+      <div class="week-row ad"><span class="wday">Fri</span><div class="wsess">Day D — Shoulders + Quads + Core<span class="wwalk">+ 🧘 mobility · 🏃 cardio (walk/bike/run) · 🦵 Achilles daily</span></div></div>
       <div class="week-row ad"><span class="wday">Sat</span><div class="wsess">Cardio (30 min, low-impact)<span class="wwalk">+ 🧘 mobility · 🦵 Achilles daily</span></div><span class="tag tg">Outdoors</span></div>
       <div class="week-row rd"><span class="wday">Sun</span><div class="wsess">Full Rest<span class="wwalk">+ 🧘 mobility · 🏃 cardio (walk/bike/run) · 🦵 Achilles daily</span></div></div>
       <div style="color:var(--faint);font-size:11px;margin-top:8px">Cardio is daily now — walk, bike, or run, your pick. Achilles work (see 🦵 Achilles tab) is also daily, strength day or not. On weeks with 2 gym days: move Day B to Sat. Always prioritize Day A &amp; B at the gym.</div>
@@ -273,47 +272,25 @@
       <div class="alert"><span class="alert-e">🦵</span><div><div class="alert-t">Achilles Tendinopathy</div><div class="alert-d">No jump rope, no running yet. Eccentric calf protocol only. Return-to-run roadmap in the Cardio section.</div></div></div>
       <div class="alert"><span class="alert-e">🦿</span><div><div class="alert-t">Knee Hyperextension Risk</div><div class="alert-d">Never lock out knees on squats, leg press, or lunges. Leg extension machine removed from plan.</div></div></div>
     </div>
-    <div class="card">
-      <div class="stitle">Key Changes from Your Current Plan</div>
-      <div class="ch"><span class="ch-i">➕</span><span style="color:var(--green)">Added dedicated Back day (was missing)</span></div>
-      <div class="ch"><span class="ch-i">➕</span><span style="color:var(--green)">Band pull-aparts for shoulder longevity</span></div>
-      <div class="ch"><span class="ch-i">➕</span><span style="color:var(--green)">Daily 10-min mobility routine (new)</span></div>
-      <div class="ch"><span class="ch-i">➕</span><span style="color:var(--green)">Daily 20-min afternoon walk</span></div>
-      <div class="ch"><span class="ch-i">🔄</span><span style="color:var(--blue)">Jump rope → dynamic warm-up (Achilles-safe)</span></div>
-      <div class="ch"><span class="ch-i">🔄</span><span style="color:var(--blue)">Bulgarian Split Squats → Reverse Lunges</span></div>
-      <div class="ch"><span class="ch-i">🔄</span><span style="color:var(--blue)">Leg Extension → Leg Press (knee-safe)</span></div>
-      <div class="ch"><span class="ch-i">🔄</span><span style="color:var(--blue)">Calf raises → eccentric protocol (Achilles rehab)</span></div>
-      <div class="ch"><span class="ch-i">➖</span><span style="color:var(--amber)">Skull crushers: Day C only (was Day 1+3)</span></div>
-      <div class="ch"><span class="ch-i">🔄</span><span style="color:var(--blue)">Split rebuilt for an athletic look — Day A now all-shoulders, Day C now all-arms. Chest + back cut down to one exercise each on Day D.</span></div>
-      <div class="ch"><span class="ch-i">➕</span><span style="color:var(--green)">Hip Thrust (dedicated) + Glute Step Downs added to Day B</span></div>
-      <div class="ch"><span class="ch-i">🔄</span><span style="color:var(--blue)">Pull-ups dropped from Training — replaced by Dead Hangs in the Flexibility tab</span></div>
-      <div class="ch"><span class="ch-i">🔄</span><span style="color:var(--blue)">Every day is now capped at exactly 4 exercises — priority lift first, ~45 min total</span></div>
-      <div class="ch"><span class="ch-i">➕</span><span style="color:var(--green)">Cardio (walk/bike/run) is now daily, not just Saturday</span></div>
-      <div class="ch"><span class="ch-i">➕</span><span style="color:var(--green)">New tabs: 🧘 Flexibility, 🦵 Achilles, ⚡ Power</span></div>
-    </div>
     </div>
   </div>
 
   <!-- TRAINING -->
   <div id="training" class="sec">
-    <div class="card">
-      <div class="stitle">Your 4-Day Split</div>
-      <div style="color:var(--muted);font-size:13px">Every day: exactly 4 exercises · 3 sets each · near failure · ~45 min. They're listed in priority order — if you're short on time, do them top to bottom and stop, don't skip to the end. Mobility (🧘 Flexibility tab), Achilles work (🦵 Achilles tab) and cardio — walk, bike or run — happen every day regardless of which lift day it is.</div>
-    </div>
     <!-- Day A -->
     <div class="card">
       <button class="w-hdr" onclick="tw(&#39;wA&#39;)">
-        <div class="w-tg"><span class="w-dl">Day A</span><span class="w-fc">Shoulders</span></div>
+        <div class="w-tg"><span class="w-dl">Day A</span><span class="w-fc">Shoulders + Chest</span></div>
         <span class="w-cv" id="wA-c">▼</span>
       </button>
       <div class="w-body" id="wA">
-        <div class="wm-l">Warm-up (5 min)</div>
-        <div class="wm-t">Arm circles, band pull-aparts (2×15), shoulder internal/external rotation with light band ×10 each — NO jump rope</div>
-        <div class="ep">4 exercises · 3 sets each · near failure</div>
+        <div class="ep">3 sets each · near failure</div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Dumbbell Overhead Press</span><span class="tag tb">Shoulders</span></div><div class="ex-nt">Priority lift. 20kg.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wC-0" placeholder="— kg" oninput="saveW(&#39;wC-0&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wC-0-1" onclick="setMult(&#39;wC-0&#39;,1)">×1</button><button class="mult-btn" id="m-wC-0-2" onclick="setMult(&#39;wC-0&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Lateral Raises (Wall)</span><span class="tag tb">Shoulders</span></div><div class="ex-nt">12kg. Lead with elbow, not hand — this is the width that reads athletic, not bulky.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wC-1" placeholder="— kg" oninput="saveW(&#39;wC-1&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wC-1-1" onclick="setMult(&#39;wC-1&#39;,1)">×1</button><button class="mult-btn" id="m-wC-1-2" onclick="setMult(&#39;wC-1&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Rear Delt Fly (Dumbbells)</span><span class="tag tb">Rear Delts</span></div><div class="ex-nt">15kg. Hinge forward 45°, lead with elbows.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wD-2" placeholder="— kg" oninput="saveW(&#39;wD-2&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wD-2-1" onclick="setMult(&#39;wD-2&#39;,1)">×1</button><button class="mult-btn" id="m-wD-2-2" onclick="setMult(&#39;wD-2&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Face Pulls (Cable/Band)</span><span class="tag tb">Rear Delts</span></div><div class="ex-nt">Pull to face, elbows high and wide. External rotation at end range. Key for shoulder longevity.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wD-fp" placeholder="— kg" oninput="saveW(&#39;wD-fp&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wD-fp-1" onclick="setMult(&#39;wD-fp&#39;,1)">×1</button><button class="mult-btn" id="m-wD-fp-2" onclick="setMult(&#39;wD-fp&#39;,2)">×2</button></div></div></div>
+        <div class="ex"><div><div class="ex-nr"><span class="ex-n">Bench Press</span><span class="tag tb">Chest</span></div><div class="ex-nt">Progress from 25kg. Control descent, full ROM.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wA-bench" placeholder="— kg" oninput="saveW(&#39;wA-bench&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wA-bench-1" onclick="setMult(&#39;wA-bench&#39;,1)">×1</button><button class="mult-btn" id="m-wA-bench-2" onclick="setMult(&#39;wA-bench&#39;,2)">×2</button></div></div></div>
+        <div class="ex"><div><div class="ex-nr"><span class="ex-n">Push-ups</span><span class="tag tb">Chest</span></div><div class="ex-nt">Bodyweight alt to Bench Press — no barbell needed.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wA-pushup" placeholder="BW" oninput="saveW(&#39;wA-pushup&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wA-pushup-1" onclick="setMult(&#39;wA-pushup&#39;,1)">×1</button><button class="mult-btn" id="m-wA-pushup-2" onclick="setMult(&#39;wA-pushup&#39;,2)">×2</button></div></div></div>
         <div style="color:var(--muted);font-size:11px;margin-top:12px">🧘 Mobility today → Flexibility tab · 🦵 Achilles work → Achilles tab · 🏃 Cardio: walk, bike, or run</div>
       </div>
     </div>
@@ -324,8 +301,6 @@
         <span class="w-cv" id="wB-c">▼</span>
       </button>
       <div class="w-body" id="wB">
-        <div class="wm-l">Warm-up (5 min)</div>
-        <div class="wm-t">Hip circles, leg swings (10× each direction), bodyweight squats ×15, glute activation with band</div>
         <div class="ep">4 exercises · 3 sets each · near failure</div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Barbell Back Squat</span><span class="tag tb">Quads</span><span class="tag ta">⚠ Knee</span></div><div class="ex-nt">Priority lift. 32.5kg. Stop just before lockout — protect knee hyperextension.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wB-0" placeholder="— kg" oninput="saveW(&#39;wB-0&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wB-0-1" onclick="setMult(&#39;wB-0&#39;,1)">×1</button><button class="mult-btn" id="m-wB-0-2" onclick="setMult(&#39;wB-0&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Romanian Deadlift</span><span class="tag tb">Hips/Lower Back</span></div><div class="ex-nt">34–37kg. Hinge at hip, feel hamstring stretch.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wB-1" placeholder="— kg" oninput="saveW(&#39;wB-1&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wB-1-1" onclick="setMult(&#39;wB-1&#39;,1)">×1</button><button class="mult-btn" id="m-wB-1-2" onclick="setMult(&#39;wB-1&#39;,2)">×2</button></div></div></div>
@@ -341,8 +316,6 @@
         <span class="w-cv" id="wC-c">▼</span>
       </button>
       <div class="w-body" id="wC">
-        <div class="wm-l">Warm-up (5 min)</div>
-        <div class="wm-t">5 min light walk or marching in place, wrist circles, light band curls ×15</div>
         <div class="ep">4 exercises · 3 sets each · near failure</div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Barbell Bicep Curl</span><span class="tag tb">Biceps</span></div><div class="ex-nt">Priority lift. 24kg. No swinging. Full extension at bottom.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wD-0" placeholder="— kg" oninput="saveW(&#39;wD-0&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wD-0-1" onclick="setMult(&#39;wD-0&#39;,1)">×1</button><button class="mult-btn" id="m-wD-0-2" onclick="setMult(&#39;wD-0&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Hammer Curls</span><span class="tag tb">Biceps</span></div><div class="ex-nt">20kg. Works brachialis for arm thickness.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wD-1" placeholder="— kg" oninput="saveW(&#39;wD-1&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wD-1-1" onclick="setMult(&#39;wD-1&#39;,1)">×1</button><button class="mult-btn" id="m-wD-1-2" onclick="setMult(&#39;wD-1&#39;,2)">×2</button></div></div></div>
@@ -354,37 +327,30 @@
     <!-- Day D -->
     <div class="card">
       <button class="w-hdr" onclick="tw(&#39;wD&#39;)">
-        <div class="w-tg"><span class="w-dl">Day D</span><span class="w-fc">Chest + Back (Light) + Core</span></div>
+        <div class="w-tg"><span class="w-dl">Day D</span><span class="w-fc">Shoulders + Quads + Core</span></div>
         <span class="w-cv" id="wD-c">▼</span>
       </button>
       <div class="w-body" id="wD">
-        <div class="wm-l">Warm-up (5 min)</div>
-        <div class="wm-t">Dynamic mobility: arm circles, thoracic rotations, band pull-aparts (2×15), shoulder rolls — NO jump rope</div>
-        <div class="wm-l" style="margin-top:10px">Press Technique Cue</div>
-        <div class="wm-t">On the incline press: push your upper back into the bench as you press. Let shoulders come slightly forward at lockout instead of pinning blades hard.</div>
         <div class="ep">4 exercises · 3 sets each · near failure</div>
-        <div class="ex"><div><div class="ex-nr"><span class="ex-n">Incline Dumbbell Press</span><span class="tag tb">Chest</span></div><div class="ex-nt">Only chest exercise in the split — deliberately light volume. Upper chest emphasis.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wA-1" placeholder="— kg" oninput="saveW(&#39;wA-1&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wA-1-1" onclick="setMult(&#39;wA-1&#39;,1)">×1</button><button class="mult-btn" id="m-wA-1-2" onclick="setMult(&#39;wA-1&#39;,2)">×2</button></div></div></div>
-        <div class="ex"><div><div class="ex-nr"><span class="ex-n">Bent-Over Barbell Row</span><span class="tag tb">Back</span></div><div class="ex-nt">Only back/lat exercise in the split — kept for posture and pull-pattern health, not size. Neutral spine, drive elbows back. 30–34kg.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wA-4" placeholder="— kg" oninput="saveW(&#39;wA-4&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wA-4-1" onclick="setMult(&#39;wA-4&#39;,1)">×1</button><button class="mult-btn" id="m-wA-4-2" onclick="setMult(&#39;wA-4&#39;,2)">×2</button></div></div></div>
+        <div class="ex"><div><div class="ex-nr"><span class="ex-n">Lateral Raises</span><span class="tag tb">Shoulders</span></div><div class="ex-nt">Second shoulder hit of the week — light weight, strict form.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wD-lat" placeholder="— kg" oninput="saveW(&#39;wD-lat&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wD-lat-1" onclick="setMult(&#39;wD-lat&#39;,1)">×1</button><button class="mult-btn" id="m-wD-lat-2" onclick="setMult(&#39;wD-lat&#39;,2)">×2</button></div></div></div>
+        <div class="ex"><div><div class="ex-nr"><span class="ex-n">Leg Press</span><span class="tag tb">Quads</span></div><div class="ex-nt">Knee-safe quad volume — second leg hit of the week alongside Day B's squat.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wB-2" placeholder="— kg" oninput="saveW(&#39;wB-2&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wB-2-1" onclick="setMult(&#39;wB-2&#39;,1)">×1</button><button class="mult-btn" id="m-wB-2-2" onclick="setMult(&#39;wB-2&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Hanging Leg Raises</span><span class="tag tb">Core</span></div><div class="ex-nt">Controlled, no swinging.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wA-6" placeholder="— kg" oninput="saveW(&#39;wA-6&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wA-6-1" onclick="setMult(&#39;wA-6&#39;,1)">×1</button><button class="mult-btn" id="m-wA-6-2" onclick="setMult(&#39;wA-6&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Plank</span><span class="tag tb">Core</span></div><div class="ex-nt">Squeeze glutes and abs throughout.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wC-5" placeholder="— s" oninput="saveW(&#39;wC-5&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wC-5-1" onclick="setMult(&#39;wC-5&#39;,1)">×1</button><button class="mult-btn" id="m-wC-5-2" onclick="setMult(&#39;wC-5&#39;,2)">×2</button></div></div></div>
         <div style="color:var(--muted);font-size:11px;margin-top:12px">🧘 Mobility today → Flexibility tab · 🦵 Achilles work → Achilles tab · 🏃 Cardio: walk, bike, or run</div>
       </div>
     </div>
     <!-- (old Day D mobility card removed — see Flexibility tab) -->
-    <!-- Daily Cardio Log -->
+    <!-- Daily Cardio -->
     <div class="card">
-      <button class="w-hdr" onclick="tw(&#39;wSat&#39;)">
-        <div class="w-tg"><span class="w-dl">Daily</span><span class="w-fc">Cardio Log</span></div>
-        <span class="w-cv" id="wSat-c">▼</span>
-      </button>
-      <div class="w-body" id="wSat">
-        <div class="wm-l">Cardio — every day</div>
-        <div class="wm-t">Walk, bike, or run — your pick, low-impact and outdoors when possible. See the 🦵 Achilles tab for the return-to-run protocol.</div>
-        <div class="ep">Log whichever you did · duration</div>
-        <div class="ex"><div><div class="ex-nr"><span class="ex-n">Walk</span><span class="tag tb">Cardio</span></div><div class="ex-nt">Zone 2 pace, conversational.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wSat-walk" placeholder="— min" oninput="saveW(&#39;wSat-walk&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wSat-walk-1" onclick="setMult(&#39;wSat-walk&#39;,1)">×1</button><button class="mult-btn" id="m-wSat-walk-2" onclick="setMult(&#39;wSat-walk&#39;,2)">×2</button></div></div></div>
-        <div class="ex"><div><div class="ex-nr"><span class="ex-n">Bicycle</span><span class="tag tb">Cardio</span></div><div class="ex-nt">Zone 2 — you can hold a conversation throughout. Outdoors or stationary.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wSat-cyc" placeholder="— min" oninput="saveW(&#39;wSat-cyc&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wSat-cyc-1" onclick="setMult(&#39;wSat-cyc&#39;,1)">×1</button><button class="mult-btn" id="m-wSat-cyc-2" onclick="setMult(&#39;wSat-cyc&#39;,2)">×2</button></div></div></div>
-        <div class="ex"><div><div class="ex-nr"><span class="ex-n">Running</span><span class="tag tb">Cardio</span></div><div class="ex-nt">Follow the return-to-run protocol in the Achilles tab. Stop if Achilles pain &gt; 5/10.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wSat-run" placeholder="— min" oninput="saveW(&#39;wSat-run&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wSat-run-1" onclick="setMult(&#39;wSat-run&#39;,1)">×1</button><button class="mult-btn" id="m-wSat-run-2" onclick="setMult(&#39;wSat-run&#39;,2)">×2</button></div></div></div>
-      </div>
+      <div class="stitle">Daily Cardio</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:12px">Every day, strength day or not: walk, bike, or run — your pick. Achilles-specific pacing and the return-to-run protocol live in the 🦵 Achilles tab, not here.</div>
+      <div class="ci"><div style="flex:1"><div class="ci-n">Brisk Walking</div><div class="ci-nt">Outdoors, good pace, slight incline if available.</div></div><span class="tag tg">20–30 min</span></div>
+      <div class="ci"><div style="flex:1"><div class="ci-n">Stationary Bike / Cycling</div><div class="ci-nt">Zone 2 — you can hold a conversation.</div></div><span class="tag tg">20–30 min</span></div>
+      <div class="ci"><div style="flex:1"><div class="ci-n">Running</div><div class="ci-nt">Only per the return-to-run protocol — see 🦵 Achilles tab.</div></div><span class="tag ta">Achilles tab</span></div>
+    </div>
+    <div class="card">
+      <div class="stitle">Zone 2 Principle</div>
+      <div style="color:var(--muted);font-size:13px;line-height:1.6">Keep 80% of cardio in Zone 2 — you can hold a full conversation, HR ~120–140 bpm. Burns fat efficiently, builds aerobic base, doesn't impact strength recovery.</div>
     </div>
   </div>
 
@@ -536,21 +502,6 @@
     </div>
   </div>
 
-  <!-- CARDIO -->
-  <div id="cardio" class="sec">
-    <div class="card">
-      <div class="stitle">Daily Cardio</div>
-      <div style="color:var(--muted);font-size:13px;margin-bottom:12px">Every day, strength day or not: walk, bike, or run — your pick. Achilles-specific pacing and the return-to-run protocol live in the 🦵 Achilles tab, not here.</div>
-      <div class="ci"><div style="flex:1"><div class="ci-n">Brisk Walking</div><div class="ci-nt">Outdoors, good pace, slight incline if available.</div></div><span class="tag tg">20–30 min</span></div>
-      <div class="ci"><div style="flex:1"><div class="ci-n">Stationary Bike / Cycling</div><div class="ci-nt">Zone 2 — you can hold a conversation.</div></div><span class="tag tg">20–30 min</span></div>
-      <div class="ci"><div style="flex:1"><div class="ci-n">Running</div><div class="ci-nt">Only per the return-to-run protocol — see 🦵 Achilles tab.</div></div><span class="tag ta">Achilles tab</span></div>
-    </div>
-    <div class="card">
-      <div class="stitle">Zone 2 Principle</div>
-      <div style="color:var(--muted);font-size:13px;line-height:1.6">Keep 80% of cardio in Zone 2 — you can hold a full conversation, HR ~120–140 bpm. Burns fat efficiently, builds aerobic base, doesn't impact strength recovery.</div>
-    </div>
-  </div>
-
   <!-- NUTRITION -->
   <div id="nutrition" class="sec">
     <div class="card">
@@ -574,7 +525,7 @@
     <!-- Progress Day A -->
     <div class="card">
       <button class="w-hdr" onclick="tw('pA')">
-        <div class="w-tg"><span class="w-dl">Day A</span><span class="w-fc">Shoulders</span></div>
+        <div class="w-tg"><span class="w-dl">Day A</span><span class="w-fc">Shoulders + Chest</span></div>
         <span class="w-cv" id="pA-c">▼</span>
       </button>
       <div class="w-body" id="pA">
@@ -582,6 +533,8 @@
         <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Lateral Raises</span><span class="tag tb">Shoulders</span></div><div class="p-chart-wrap"><canvas id="chart-wC-1"></canvas></div></div>
         <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Rear Delt Fly</span><span class="tag tb">Rear Delts</span></div><div class="p-chart-wrap"><canvas id="chart-wD-2"></canvas></div></div>
         <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Face Pulls</span><span class="tag tb">Rear Delts</span></div><div class="p-chart-wrap"><canvas id="chart-wD-fp"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Bench Press</span><span class="tag tb">Chest</span></div><div class="p-chart-wrap"><canvas id="chart-wA-bench"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Push-ups</span><span class="tag tb">Chest</span></div><div class="p-chart-wrap"><canvas id="chart-wA-pushup"></canvas></div></div>
       </div>
     </div>
     <!-- Progress Day B -->
@@ -613,12 +566,12 @@
     <!-- Progress Day D -->
     <div class="card">
       <button class="w-hdr" onclick="tw('pD')">
-        <div class="w-tg"><span class="w-dl">Day D</span><span class="w-fc">Chest + Back (Light) + Core</span></div>
+        <div class="w-tg"><span class="w-dl">Day D</span><span class="w-fc">Shoulders + Quads + Core</span></div>
         <span class="w-cv" id="pD-c">▼</span>
       </button>
       <div class="w-body" id="pD">
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Incline DB Press</span><span class="tag tb">Chest</span></div><div class="p-chart-wrap"><canvas id="chart-wA-1"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Bent-Over Row</span><span class="tag tb">Back</span></div><div class="p-chart-wrap"><canvas id="chart-wA-4"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Lateral Raises</span><span class="tag tb">Shoulders</span></div><div class="p-chart-wrap"><canvas id="chart-wD-lat"></canvas></div></div>
+        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Leg Press</span><span class="tag tb">Quads</span></div><div class="p-chart-wrap"><canvas id="chart-wB-2"></canvas></div></div>
         <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Hanging Leg Raises</span><span class="tag tb">Core</span></div><div class="p-chart-wrap"><canvas id="chart-wA-6"></canvas></div></div>
         <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Plank</span><span class="tag tb">Core</span></div><div class="p-chart-wrap"><canvas id="chart-wC-5"></canvas></div></div>
       </div>
@@ -628,11 +581,12 @@
 <script>
   var BASE_IMG = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
   var EX_IMAGES = {
-    'wA-1': 'Incline_Dumbbell_Press/0.jpg',
-    'wA-4': 'Bent_Over_Barbell_Row/0.jpg',
     'wA-6': 'Hanging_Leg_Raise/0.jpg',
+    'wA-bench': 'Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+    'wA-pushup': 'Pushups/0.jpg',
     'wB-0': 'Barbell_Squat/0.jpg',
     'wB-1': 'Good_Morning/0.jpg',
+    'wB-2': 'Leg_Press/0.jpg',
     'wB-4': 'Barbell_Glute_Bridge/0.jpg',
     'wB-sd': 'Step-up_with_Knee_Raise/0.jpg',
     'wC-0': 'Dumbbell_Shoulder_Press/0.jpg',
@@ -643,7 +597,8 @@
     'wD-0': 'Barbell_Curl/0.jpg',
     'wD-1': 'Alternate_Hammer_Curl/0.jpg',
     'wD-2': 'Bent_Over_Dumbbell_Rear_Delt_Raise_With_Head_On_Bench/0.jpg',
-    'wD-fp': 'Face_Pull/0.jpg'
+    'wD-fp': 'Face_Pull/0.jpg',
+    'wD-lat': 'Alternating_Deltoid_Raise/0.jpg'
   };
 
   var MOB_IMAGES = {
@@ -1025,6 +980,8 @@
     { key: 'wC-1', name: 'Lateral Raises' },
     { key: 'wD-2', name: 'Rear Delt Fly' },
     { key: 'wD-fp', name: 'Face Pulls' },
+    { key: 'wA-bench', name: 'Bench Press' },
+    { key: 'wA-pushup', name: 'Push-ups' },
     { key: 'wB-0', name: 'Barbell Back Squat' },
     { key: 'wB-1', name: 'Romanian Deadlift' },
     { key: 'wB-4', name: 'Hip Thrust' },
@@ -1033,8 +990,8 @@
     { key: 'wD-1', name: 'Hammer Curls' },
     { key: 'wC-3', name: 'Skull Crushers' },
     { key: 'wC-dip', name: 'Tricep Dips' },
-    { key: 'wA-1', name: 'Incline DB Press' },
-    { key: 'wA-4', name: 'Bent-Over Row' },
+    { key: 'wD-lat', name: 'Lateral Raises (Day D)' },
+    { key: 'wB-2', name: 'Leg Press' },
     { key: 'wA-6', name: 'Hanging Leg Raises' },
     { key: 'wC-5', name: 'Plank' }
   ];
