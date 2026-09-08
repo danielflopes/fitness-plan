@@ -7,7 +7,12 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="My Fitness Plan">
 <title>My Fitness Plan</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%8A%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -160,7 +165,7 @@
 <body>
 <div class="header">
   <div class="header-top">
-    <div><h1>My Fitness Plan</h1><p>Male · 35 · 72kg · 168cm · ~22% BF</p></div>
+    <div><h1>My Fitness Plan</h1><p>Male · 35 · 72kg · 168cm · ~21% BF</p></div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
       <div class="header-tags"><span class="tag tg">Recomp</span><span class="tag tb">3 months</span></div>
       <span id="sync-status" style="font-size:10px;font-family:monospace;color:var(--faint)"></span>
@@ -190,7 +195,7 @@
           <div style="color:var(--muted);font-size:11px">Lose fat through recomp — slight deficit + high protein</div>
         </div>
         <div style="text-align:right;flex-shrink:0">
-          <div style="font-family:monospace;font-size:13px;color:var(--faint)">~22%</div>
+          <div style="font-family:monospace;font-size:13px;color:var(--faint)">~21%</div>
           <div style="font-family:monospace;font-size:11px;color:var(--faint);margin:1px 0">↓</div>
           <div style="font-family:monospace;font-size:14px;font-weight:700;color:var(--green)">18–19%</div>
         </div>
@@ -223,12 +228,12 @@
         <div style="font-size:20px;flex-shrink:0">🏃</div>
         <div style="flex:1">
           <div style="font-weight:600;color:var(--text);font-size:13px;margin-bottom:2px">Return to Running</div>
-          <div style="color:var(--muted);font-size:11px">Gradual return via Achilles protocol — pain-free 5K</div>
+          <div style="color:var(--muted);font-size:11px">Gradual return via Achilles protocol</div>
         </div>
         <div style="text-align:right;flex-shrink:0">
           <div style="font-family:monospace;font-size:13px;color:var(--faint)">Paused</div>
           <div style="font-family:monospace;font-size:11px;color:var(--faint);margin:1px 0">→</div>
-          <div style="font-family:monospace;font-size:14px;font-weight:700;color:var(--green)">30min pain-free</div>
+          <div style="font-family:monospace;font-size:14px;font-weight:700;color:var(--green)">20min pain-free</div>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
@@ -291,7 +296,6 @@
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Face Pulls (Cable/Band)</span><span class="tag tb">Rear Delts</span></div><div class="ex-nt">Pull to face, elbows high and wide. External rotation at end range. Key for shoulder longevity.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wD-fp" placeholder="— kg" oninput="saveW(&#39;wD-fp&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wD-fp-1" onclick="setMult(&#39;wD-fp&#39;,1)">×1</button><button class="mult-btn" id="m-wD-fp-2" onclick="setMult(&#39;wD-fp&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Bench Press</span><span class="tag tb">Chest</span></div><div class="ex-nt">Progress from 25kg. Control descent, full ROM.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wA-bench" placeholder="— kg" oninput="saveW(&#39;wA-bench&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wA-bench-1" onclick="setMult(&#39;wA-bench&#39;,1)">×1</button><button class="mult-btn" id="m-wA-bench-2" onclick="setMult(&#39;wA-bench&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Push-ups</span><span class="tag tb">Chest</span></div><div class="ex-nt">Bodyweight alt to Bench Press — no barbell needed.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wA-pushup" placeholder="BW" oninput="saveW(&#39;wA-pushup&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wA-pushup-1" onclick="setMult(&#39;wA-pushup&#39;,1)">×1</button><button class="mult-btn" id="m-wA-pushup-2" onclick="setMult(&#39;wA-pushup&#39;,2)">×2</button></div></div></div>
-        <div style="color:var(--muted);font-size:11px;margin-top:12px">🧘 Mobility today → Flexibility tab · 🦵 Achilles work → Achilles tab · 🏃 Cardio: walk, bike, or run</div>
       </div>
     </div>
     <!-- Day B -->
@@ -306,7 +310,6 @@
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Romanian Deadlift</span><span class="tag tb">Hips/Lower Back</span></div><div class="ex-nt">34–37kg. Hinge at hip, feel hamstring stretch.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wB-1" placeholder="— kg" oninput="saveW(&#39;wB-1&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wB-1-1" onclick="setMult(&#39;wB-1&#39;,1)">×1</button><button class="mult-btn" id="m-wB-1-2" onclick="setMult(&#39;wB-1&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Hip Thrust</span><span class="tag tb">Glutes/Hips</span></div><div class="ex-nt">32.5kg. Squeeze glutes at top for 1s.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wB-4" placeholder="— kg" oninput="saveW(&#39;wB-4&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wB-4-1" onclick="setMult(&#39;wB-4&#39;,1)">×1</button><button class="mult-btn" id="m-wB-4-2" onclick="setMult(&#39;wB-4&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Glute Step Downs</span><span class="tag tb">Glutes/Quads</span></div><div class="ex-nt">New. Step box or bench, lower under control on one leg until heel taps floor, drive back up. Single-leg hip/knee control — replaces Reverse Lunges.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wB-sd" placeholder="— kg" oninput="saveW(&#39;wB-sd&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wB-sd-1" onclick="setMult(&#39;wB-sd&#39;,1)">×1</button><button class="mult-btn" id="m-wB-sd-2" onclick="setMult(&#39;wB-sd&#39;,2)">×2</button></div></div></div>
-        <div style="color:var(--muted);font-size:11px;margin-top:12px">🧘 Mobility today → Flexibility tab · 🦵 Achilles work → Achilles tab · 🏃 Cardio: walk, bike, or run</div>
       </div>
     </div>
     <!-- Day C -->
@@ -321,7 +324,6 @@
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Hammer Curls</span><span class="tag tb">Biceps</span></div><div class="ex-nt">20kg. Works brachialis for arm thickness.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wD-1" placeholder="— kg" oninput="saveW(&#39;wD-1&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wD-1-1" onclick="setMult(&#39;wD-1&#39;,1)">×1</button><button class="mult-btn" id="m-wD-1-2" onclick="setMult(&#39;wD-1&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Skull Crushers</span><span class="tag tb">Triceps</span></div><div class="ex-nt">18kg. Keep elbows vertical, control descent.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wC-3" placeholder="— kg" oninput="saveW(&#39;wC-3&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wC-3-1" onclick="setMult(&#39;wC-3&#39;,1)">×1</button><button class="mult-btn" id="m-wC-3-2" onclick="setMult(&#39;wC-3&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Tricep Dips</span><span class="tag tb">Triceps</span></div><div class="ex-nt">BW or add weight. Elbows back, lower until upper arms parallel. Control the descent.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wC-dip" placeholder="BW" oninput="saveW(&#39;wC-dip&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wC-dip-1" onclick="setMult(&#39;wC-dip&#39;,1)">×1</button><button class="mult-btn" id="m-wC-dip-2" onclick="setMult(&#39;wC-dip&#39;,2)">×2</button></div></div></div>
-        <div style="color:var(--muted);font-size:11px;margin-top:12px">🧘 Mobility today → Flexibility tab · 🦵 Achilles work → Achilles tab · 🏃 Cardio: walk, bike, or run</div>
       </div>
     </div>
     <!-- Day D -->
@@ -336,21 +338,16 @@
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Leg Press</span><span class="tag tb">Quads</span></div><div class="ex-nt">Knee-safe quad volume — second leg hit of the week alongside Day B's squat.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wB-2" placeholder="— kg" oninput="saveW(&#39;wB-2&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wB-2-1" onclick="setMult(&#39;wB-2&#39;,1)">×1</button><button class="mult-btn" id="m-wB-2-2" onclick="setMult(&#39;wB-2&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Hanging Leg Raises</span><span class="tag tb">Core</span></div><div class="ex-nt">Controlled, no swinging.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wA-6" placeholder="— kg" oninput="saveW(&#39;wA-6&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wA-6-1" onclick="setMult(&#39;wA-6&#39;,1)">×1</button><button class="mult-btn" id="m-wA-6-2" onclick="setMult(&#39;wA-6&#39;,2)">×2</button></div></div></div>
         <div class="ex"><div><div class="ex-nr"><span class="ex-n">Plank</span><span class="tag tb">Core</span></div><div class="ex-nt">Squeeze glutes and abs throughout.</div></div><div class="weight-wrap"><input class="weight-input" id="w-wC-5" placeholder="— s" oninput="saveW(&#39;wC-5&#39;,this.value)"><div class="mult-toggle"><button class="mult-btn on" id="m-wC-5-1" onclick="setMult(&#39;wC-5&#39;,1)">×1</button><button class="mult-btn" id="m-wC-5-2" onclick="setMult(&#39;wC-5&#39;,2)">×2</button></div></div></div>
-        <div style="color:var(--muted);font-size:11px;margin-top:12px">🧘 Mobility today → Flexibility tab · 🦵 Achilles work → Achilles tab · 🏃 Cardio: walk, bike, or run</div>
       </div>
     </div>
     <!-- (old Day D mobility card removed — see Flexibility tab) -->
     <!-- Daily Cardio -->
     <div class="card">
       <div class="stitle">Daily Cardio</div>
-      <div style="color:var(--muted);font-size:13px;margin-bottom:12px">Every day, strength day or not: walk, bike, or run — your pick. Achilles-specific pacing and the return-to-run protocol live in the 🦵 Achilles tab, not here.</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:12px">Every day, strength day or not: walk, bike, or run — your pick.</div>
       <div class="ci"><div style="flex:1"><div class="ci-n">Brisk Walking</div><div class="ci-nt">Outdoors, good pace, slight incline if available.</div></div><span class="tag tg">20–30 min</span></div>
       <div class="ci"><div style="flex:1"><div class="ci-n">Stationary Bike / Cycling</div><div class="ci-nt">Zone 2 — you can hold a conversation.</div></div><span class="tag tg">20–30 min</span></div>
       <div class="ci"><div style="flex:1"><div class="ci-n">Running</div><div class="ci-nt">Only per the return-to-run protocol — see 🦵 Achilles tab.</div></div><span class="tag ta">Achilles tab</span></div>
-    </div>
-    <div class="card">
-      <div class="stitle">Zone 2 Principle</div>
-      <div style="color:var(--muted);font-size:13px;line-height:1.6">Keep 80% of cardio in Zone 2 — you can hold a full conversation, HR ~120–140 bpm. Burns fat efficiently, builds aerobic base, doesn't impact strength recovery.</div>
     </div>
   </div>
 
@@ -366,30 +363,36 @@
       <div class="mob-ex-full" id="mob-f-hang"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Dead Hangs</span><span class="tag tp">Shoulders/Grip</span></div><div class="mob-nt">Hang from the pull-up bar, full relaxed extension, let the shoulders and spine decompress. Replaces weighted pull-ups in the strength split — this is decompression, not a strength set.</div></div><span class="mob-rp">3×20–30s</span></div>
       <div class="mob-ex-full" id="mob-f-wgs"><div class="mob-info"><div class="mob-nr"><span class="mob-n">World's Greatest Stretch</span><span class="tag tp">Full Body</span></div><div class="mob-nt">Lunge forward, foot outside hand. Drop forearm to floor, then rotate arm toward ceiling and hold 1s. 6–8 reps each side.</div></div><span class="mob-rp">6–8 ea side</span></div>
       <div class="mob-ex-full" id="mob-f-dsq"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Deep Squat</span><span class="tag tp">Hips/Ankles</span></div><div class="mob-nt">Feet shoulder-width, toes out. Lower all the way down, heels flat, knees pushed out. Breathe at the bottom and relax into it.</div></div><span class="mob-rp">60s</span></div>
+      <div class="mob-ex-full" id="mob-f-ng"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Nerve Glides</span><span class="tag tp">Neural</span></div><div class="mob-nt">Sit or lie. Straighten one leg, flex foot toward shin, hold 2s, then point — repeat rhythmically. 10 reps each side.</div></div><span class="mob-rp">10 ea side</span></div>
+      <div class="mob-ex-full" id="mob-f-sst"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Supine Spinal Twist</span><span class="tag tp">Spine</span></div><div class="mob-nt">Lie on back. Pull one knee to chest, let it fall to the opposite side. Arms spread, shoulders stay flat. Breathe into the rotation.</div></div><span class="mob-rp">30–45s ea</span></div>
     </div>
-    <div class="card" id="mob-card-flex-upper">
-      <div class="mob-card-title" style="margin-bottom:10px">◯ Upper body</div>
-      <div class="mob-ex-full" id="mob-f-pec"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Pec Stretch (Doorframe)</span><span class="tag tp">Chest</span></div><div class="mob-nt">Arm at 90°, lean forward gently. Keep shoulder relaxed down, don't shrug.</div></div><span class="mob-rp">30s each</span></div>
-      <div class="mob-ex-full" id="mob-f-lat"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Doorframe Lat Stretch</span><span class="tag tp">Back</span></div><div class="mob-nt">Grip frame at shoulder height, shift weight back and sit into it. Feel the lat lengthen.</div></div><span class="mob-rp">30s each</span></div>
-      <div class="mob-ex-full" id="mob-f-bpa"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Band Pull-Apart</span><span class="tag tp">Shoulder</span></div><div class="mob-nt">Arms straight at shoulder height. Slow controlled return. Rotator cuff health — non-negotiable.</div></div><span class="mob-rp">2×15</span></div>
+    <div class="card" id="mob-card-flex-shoulders">
+      <div class="mob-card-title" style="margin-bottom:10px">◯ Shoulders</div>
       <div class="mob-ex-full" id="mob-f-er"><div class="mob-info"><div class="mob-nr"><span class="mob-n">External Rotation (Band)</span><span class="tag tp">Shoulder</span></div><div class="mob-nt">Elbow pinned at side, rotate outward against light band resistance. Key for shoulder stability.</div></div><span class="mob-rp">2×12 ea</span></div>
       <div class="mob-ex-full" id="mob-f-xs"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Cross-Body Shoulder Stretch</span><span class="tag tp">Rear Delts</span></div><div class="mob-nt">Pull arm across chest with opposite hand. Keep shoulder pressed down, not shrugged up.</div></div><span class="mob-rp">30s each</span></div>
-      <div class="mob-ex-full" id="mob-f-tri"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Triceps Overhead Stretch</span><span class="tag tp">Triceps</span></div><div class="mob-nt">Raise one arm, bend elbow behind head. Use opposite hand to gently press elbow down. Keep core braced.</div></div><span class="mob-rp">30s each</span></div>
-      <div class="mob-ex-full" id="mob-f-sor"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Stick Overhead Rotations</span><span class="tag tp">Thoracic/Shoulder</span></div><div class="mob-nt">Grip stick wide. Arms straight, rotate overhead from front to behind slowly. Feel the shoulder and thoracic open. If too tight, widen grip.</div></div><span class="mob-rp">10 reps</span></div>
-      <div class="mob-ex-full" id="mob-f-thor"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Thoracic Rotation</span><span class="tag tp">Spine</span></div><div class="mob-nt">Keep hips still. Hand behind head, rotate upper back only — elbow leads the movement to the ceiling.</div></div><span class="mob-rp">10 ea side</span></div>
     </div>
-    <div class="card" id="mob-card-flex-lower">
-      <div class="mob-card-title" style="margin-bottom:10px">◯ Hips, spine &amp; lower body</div>
-      <div class="mob-ex-full" id="mob-f-sst"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Supine Spinal Twist</span><span class="tag tp">Spine</span></div><div class="mob-nt">Lie on back. Pull one knee to chest, let it fall to the opposite side. Arms spread, shoulders stay flat. Breathe into the rotation.</div></div><span class="mob-rp">30–45s ea</span></div>
-      <div class="mob-ex-full" id="mob-f-couch"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Couch Stretch</span><span class="tag tp">Hips</span></div><div class="mob-nt">Knee on pad, foot up wall. Tuck pelvis and push hips forward. Progress by leaning back further each week.</div></div><span class="mob-rp">45s each</span></div>
-      <div class="mob-ex-full" id="mob-f-coss"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Cossack Squat</span><span class="tag tp">Hips</span></div><div class="mob-nt">Wide stance, shift to one side and sink. Grounded foot flat. Aim deeper each week — track your depth.</div></div><span class="mob-rp">5 ea side</span></div>
-      <div class="mob-ex-full" id="mob-f-9090"><div class="mob-info"><div class="mob-nr"><span class="mob-n">90/90 Hip Switch</span><span class="tag tp">Hips</span></div><div class="mob-nt">Sit with legs wider than shoulder-width, knees at 90°. Keep heels grounded, rotate knees side to side from the hips. 6 reps.</div></div><span class="mob-rp">6 reps</span></div>
-      <div class="mob-ex-full" id="mob-f-pig"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Pigeon Pose / Figure-4</span><span class="tag tp">Glutes</span></div><div class="mob-nt">From all fours, bring one shin forward across the body. Sink the hips toward the floor. If knees protest, lie supine and cross ankle over opposite knee (figure-4).</div></div><span class="mob-rp">45s each</span></div>
-      <div class="mob-ex-full" id="mob-f-ham"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Standing Hamstring Stretch</span><span class="tag tp">Hamstrings</span></div><div class="mob-nt">Heel on a low step or bench, leg straight. Hinge at the hips with a flat back until you feel the stretch. Don't round the spine.</div></div><span class="mob-rp">30s each</span></div>
+    <div class="card" id="mob-card-flex-chest">
+      <div class="mob-card-title" style="margin-bottom:10px">◯ Chest</div>
+      <div class="mob-ex-full" id="mob-f-pec"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Pec Stretch (Doorframe)</span><span class="tag tp">Chest</span></div><div class="mob-nt">Arm at 90°, lean forward gently. Keep shoulder relaxed down, don't shrug.</div></div><span class="mob-rp">30s each</span></div>
+    </div>
+    <div class="card" id="mob-card-flex-arms">
+      <div class="mob-card-title" style="margin-bottom:10px">◯ Arms</div>
+      <div class="mob-ex-full" id="mob-f-tri"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Triceps Overhead Stretch</span><span class="tag tp">Triceps</span></div><div class="mob-nt">Raise one arm, bend elbow behind head. Use opposite hand to gently press elbow down. Keep core braced.</div></div><span class="mob-rp">30s each</span></div>
+    </div>
+    <div class="card" id="mob-card-flex-back">
+      <div class="mob-card-title" style="margin-bottom:10px">◯ Back &amp; Torso</div>
+      <div class="mob-ex-full" id="mob-f-lat"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Doorframe Lat Stretch</span><span class="tag tp">Back</span></div><div class="mob-nt">Grip frame at shoulder height, shift weight back and sit into it. Feel the lat lengthen.</div></div><span class="mob-rp">30s each</span></div>
+      <div class="mob-ex-full" id="mob-f-thor"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Thoracic Rotation</span><span class="tag tp">Spine</span></div><div class="mob-nt">Keep hips still. Hand behind head, rotate upper back only — elbow leads the movement to the ceiling.</div></div><span class="mob-rp">10 ea side</span></div>
       <div class="mob-ex-full" id="mob-f-cc"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Cat-Cows</span><span class="tag tp">Spine</span></div><div class="mob-nt">On hands and knees. Inhale and pull belly to spine (cow). Exhale and arch back, look up (cat). 2–3s hold each. 8 reps.</div></div><span class="mob-rp">×8</span></div>
       <div class="mob-ex-full" id="mob-f-ttn"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Thread the Needle</span><span class="tag tp">Spine</span></div><div class="mob-nt">On all fours, lift one arm toward the ceiling. Bring it back down and thread under body, dropping that shoulder to the floor. Hold a second. 6 reps each side.</div></div><span class="mob-rp">6 ea side</span></div>
       <div class="mob-ex-full" id="mob-f-child"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Child's Pose</span><span class="tag tp">Back/Hips</span></div><div class="mob-nt">Breathe deeply. Let lower back decompress and hips open. Arms extended overhead or resting by sides.</div></div><span class="mob-rp">60s</span></div>
-      <div class="mob-ex-full" id="mob-f-ng"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Nerve Glides</span><span class="tag tp">Neural</span></div><div class="mob-nt">Sit or lie. Straighten one leg, flex foot toward shin, hold 2s, then point — repeat rhythmically. 10 reps each side.</div></div><span class="mob-rp">10 ea side</span></div>
+    </div>
+    <div class="card" id="mob-card-flex-legs">
+      <div class="mob-card-title" style="margin-bottom:10px">◯ Legs</div>
+      <div class="mob-ex-full" id="mob-f-couch"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Couch Stretch</span><span class="tag tp">Hips</span></div><div class="mob-nt">Knee on pad, foot up wall. Tuck pelvis and push hips forward. Progress by leaning back further each week.</div></div><span class="mob-rp">45s each</span></div>
+      <div class="mob-ex-full" id="mob-f-coss"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Cossack Squat</span><span class="tag tp">Hips</span></div><div class="mob-nt">Wide stance, shift to one side and sink. Grounded foot flat. Aim deeper each week — track your depth.</div></div><span class="mob-rp">5 ea side</span></div>
+      <div class="mob-ex-full" id="mob-f-pig"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Pigeon Pose / Figure-4</span><span class="tag tp">Glutes</span></div><div class="mob-nt">From all fours, bring one shin forward across the body. Sink the hips toward the floor. If knees protest, lie supine and cross ankle over opposite knee (figure-4).</div></div><span class="mob-rp">45s each</span></div>
+      <div class="mob-ex-full" id="mob-f-ham"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Standing Hamstring Stretch</span><span class="tag tp">Hamstrings</span></div><div class="mob-nt">Heel on a low step or bench, leg straight. Hinge at the hips with a flat back until you feel the stretch. Don't round the spine.</div></div><span class="mob-rp">30s each</span></div>
       <div class="mob-ex-full" id="mob-f-ankle"><div class="mob-info"><div class="mob-nr"><span class="mob-n">Ankle Circles + Dorsiflexion</span><span class="tag tp">Achilles</span></div><div class="mob-nt">Slow controlled circles, then flex/point. Finish with loaded dorsiflexion — heel on floor, knee over toes.</div></div><span class="mob-rp">30s/ankle</span></div>
     </div>
   </div>
@@ -471,10 +474,10 @@
         <div class="ci"><div style="flex:1"><div class="ci-n">Week 5–6</div><div class="ci-nt">Walk 3min / Jog 1min × 5 rounds (20 min total)</div></div><span class="tag tg">1×/week</span></div>
         <div class="ci"><div style="flex:1"><div class="ci-n">Week 7</div><div class="ci-nt">Walk 2min / Jog 2min × 5 rounds (20 min total)</div></div><span class="tag tg">1×/week</span></div>
         <div class="ci"><div style="flex:1"><div class="ci-n">Week 8</div><div class="ci-nt">Walk 1min / Jog 3min × 5 rounds (20 min total)</div></div><span class="tag tg">2×/week</span></div>
-        <div class="wm-l" style="margin-top:14px">Weeks 9–12 — Back to Your Level</div>
+        <div class="wm-l" style="margin-top:14px">Weeks 9–12 — Hold at Goal</div>
         <div class="ci"><div style="flex:1"><div class="ci-n">Week 9–10</div><div class="ci-nt">20 min continuous run at 6 min/km</div></div><span class="tag tg">1×/week</span></div>
-        <div class="ci"><div style="flex:1"><div class="ci-n">Week 11</div><div class="ci-nt">25 min run, try 5:45/km</div></div><span class="tag tg">1×/week</span></div>
-        <div class="ci"><div style="flex:1"><div class="ci-n">Week 12</div><div class="ci-nt">30 min run at comfortable pace — you're back ✅</div></div><span class="tag tg">1×/week</span></div>
+        <div class="ci"><div style="flex:1"><div class="ci-n">Week 11</div><div class="ci-nt">Repeat 20 min run — confirm pain-free two sessions in a row</div></div><span class="tag tg">1×/week</span></div>
+        <div class="ci"><div style="flex:1"><div class="ci-n">Week 12</div><div class="ci-nt">20 min run at comfortable pace — you're back ✅ No further mileage increase, 2×/week ongoing.</div></div><span class="tag tg">1×/week</span></div>
         <div style="color:var(--muted);font-size:11px;margin-top:10px">Stop rule: pain &gt;3/10 during or after, or &gt;24h next-day soreness → drop back one phase.</div>
       </div>
     </div>
@@ -608,16 +611,13 @@
     'mob-f-dsq': 'Knee_Across_The_Body/0.jpg',
     'mob-f-pec': 'Behind_Head_Chest_Stretch/0.jpg',
     'mob-f-lat': 'One_Arm_Against_Wall/0.jpg',
-    'mob-f-bpa': 'Band_Pull_Apart/0.jpg',
     'mob-f-er': 'External_Rotation_with_Band/0.jpg',
     'mob-f-xs': 'Shoulder_Stretch/0.jpg',
     'mob-f-tri': 'Triceps_Stretch/0.jpg',
-    'mob-f-sor': 'Knee_Across_The_Body/0.jpg',
     'mob-f-thor': 'Torso_Rotation/0.jpg',
     'mob-f-sst': 'Knee_Across_The_Body/0.jpg',
     'mob-f-couch': 'Standing_Elevated_Quad_Stretch/0.jpg',
     'mob-f-coss': 'Groiners/0.jpg',
-    'mob-f-9090': 'Torso_Rotation/0.jpg',
     'mob-f-pig': 'IT_Band_and_Glute_Stretch/0.jpg',
     'mob-f-ham': 'Leg-Up_Hamstring_Stretch/0.jpg',
     'mob-f-cc': 'Cat_Stretch/0.jpg',
@@ -698,16 +698,13 @@
     'mob-f-dsq': 'https://www.youtube.com/watch?v=WL6VSc5XQ-8',
     'mob-f-pec': 'https://www.youtube.com/results?search_query=doorframe+pec+stretch+chest+mobility',
     'mob-f-lat': 'https://www.youtube.com/results?search_query=doorframe+lat+stretch',
-    'mob-f-bpa': 'https://www.youtube.com/results?search_query=band+pull+apart+tutorial',
     'mob-f-er': 'https://www.youtube.com/results?search_query=band+external+rotation+shoulder',
     'mob-f-xs': 'https://www.youtube.com/results?search_query=cross+body+shoulder+stretch+rear+delt',
     'mob-f-tri': 'https://www.youtube.com/results?search_query=triceps+overhead+stretch+tutorial',
-    'mob-f-sor': 'https://www.youtube.com/watch?v=WL6VSc5XQ-8',
     'mob-f-thor': 'https://www.youtube.com/results?search_query=thoracic+rotation+mobility',
     'mob-f-sst': 'https://www.youtube.com/results?search_query=supine+spinal+twist+stretch',
     'mob-f-couch': 'https://www.youtube.com/results?search_query=couch+stretch+hip+flexor+mobility',
     'mob-f-coss': 'https://www.youtube.com/results?search_query=cossack+squat+mobility+tutorial',
-    'mob-f-9090': 'https://www.youtube.com/results?search_query=90+90+hip+switch+mobility',
     'mob-f-pig': 'https://www.youtube.com/results?search_query=pigeon+pose+figure+4+glute+stretch',
     'mob-f-ham': 'https://www.youtube.com/results?search_query=standing+hamstring+stretch+running',
     'mob-f-cc': 'https://www.youtube.com/results?search_query=cat+cow+stretch+mobility',
@@ -814,7 +811,7 @@
   }
 
   // ── Mobility row reorder ──────────────────────────────────
-  var MOB_CONTAINERS = ['mob-card-flex-priority','mob-card-flex-upper','mob-card-flex-lower','mob-power-card','mob-later-card'];
+  var MOB_CONTAINERS = ['mob-card-flex-priority','mob-card-flex-shoulders','mob-card-flex-chest','mob-card-flex-arms','mob-card-flex-back','mob-card-flex-legs','mob-power-card','mob-later-card'];
 
   function addMobMoveButtonsToRow(row) {
     if (row.querySelector('.move-btns')) return;
