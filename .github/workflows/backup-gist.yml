@@ -1,0 +1,37 @@
+name: Backup Gist Data
+
+on:
+  schedule:
+    # Daily at 06:00 UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch gist content
+        env:
+          GIST_ID: 05158301a296e8d08403c8f70c2df299
+        run: |
+          mkdir -p backups
+          curl -sf "https://api.github.com/gists/${GIST_ID}" \
+            | jq -r '.files["weights.json"].content' \
+            > backups/gist-weights.json
+
+      - name: Commit if changed
+        run: |
+          git config user.name "gist-backup-bot"
+          git config user.email "actions@github.com"
+          git add backups/gist-weights.json
+          if git diff --cached --quiet; then
+            echo "No changes since last backup."
+          else
+            git commit -m "Backup gist weights.json ($(date -u +%Y-%m-%d))"
+            git push
+          fi
