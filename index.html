@@ -612,17 +612,20 @@
   };
 
   var MOB_IMAGES = {
+    'mob-f-hinge': 'icons/mobility/rotational-hinge.png',
     'mob-f-hang': 'One_Handed_Hang/0.jpg',
     'mob-f-wgs': 'Worlds_Greatest_Stretch/0.jpg',
-    'mob-f-dsq': 'Bodyweight_Squat/0.jpg',
+    'mob-f-dsq': 'Bodyweight_Squat/1.jpg',
+    'mob-f-ng': 'icons/mobility/nerve-glides.png',
     'mob-f-pec': 'Behind_Head_Chest_Stretch/0.jpg',
     'mob-f-lat': 'One_Arm_Against_Wall/0.jpg',
     'mob-f-er': 'External_Rotation_with_Band/0.jpg',
-    'mob-f-xs': 'Shoulder_Stretch/0.jpg',
-    'mob-f-tri': 'Triceps_Stretch/0.jpg',
+    'mob-f-xs': 'Shoulder_Stretch/1.jpg',
+    'mob-f-tri': 'Triceps_Stretch/1.jpg',
     'mob-f-sst': 'Knee_Across_The_Body/0.jpg',
     'mob-f-couch': 'Standing_Elevated_Quad_Stretch/0.jpg',
-    'mob-f-pig': 'Ankle_On_The_Knee/0.jpg',
+    'mob-f-coss': 'icons/mobility/cossack-squat.png',
+    'mob-f-pig': 'Piriformis-SMR/0.jpg',
     'mob-f-ham': 'Standing_Hamstring_and_Calf_Stretch/0.jpg',
     'mob-f-cc': 'Cat_Stretch/0.jpg',
     'mob-f-child': 'Childs_Pose/0.jpg',
@@ -635,19 +638,23 @@
     'mob-later-3': 'Box_Jump_Multiple_Response/0.jpg'
   };
 
+  function mobImgUrl(path) {
+    return path.indexOf('icons/') === 0 ? path : BASE_IMG + path;
+  }
+
   function addMobilityImages() {
     // Post-workout mobility cards (.mob-ex-full)
     document.querySelectorAll('.mob-ex-full[id]').forEach(function(row) {
       var imgPath = MOB_IMAGES[row.id];
       if (!imgPath || row.querySelector('.mob-thumb')) return;
       var img = document.createElement('img');
-      img.src = BASE_IMG + imgPath;
+      img.src = mobImgUrl(imgPath);
       img.className = 'mob-thumb';
       img.alt = '';
       img.onerror = function() { this.style.display = 'none'; };
       img.onclick = function() {
         var m = document.getElementById('ex-modal');
-        document.getElementById('ex-modal-img').src = BASE_IMG + imgPath.replace('/0.jpg', '/1.jpg');
+        document.getElementById('ex-modal-img').src = mobImgUrl(imgPath.replace('/0.jpg', '/1.jpg'));
         m.style.display = 'flex';
       };
       row.insertBefore(img, row.querySelector('.mob-info'));
@@ -657,14 +664,14 @@
       var imgPath = MOB_IMAGES[row.id];
       if (!imgPath || row.querySelector('.mob-thumb')) return;
       var img = document.createElement('img');
-      img.src = BASE_IMG + imgPath;
+      img.src = mobImgUrl(imgPath);
       img.className = 'mob-thumb';
       img.alt = '';
       img.style.cssText = 'margin-right:4px';
       img.onerror = function() { this.style.display = 'none'; };
       img.onclick = function() {
         var m = document.getElementById('ex-modal');
-        document.getElementById('ex-modal-img').src = BASE_IMG + imgPath.replace('/0.jpg', '/1.jpg');
+        document.getElementById('ex-modal-img').src = mobImgUrl(imgPath.replace('/0.jpg', '/1.jpg'));
         m.style.display = 'flex';
       };
       row.insertBefore(img, row.firstChild);
