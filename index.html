@@ -14,6 +14,7 @@
 <link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167.png">
 <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -126,9 +127,12 @@
   .mob-ex-rp { font-family: monospace; font-size: 11px; color: var(--purple); white-space: nowrap; }
   .del-btn { display: none; width: 22px; height: 22px; background: none; border: 1.5px solid var(--border); border-radius: 50%; color: var(--faint); font-size: 14px; line-height: 1; cursor: pointer; flex-shrink: 0; align-items: center; justify-content: center; padding: 0; }
   .del-btn:hover, .del-btn:active { background: #fee2e2; border-color: #f87171; color: #dc2626; }
-  .move-btns { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
-  .move-btn { width: 20px; height: 20px; background: none; border: 1.5px solid var(--border); border-radius: 4px; color: var(--faint); font-size: 10px; line-height: 1; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; }
-  .move-btn:hover, .move-btn:active { background: var(--blue-bg); border-color: var(--blue-bd); color: var(--blue); }
+  .drag-handle { width: 22px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: grab; color: var(--faint); touch-action: none; }
+  .drag-handle:active { cursor: grabbing; color: var(--blue); }
+  .drag-handle svg { width: 14px; height: 20px; pointer-events: none; }
+  .sortable-ghost { opacity: 0.35; }
+  .sortable-chosen { background: var(--green-bg) !important; border-radius: 8px; }
+  .sortable-drag { box-shadow: 0 6px 16px rgba(0,0,0,0.18); border-radius: 8px; background: var(--surface); }
   .add-ex-btn { width: 100%; margin-top: 10px; padding: 9px; background: none; border: 1.5px dashed var(--border); border-radius: 8px; color: var(--faint); font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; }
   .add-ex-btn:hover, .add-ex-btn:active { border-color: var(--green); color: var(--green); background: var(--green-bg); }
   .add-ex-form { display: none; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 8px; }
@@ -803,45 +807,25 @@
     });
   }
 
-  // ── Mobility row reorder ──────────────────────────────────
+  // ── Mobility row reorder (drag and drop) ────────────────────
   var MOB_CONTAINERS = ['mob-card-flex-priority','mob-card-flex-shoulders','mob-card-flex-chest','mob-card-flex-arms','mob-card-flex-back','mob-card-flex-legs','mob-power-card','mob-later-card'];
 
-  function addMobMoveButtonsToRow(row) {
-    if (row.querySelector('.move-btns')) return;
-    var wrap = document.createElement('div');
-    wrap.className = 'move-btns';
-    var up = document.createElement('button');
-    up.className = 'move-btn';
-    up.type = 'button';
-    up.innerHTML = '▲';
-    up.title = 'Move up';
-    up.onclick = function(e) { e.stopPropagation(); moveMobRow(row, -1); };
-    var dn = document.createElement('button');
-    dn.className = 'move-btn';
-    dn.type = 'button';
-    dn.innerHTML = '▼';
-    dn.title = 'Move down';
-    dn.onclick = function(e) { e.stopPropagation(); moveMobRow(row, 1); };
-    wrap.appendChild(up);
-    wrap.appendChild(dn);
-    row.appendChild(wrap);
+  function addMobDragHandles() {
+    document.querySelectorAll(MOB_ROW_SEL).forEach(addDragHandle);
   }
 
-  function addMobMoveButtons() {
-    document.querySelectorAll(MOB_ROW_SEL).forEach(addMobMoveButtonsToRow);
-  }
-
-  function moveMobRow(row, direction) {
-    var parent = row.parentElement;
-    if (!parent) return;
-    var siblings = Array.from(parent.querySelectorAll(':scope > .mob-r[id], :scope > .mob-ex-full[id]'));
-    var idx = siblings.indexOf(row);
-    if (direction === -1 && idx > 0) {
-      parent.insertBefore(row, siblings[idx - 1]);
-    } else if (direction === 1 && idx < siblings.length - 1) {
-      parent.insertBefore(siblings[idx + 1], row);
-    } else return;
-    saveMobOrder();
+  function initMobSorting() {
+    if (typeof Sortable === 'undefined') return;
+    MOB_CONTAINERS.forEach(function(cid) {
+      var c = document.getElementById(cid);
+      if (!c || c.sortableInstance) return;
+      c.sortableInstance = Sortable.create(c, {
+        handle: '.drag-handle',
+        draggable: '.mob-ex-full, .mob-r',
+        animation: 150,
+        onEnd: saveMobOrder
+      });
+    });
   }
 
   function saveMobOrder() {
@@ -988,10 +972,11 @@
   ];
 
   function getToken() {
-    var t = localStorage.getItem('gh-token');
+    var t = null;
+    try { t = localStorage.getItem('gh-token'); } catch(e) {}
     if (!t) {
       t = prompt('Enter your GitHub token (stored only in this browser):');
-      if (t) localStorage.setItem('gh-token', t.trim());
+      if (t) { try { localStorage.setItem('gh-token', t.trim()); } catch(e) {} }
     }
     return t ? t.trim() : null;
   }
@@ -1193,7 +1178,7 @@
       var addForm = document.getElementById('add-form-' + ex.day);
       container.insertBefore(row, addForm || container.querySelector('.mob-card') || null);
       addDeleteButton(row, ex.key);
-      addMoveButtonsToRow(row);
+      addDragHandle(row);
       EXERCISES.push({ key: ex.key, name: ex.name });
     });
   }
@@ -1276,7 +1261,7 @@
     var row = buildExRow(ex);
     container.insertBefore(row, document.getElementById('add-form-' + day));
     addDeleteButton(row, key);
-    addMoveButtonsToRow(row);
+    addDragHandle(row);
     closeAdd(day);
     clearTimeout(saveTimer);
     pushToGist();
@@ -1343,43 +1328,37 @@
     EXERCISES.forEach(function(ex) { renderChart(ex.key); });
   }
 
-  // ── Move/reorder exercises ──────────────────────────────
-  function addMoveButtonsToRow(row) {
-    if (row.querySelector('.move-btns')) return;
-    var wrap = document.createElement('div');
-    wrap.className = 'move-btns';
-    var up = document.createElement('button');
-    up.className = 'move-btn';
-    up.innerHTML = '▲';
-    up.title = 'Move up';
-    up.onclick = function(e) { e.stopPropagation(); moveExercise(row, -1); };
-    var dn = document.createElement('button');
-    dn.className = 'move-btn';
-    dn.innerHTML = '▼';
-    dn.title = 'Move down';
-    dn.onclick = function(e) { e.stopPropagation(); moveExercise(row, 1); };
-    wrap.appendChild(up);
-    wrap.appendChild(dn);
-    row.appendChild(wrap);
+  // ── Drag handle (shared by Training + Flexibility) ──────────
+  var DRAG_HANDLE_SVG = '<svg viewBox="0 0 14 20" xmlns="http://www.w3.org/2000/svg"><circle cx="4" cy="3" r="1.6" fill="currentColor"/><circle cx="10" cy="3" r="1.6" fill="currentColor"/><circle cx="4" cy="10" r="1.6" fill="currentColor"/><circle cx="10" cy="10" r="1.6" fill="currentColor"/><circle cx="4" cy="17" r="1.6" fill="currentColor"/><circle cx="10" cy="17" r="1.6" fill="currentColor"/></svg>';
+
+  function addDragHandle(row) {
+    if (row.querySelector('.drag-handle')) return;
+    var h = document.createElement('div');
+    h.className = 'drag-handle';
+    h.innerHTML = DRAG_HANDLE_SVG;
+    h.title = 'Drag to reorder';
+    row.appendChild(h);
   }
 
-  function addMoveButtons() {
+  // ── Reorder exercises (drag and drop) ───────────────────────
+  function addDragHandles() {
     document.querySelectorAll('.ex').forEach(function(row) {
-      if (row.querySelector('.weight-input')) addMoveButtonsToRow(row);
+      if (row.querySelector('.weight-input')) addDragHandle(row);
     });
   }
 
-  function moveExercise(row, direction) {
-    var parent = row.parentElement;
-    if (!parent) return;
-    var siblings = Array.from(parent.querySelectorAll(':scope > .ex'));
-    var idx = siblings.indexOf(row);
-    if (direction === -1 && idx > 0) {
-      parent.insertBefore(row, siblings[idx - 1]);
-    } else if (direction === 1 && idx < siblings.length - 1) {
-      parent.insertBefore(siblings[idx + 1], row);
-    } else return;
-    saveOrder();
+  function initExerciseSorting() {
+    if (typeof Sortable === 'undefined') return;
+    ['A','B','C','D'].forEach(function(day) {
+      var c = document.getElementById('w' + day);
+      if (!c || c.sortableInstance) return;
+      c.sortableInstance = Sortable.create(c, {
+        handle: '.drag-handle',
+        draggable: '.ex',
+        animation: 150,
+        onEnd: saveOrder
+      });
+    });
   }
 
   function saveOrder() {
@@ -1423,9 +1402,11 @@
   addExerciseImages();
   addMobilityImages();
   addMobLinks();
-  addMobMoveButtons();
+  addMobDragHandles();
   addDeleteButtons();
-  addMoveButtons();
+  addDragHandles();
+  initExerciseSorting();
+  initMobSorting();
 </script>
 
 
