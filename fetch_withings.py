@@ -29,7 +29,7 @@ import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
+ENV_PATH = Path(__file__).resolve().parent / ".env"
 
 try:
     import requests
