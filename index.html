@@ -528,7 +528,13 @@
   <div id="progress" class="sec">
     <div class="card">
       <div class="stitle">Weight Progress Over Time</div>
-      <div style="color:var(--muted);font-size:13px">Each chart shows your logged weight per session. Updates automatically when you change a weight in the Training tab.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <div style="color:var(--muted);font-size:13px">Each chart groups your logged weights by week or month. Updates automatically when you change a weight in the Training tab.</div>
+        <div class="mult-toggle" style="flex-shrink:0">
+          <button class="mult-btn" id="pg-week" onclick="setProgressGranularity('week')">Week</button>
+          <button class="mult-btn on" id="pg-month" onclick="setProgressGranularity('month')">Month</button>
+        </div>
+      </div>
     </div>
     <!-- Progress Day A -->
     <div class="card">
@@ -1308,6 +1314,60 @@
     pushToGist();
   }
 
+  var progressGranularity = 'month';
+  try { progressGranularity = localStorage.getItem('fp-progress-gran') || 'month'; } catch(e) {}
+  if (progressGranularity === 'week') {
+    document.getElementById('pg-week').classList.add('on');
+    document.getElementById('pg-month').classList.remove('on');
+  }
+
+  function setProgressGranularity(g) {
+    progressGranularity = g;
+    try { localStorage.setItem('fp-progress-gran', g); } catch(e) {}
+    document.getElementById('pg-week').classList.toggle('on', g === 'week');
+    document.getElementById('pg-month').classList.toggle('on', g === 'month');
+    renderAllCharts();
+  }
+
+  var MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // Monday of the ISO week containing this date, as YYYY-MM-DD
+  function weekStart(d) {
+    var dt = new Date(d + 'T00:00:00');
+    var day = dt.getDay() || 7; // Sun=0 -> 7
+    if (day !== 1) dt.setDate(dt.getDate() - (day - 1));
+    var y = dt.getFullYear(), m = String(dt.getMonth() + 1).padStart(2, '0'), dd = String(dt.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + dd;
+  }
+
+  // Group a sorted {date: value} history into period buckets, averaging values per period.
+  function groupHistory(dates, hist, granularity) {
+    var order = [];
+    var sums = {};
+    var counts = {};
+    var labels = {};
+    dates.forEach(function(d) {
+      var groupKey, label;
+      if (granularity === 'week') {
+        groupKey = weekStart(d);
+        var p = groupKey.split('-');
+        label = p[2] + '/' + p[1];
+      } else {
+        var p2 = d.split('-');
+        groupKey = p2[0] + '-' + p2[1];
+        label = MONTH_ABBR[parseInt(p2[1], 10) - 1] + " '" + p2[0].slice(2);
+      }
+      if (!(groupKey in sums)) { sums[groupKey] = 0; counts[groupKey] = 0; order.push(groupKey); labels[groupKey] = label; }
+      sums[groupKey] += parseFloat(hist[d]);
+      counts[groupKey]++;
+    });
+    order.sort();
+    return {
+      labels: order.map(function(k) { return labels[k]; }),
+      values: order.map(function(k) { return Math.round((sums[k] / counts[k]) * 10) / 10; })
+    };
+  }
+
   function renderChart(key) {
     var canvas = document.getElementById('chart-' + key);
     if (!canvas) return;
@@ -1326,10 +1386,9 @@
       return;
     }
     canvas.style.display = '';
-    var values = dates.map(function(d) { return parseFloat(hist[d]); });
-    var labels = dates.map(function(d) {
-      var p = d.split('-'); return p[2] + '/' + p[1];
-    });
+    var grouped = groupHistory(dates, hist, progressGranularity);
+    var values = grouped.values;
+    var labels = grouped.labels;
     if (charts[key]) charts[key].destroy();
     charts[key] = new Chart(canvas, {
       type: 'line',
@@ -1340,7 +1399,7 @@
           borderColor: '#0f7f56',
           backgroundColor: 'rgba(15,127,86,0.08)',
           borderWidth: 2,
-          pointRadius: dates.length === 1 ? 5 : 4,
+          pointRadius: values.length === 1 ? 5 : 4,
           pointBackgroundColor: '#0f7f56',
           fill: true,
           tension: 0.3
