@@ -85,6 +85,32 @@
   .step-btn { font-family: monospace; font-size: 12px; font-weight: 700; padding: 3px 9px; background: var(--green-bg); color: var(--green); border: none; cursor: pointer; line-height: 1.4; }
   .step-btn:active { background: var(--green); color: #fff; }
   .step-btn:first-child { border-right: 1px solid var(--green-bd); }
+  .ex { flex-wrap: wrap; }
+  .ex-main { flex: 1 1 0; min-width: 0; cursor: pointer; }
+  .ex-caret { color: var(--faint); font-size: 11px; margin-right: 5px; }
+  .ex-vol { font-family: monospace; font-size: 11px; font-weight: 700; color: var(--green); }
+  .sets-panel { display: none; flex: 0 0 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px 10px; margin-top: 6px; }
+  .sets-panel.open { display: block; }
+  .set-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+  .set-n { width: 38px; flex-shrink: 0; font-family: monospace; font-size: 11px; color: var(--muted); }
+  .set-input { width: 64px; min-width: 0; font-family: monospace; font-size: 16px; font-weight: 700; color: var(--green); background: var(--green-bg); border: 1.5px solid var(--green-bd); border-radius: 6px; padding: 5px 4px; text-align: center; outline: none; -webkit-appearance: none; }
+  .set-input:focus { border-color: var(--green); background: #fff; }
+  .set-input::placeholder { color: var(--faint); font-weight: 400; font-size: 12px; }
+  .set-x { color: var(--faint); font-size: 12px; }
+  .set-v { flex: 1; text-align: right; font-family: monospace; font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .set-rm { width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); font-size: 15px; line-height: 1; padding: 0; cursor: pointer; }
+  .set-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 6px; padding-top: 8px; border-top: 1px solid var(--border); }
+  .set-add { font-family: monospace; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 6px; border: 1.5px solid var(--green-bd); background: var(--green-bg); color: var(--green); cursor: pointer; }
+  .set-total { font-family: monospace; font-size: 12px; color: var(--muted); text-align: right; }
+  .set-total b { color: var(--green); font-size: 13px; }
+  .wk-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .wk-btn { padding: 9px 14px; border-radius: 8px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; background: var(--green); color: #fff; }
+  .wk-btn.run { background: var(--amber); }
+  .wk-btn:disabled { opacity: 0.4; cursor: default; }
+  .wk-info { font-family: monospace; font-size: 11px; color: var(--muted); }
+  .p-ex-hdr { flex-wrap: wrap; }
+  .p-rec { flex: 0 0 100%; font-family: monospace; font-size: 11px; color: var(--muted); }
+  .p-rec:empty { display: none; }
   .bul { display: flex; gap: 9px; margin-bottom: 8px; font-size: 13px; }
   .bul-d { color: var(--green); flex-shrink: 0; }
   .bl { color: var(--text); font-weight: 500; }
@@ -526,7 +552,7 @@
     <div class="card">
       <div class="stitle">Weight Progress Over Time</div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
-        <div style="color:var(--muted);font-size:13px">Each chart groups your logged weights by week or month. Updates automatically when you change a weight in the Training tab.</div>
+        <div style="color:var(--muted);font-size:13px">Cada gráfico mostra o peso máximo (verde) e o volume máximo num set (âmbar) por semana ou mês. Atualiza quando acabas um treino na aba Training.</div>
         <div class="mult-toggle" style="flex-shrink:0">
           <button class="mult-btn" id="pg-week" onclick="setProgressGranularity('week')">Week</button>
           <button class="mult-btn on" id="pg-month" onclick="setProgressGranularity('month')">Month</button>
@@ -1047,6 +1073,7 @@
     clearTimeout(saveTimer);
     saveTimer = setTimeout(pushToGist, 1200);
     showSyncStatus('saving…', 'var(--amber)');
+    updateExTotal(key);
   }
 
   function collectWeights() {
@@ -1104,7 +1131,7 @@
   function pushToGist() {
     var token = getToken();
     if (!token) { showSyncStatus('no token — not saved', 'var(--amber)'); return; }
-    var today = new Date().toISOString().split('T')[0];
+    var today = todayStr();
     var weights = collectWeights();
     // Merge into cached gistData
     Object.keys(weights).forEach(function(k) { gistData[k] = weights[k]; });
@@ -1114,7 +1141,8 @@
       var key = el.id.replace('w-', '');
       if (!el.value) return;
       if (!gistData.history[key]) gistData.history[key] = {};
-      gistData.history[key][today] = el.value;
+      var sm = sessionMaxWeight(key, today);
+      gistData.history[key][today] = sm !== null ? String(sm) : el.value;
     });
     fetch('https://api.github.com/gists/' + GIST_ID, {
       method: 'PATCH',
@@ -1158,6 +1186,10 @@
         if (k.startsWith('sel-')) localStorage.setItem('fp-sel-' + k.replace('sel-', ''), gistData[k]);
       });
       applySel();
+      addSetPanels();
+      addWeightSteppers();
+      mergeLocalSessions();
+      renderWorkoutBars();
       showSyncStatus('synced ✓', 'var(--green)');
     }).catch(function() { showSyncStatus('offline', 'var(--faint)'); });
   }
@@ -1222,6 +1254,7 @@
       addDeleteButton(row, ex.key);
       addDragHandle(row);
       addWeightSteppers();
+      addSetPanels();
       EXERCISES.push({ key: ex.key, name: ex.name });
     });
   }
@@ -1306,6 +1339,7 @@
     addDeleteButton(row, key);
     addDragHandle(row);
     addWeightSteppers();
+    addSetPanels();
     closeAdd(day);
     clearTimeout(saveTimer);
     pushToGist();
@@ -1337,44 +1371,73 @@
     return y + '-' + m + '-' + dd;
   }
 
-  // Group a sorted {date: value} history into period buckets, averaging values per period.
-  function groupHistory(dates, hist, granularity) {
-    var order = [];
-    var sums = {};
-    var counts = {};
-    var labels = {};
-    dates.forEach(function(d) {
-      var groupKey, label;
-      if (granularity === 'week') {
-        groupKey = weekStart(d);
-        var p = groupKey.split('-');
-        label = p[2] + '/' + p[1];
-      } else {
-        var p2 = d.split('-');
-        groupKey = p2[0] + '-' + p2[1];
-        label = MONTH_ABBR[parseInt(p2[1], 10) - 1] + " '" + p2[0].slice(2);
-      }
-      if (!(groupKey in sums)) { sums[groupKey] = 0; counts[groupKey] = 0; order.push(groupKey); labels[groupKey] = label; }
-      sums[groupKey] += parseFloat(hist[d]);
-      counts[groupKey]++;
+  // Period bucket (week or month) for a YYYY-MM-DD date
+  function periodOf(d, granularity) {
+    if (granularity === 'week') {
+      var k = weekStart(d);
+      var p = k.split('-');
+      return { key: k, label: p[2] + '/' + p[1] };
+    }
+    var p2 = d.split('-');
+    return { key: p2[0] + '-' + p2[1], label: MONTH_ABBR[parseInt(p2[1], 10) - 1] + " '" + p2[0].slice(2) };
+  }
+
+  // Max value per period from [[date, value], ...]; fills `labels` {periodKey: label}
+  function bucketMax(pairs, granularity, labels) {
+    var out = {};
+    pairs.forEach(function(pr) {
+      var pd = periodOf(pr[0], granularity);
+      labels[pd.key] = pd.label;
+      if (!(pd.key in out) || pr[1] > out[pd.key]) out[pd.key] = pr[1];
     });
-    order.sort();
-    return {
-      labels: order.map(function(k) { return labels[k]; }),
-      values: order.map(function(k) { return Math.round((sums[k] / counts[k]) * 10) / 10; })
-    };
+    return out;
+  }
+
+  // [[date, max single-set volume in that session]] for one exercise
+  function sessionVolPairs(key) {
+    var pairs = [];
+    (gistData.sessions || []).forEach(function(s) {
+      var e = s.exercises && s.exercises[key];
+      if (!e) return;
+      var best = 0;
+      (e.sets || []).forEach(function(st) {
+        var v = setVol(st.w, st.r, e.mult || 1);
+        if (v > best) best = v;
+      });
+      if (best > 0) pairs.push([s.date, best]);
+    });
+    return pairs;
+  }
+
+  function renderRecords(canvas, wPairs, vPairs) {
+    var hdr = canvas.closest('.p-ex').querySelector('.p-ex-hdr');
+    if (!hdr) return;
+    var rec = hdr.querySelector('.p-rec');
+    if (!rec) {
+      rec = document.createElement('span');
+      rec.className = 'p-rec';
+      hdr.appendChild(rec);
+    }
+    var parts = [];
+    if (wPairs.length) parts.push('Máx ' + fmtVol(Math.max.apply(null, wPairs.map(function(p) { return p[1]; }))) + ' kg');
+    if (vPairs.length) parts.push('Vol. máx/set ' + fmtVol(Math.max.apply(null, vPairs.map(function(p) { return p[1]; }))) + ' kg');
+    rec.textContent = parts.join(' · ');
   }
 
   function renderChart(key) {
     var canvas = document.getElementById('chart-' + key);
     if (!canvas) return;
     var hist = (gistData.history || {})[key] || {};
-    var dates = Object.keys(hist).sort();
+    var wPairs = Object.keys(hist).sort().map(function(d) { return [d, parseNum(hist[d])]; })
+      .filter(function(p) { return p[1] > 0; });
+    var vPairs = sessionVolPairs(key);
     var wrap = canvas.parentElement;
     // Remove existing empty state if any
     var existing = wrap.querySelector('.p-empty');
     if (existing) existing.remove();
-    if (dates.length === 0) {
+    renderRecords(canvas, wPairs, vPairs);
+    if (wPairs.length === 0 && vPairs.length === 0) {
+      if (charts[key]) { charts[key].destroy(); delete charts[key]; }
       canvas.style.display = 'none';
       var msg = document.createElement('div');
       msg.className = 'p-empty';
@@ -1383,40 +1446,67 @@
       return;
     }
     canvas.style.display = '';
-    var grouped = groupHistory(dates, hist, progressGranularity);
-    var values = grouped.values;
-    var labels = grouped.labels;
+    var labelMap = {};
+    var wm = bucketMax(wPairs, progressGranularity, labelMap);
+    var vm = bucketMax(vPairs, progressGranularity, labelMap);
+    var periods = Object.keys(labelMap).sort();
+    var labels = periods.map(function(k) { return labelMap[k]; });
+    var wVals = periods.map(function(k) { return k in wm ? Math.round(wm[k] * 10) / 10 : null; });
+    var vVals = periods.map(function(k) { return k in vm ? Math.round(vm[k] * 10) / 10 : null; });
+    var hasVol = vPairs.length > 0;
+    var wList = wVals.filter(function(v) { return v !== null; });
+    var datasets = [{
+      label: 'Peso máx (kg)',
+      data: wVals,
+      yAxisID: 'y',
+      borderColor: '#0f7f56',
+      backgroundColor: 'rgba(15,127,86,0.08)',
+      borderWidth: 2,
+      pointRadius: periods.length === 1 ? 5 : 4,
+      pointBackgroundColor: '#0f7f56',
+      fill: true,
+      spanGaps: true,
+      tension: 0.3
+    }];
+    if (hasVol) {
+      datasets.push({
+        label: 'Vol. máx/set (kg)',
+        data: vVals,
+        yAxisID: 'y2',
+        borderColor: '#c77d0a',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: periods.length === 1 ? 5 : 3,
+        pointBackgroundColor: '#c77d0a',
+        fill: false,
+        spanGaps: true,
+        tension: 0.3
+      });
+    }
+    var tickStyle = { font: { size: 10, family: 'monospace' }, color: '#8a91aa' };
+    var scales = {
+      x: { grid: { color: '#dde2ec' }, ticks: tickStyle },
+      y: { grid: { color: '#dde2ec' }, ticks: tickStyle,
+           suggestedMin: wList.length ? Math.max(0, Math.min.apply(null, wList) - 5) : undefined }
+    };
+    if (hasVol) {
+      scales.y2 = { position: 'right', grid: { drawOnChartArea: false },
+                    ticks: { font: tickStyle.font, color: '#c77d0a' }, suggestedMin: 0 };
+    }
     if (charts[key]) charts[key].destroy();
     charts[key] = new Chart(canvas, {
       type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          data: values,
-          borderColor: '#0f7f56',
-          backgroundColor: 'rgba(15,127,86,0.08)',
-          borderWidth: 2,
-          pointRadius: values.length === 1 ? 5 : 4,
-          pointBackgroundColor: '#0f7f56',
-          fill: true,
-          tension: 0.3
-        }]
-      },
+      data: { labels: labels, datasets: datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: {
-          callbacks: { label: function(ctx) { return ctx.parsed.y + ' kg'; } }
-        }},
-        scales: {
-          x: { grid: { color: '#dde2ec' }, ticks: { font: { size: 10, family: 'monospace' }, color: '#8a91aa' } },
-          y: { grid: { color: '#dde2ec' }, ticks: { font: { size: 10, family: 'monospace' }, color: '#8a91aa' },
-               suggestedMin: function() {
-                 var min = Math.min.apply(null, values);
-                 return Math.max(0, min - 5);
-               }()
-          }
-        }
+        plugins: {
+          legend: { display: hasVol, labels: { boxWidth: 10, font: { size: 10 } } },
+          tooltip: { callbacks: { label: function(ctx) {
+            return ctx.dataset.label.split(' (')[0] + ': ' + ctx.parsed.y + ' kg';
+          } } }
+        },
+        scales: scales
       }
     });
   }
@@ -1499,6 +1589,340 @@
     });
   }
 
+  // ── Sets, volume & workout sessions ────────────────────────
+  var DRAFT_KEY = 'fp-session-draft';
+  var SESSIONS_KEY = 'fp-sessions';
+  var WORKOUT_DAYS = ['A','B','C','D'];
+  var workoutDraft = { day: null, start: null, sets: {} };
+
+  function parseNum(v) {
+    var n = parseFloat(String(v === undefined || v === null ? '' : v).replace(',', '.'));
+    return isNaN(n) ? 0 : n;
+  }
+  function fmtVol(n) {
+    var parts = String(Math.round(n * 10) / 10).split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return parts.join('.');
+  }
+  function esc(s) {
+    return String(s === undefined || s === null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  }
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function hhmm(iso) {
+    return new Date(iso).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+  }
+  function getMult(key) {
+    var b = document.getElementById('m-' + key + '-2');
+    return b && b.classList.contains('on') ? 2 : 1;
+  }
+  function setVol(w, r, mult) {
+    return Math.round(parseNum(w) * parseNum(r) * mult * 10) / 10;
+  }
+
+  function loadDraft() {
+    try {
+      var d = JSON.parse(localStorage.getItem(DRAFT_KEY));
+      if (d && typeof d === 'object') workoutDraft = { day: d.day || null, start: d.start || null, sets: d.sets || {} };
+    } catch(e) {}
+  }
+  function saveDraft() {
+    var sets = {};
+    Object.keys(workoutDraft.sets).forEach(function(k) { sets[k] = workoutDraft.sets[k]; });
+    document.querySelectorAll('.sets-panel[data-built="1"]').forEach(function(p) {
+      var rows = readRows(p);
+      if (rows.some(function(s) { return parseNum(s.r) > 0; })) sets[p.dataset.key] = rows;
+      else delete sets[p.dataset.key];
+    });
+    workoutDraft.sets = sets;
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(workoutDraft)); } catch(e) {}
+  }
+
+  function readRows(p) {
+    return Array.from(p.querySelectorAll('.set-row')).map(function(row) {
+      return { w: row.querySelector('.set-w').value, r: row.querySelector('.set-r').value };
+    });
+  }
+
+  function lastSets(key) {
+    var s = gistData.sessions || [];
+    for (var i = s.length - 1; i >= 0; i--) {
+      var e = s[i].exercises && s[i].exercises[key];
+      if (e && e.sets && e.sets.length) return e.sets;
+    }
+    return null;
+  }
+
+  function setRowEl(n, w, r, ph) {
+    var row = document.createElement('div');
+    row.className = 'set-row';
+    row.innerHTML =
+      '<span class="set-n">Set ' + n + '</span>' +
+      '<input class="set-input set-w" type="text" inputmode="decimal" placeholder="kg" value="' + esc(w) + '" aria-label="Peso do set ' + n + '">' +
+      '<span class="set-x">×</span>' +
+      '<input class="set-input set-r" type="text" inputmode="numeric" placeholder="' + esc(ph || 'reps') + '" value="' + esc(r) + '" aria-label="Repetições do set ' + n + '">' +
+      '<span class="set-v">—</span>' +
+      '<button type="button" class="set-rm" title="Remover set">−</button>';
+    return row;
+  }
+
+  function ensurePanel(key) {
+    var p = document.getElementById('sp-' + key);
+    if (!p || p.dataset.built === '1') return p;
+    var input = document.getElementById('w-' + key);
+    var drafted = workoutDraft.sets[key];
+    var last = lastSets(key);
+    var rows = [];
+    if (drafted && drafted.length) {
+      rows = drafted.map(function(s) { return { w: s.w, r: s.r }; });
+    } else {
+      var n = last ? last.length : 3;
+      for (var i = 0; i < n; i++) {
+        rows.push({ w: input && input.value ? input.value : (last ? last[i].w : ''), r: '' });
+      }
+    }
+    p.innerHTML = '<div class="set-rows"></div><div class="set-foot"><button type="button" class="set-add">+ Set</button><span class="set-total">Volume total: <b>0</b> kg</span></div>';
+    var box = p.querySelector('.set-rows');
+    rows.forEach(function(s, i) {
+      box.appendChild(setRowEl(i + 1, s.w, s.r, last && last[i] ? last[i].r : ''));
+    });
+    p.dataset.built = '1';
+    updateExTotal(key);
+    return p;
+  }
+
+  function addSetRow(key) {
+    var p = ensurePanel(key);
+    var rows = p.querySelectorAll('.set-row');
+    var last = lastSets(key);
+    var prevW = rows.length ? rows[rows.length - 1].querySelector('.set-w').value : '';
+    p.querySelector('.set-rows').appendChild(setRowEl(rows.length + 1, prevW, '', last && last[rows.length] ? last[rows.length].r : ''));
+    updateExTotal(key);
+    saveDraft();
+  }
+
+  function removeSetRow(key, row) {
+    var p = document.getElementById('sp-' + key);
+    var rows = p.querySelectorAll('.set-row');
+    if (rows.length <= 1) {
+      row.querySelector('.set-r').value = '';
+    } else {
+      row.remove();
+      p.querySelectorAll('.set-row').forEach(function(r, i) { r.querySelector('.set-n').textContent = 'Set ' + (i + 1); });
+    }
+    updateExTotal(key);
+    saveDraft();
+  }
+
+  function updateExTotal(key) {
+    var p = document.getElementById('sp-' + key);
+    if (!p || p.dataset.built !== '1') return;
+    var mult = getMult(key), total = 0;
+    p.querySelectorAll('.set-row').forEach(function(row) {
+      var v = setVol(row.querySelector('.set-w').value, row.querySelector('.set-r').value, mult);
+      row.querySelector('.set-v').textContent = v > 0 ? fmtVol(v) + ' kg' : '—';
+      total += v;
+    });
+    total = Math.round(total * 10) / 10;
+    p.querySelector('.set-total b').textContent = fmtVol(total);
+    var badge = document.getElementById('exv-' + key);
+    if (badge) badge.textContent = total > 0 ? fmtVol(total) + ' kg' : '';
+  }
+
+  function toggleSets(key) {
+    var p = document.getElementById('sp-' + key);
+    if (!p) return;
+    var open = p.classList.toggle('open');
+    if (open) ensurePanel(key);
+    var caret = p.closest('.ex').querySelector('.ex-caret');
+    if (caret) caret.textContent = open ? '▾' : '▸';
+  }
+
+  function addSetPanels() {
+    document.querySelectorAll('.ex').forEach(function(row) {
+      var input = row.querySelector('.weight-input');
+      if (!input || row.querySelector('.sets-panel')) return;
+      var key = input.id.replace('w-', '');
+      var nr = row.querySelector('.ex-nr');
+      if (!nr) return;
+      nr.parentElement.classList.add('ex-main');
+      nr.parentElement.onclick = function() { toggleSets(key); };
+      var caret = document.createElement('span');
+      caret.className = 'ex-caret';
+      caret.textContent = '▸';
+      var nm = nr.querySelector('.ex-n') || nr;
+      nm.insertBefore(caret, nm.firstChild);
+      var badge = document.createElement('span');
+      badge.className = 'ex-vol';
+      badge.id = 'exv-' + key;
+      nr.appendChild(badge);
+      var p = document.createElement('div');
+      p.className = 'sets-panel';
+      p.id = 'sp-' + key;
+      p.dataset.key = key;
+      p.addEventListener('input', function() { updateExTotal(key); saveDraft(); });
+      p.addEventListener('click', function(e) {
+        var t = e.target;
+        if (t.classList.contains('set-add')) addSetRow(key);
+        else if (t.classList.contains('set-rm')) removeSetRow(key, t.closest('.set-row'));
+      });
+      row.appendChild(p);
+    });
+    Object.keys(workoutDraft.sets).forEach(function(k) { ensurePanel(k); });
+  }
+
+  // ── Começar / Acabar treino ────────────────────────────────
+  function initWorkoutBars() {
+    WORKOUT_DAYS.forEach(function(day) {
+      var c = document.getElementById('w' + day);
+      if (!c || document.getElementById('wk-bar-' + day)) return;
+      var bar = document.createElement('div');
+      bar.className = 'wk-bar';
+      bar.id = 'wk-bar-' + day;
+      bar.innerHTML =
+        '<button type="button" class="wk-btn" id="wk-btn-' + day + '" onclick="toggleWorkout(\'' + day + '\')"></button>' +
+        '<span class="wk-info" id="wk-info-' + day + '"></span>';
+      c.insertBefore(bar, c.firstChild);
+    });
+    loadDraft();
+    Object.keys(workoutDraft.sets).forEach(function(k) { ensurePanel(k); });
+    renderWorkoutBars();
+  }
+
+  function renderWorkoutBars() {
+    var today = todayStr();
+    WORKOUT_DAYS.forEach(function(day) {
+      var btn = document.getElementById('wk-btn-' + day);
+      var info = document.getElementById('wk-info-' + day);
+      if (!btn || !info) return;
+      var running = workoutDraft.day;
+      btn.disabled = false;
+      if (running === day) {
+        btn.textContent = '■ Acabar treino';
+        btn.className = 'wk-btn run';
+        info.textContent = 'em curso desde ' + hhmm(workoutDraft.start);
+      } else {
+        btn.textContent = '▶ Começar treino';
+        btn.className = 'wk-btn';
+        if (running) {
+          btn.disabled = true;
+          info.textContent = 'Treino do Dia ' + running + ' em curso';
+        } else {
+          var s = (gistData.sessions || []).filter(function(x) { return x.day === day && x.date === today; }).pop();
+          info.textContent = s ? 'Gravado ✓ ' + hhmm(s.end) + ' · ' + Object.keys(s.exercises).length + ' exercícios · ' + fmtVol(s.vol || 0) + ' kg' : '';
+        }
+      }
+    });
+  }
+
+  function toggleWorkout(day) {
+    if (workoutDraft.day === day) { finishWorkout(day); return; }
+    if (workoutDraft.day) return;
+    workoutDraft.day = day;
+    workoutDraft.start = new Date().toISOString();
+    saveDraft();
+    renderWorkoutBars();
+  }
+
+  function sessionMaxWeight(key, date) {
+    var best = null;
+    (gistData.sessions || []).forEach(function(s) {
+      var e = s.date === date && s.exercises && s.exercises[key];
+      if (!e) return;
+      e.sets.forEach(function(st) {
+        var w = parseNum(st.w);
+        if (w > 0 && (best === null || w > best)) best = w;
+      });
+    });
+    return best;
+  }
+
+  function applySessionToHistory(s) {
+    if (!gistData.history) gistData.history = {};
+    Object.keys(s.exercises).forEach(function(key) {
+      var w = sessionMaxWeight(key, s.date);
+      if (w === null) return;
+      if (!gistData.history[key]) gistData.history[key] = {};
+      gistData.history[key][s.date] = String(w);
+    });
+  }
+
+  function finishWorkout(day) {
+    var container = document.getElementById('w' + day);
+    var exs = {}, count = 0, total = 0;
+    container.querySelectorAll(':scope > .ex').forEach(function(row) {
+      if (row.style.display === 'none' || row.classList.contains('skip')) return;
+      var inp = row.querySelector('.weight-input');
+      if (!inp) return;
+      var key = inp.id.replace('w-', '');
+      var p = document.getElementById('sp-' + key);
+      if (!p || p.dataset.built !== '1') return;
+      var mult = getMult(key), sets = [], vol = 0;
+      readRows(p).forEach(function(s) {
+        if (parseNum(s.r) <= 0) return;
+        var v = setVol(s.w, s.r, mult);
+        sets.push({ w: s.w.trim(), r: s.r.trim(), vol: v });
+        vol += v;
+      });
+      if (!sets.length) return;
+      vol = Math.round(vol * 10) / 10;
+      exs[key] = { mult: mult, sets: sets, vol: vol };
+      count++;
+      total += vol;
+    });
+    if (!count) {
+      alert('Preenche as repetições de pelo menos um set antes de acabar o treino.');
+      return;
+    }
+    var session = { date: todayStr(), day: day, start: workoutDraft.start, end: new Date().toISOString(), vol: Math.round(total * 10) / 10, exercises: exs };
+    if (!gistData.sessions) gistData.sessions = [];
+    gistData.sessions.push(session);
+    applySessionToHistory(session);
+    try {
+      var local = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]');
+      local.push(session);
+      localStorage.setItem(SESSIONS_KEY, JSON.stringify(local.slice(-200)));
+    } catch(e) {}
+    Object.keys(exs).forEach(function(key) {
+      delete workoutDraft.sets[key];
+      var p = document.getElementById('sp-' + key);
+      p.dataset.built = '0';
+      p.innerHTML = '';
+      if (p.classList.contains('open')) ensurePanel(key);
+      var badge = document.getElementById('exv-' + key);
+      if (badge) badge.textContent = '';
+    });
+    workoutDraft.day = null;
+    workoutDraft.start = null;
+    saveDraft();
+    renderWorkoutBars();
+    clearTimeout(saveTimer);
+    pushToGist();
+  }
+
+  // Sessões gravadas neste dispositivo que ainda não estão no gist
+  function mergeLocalSessions() {
+    var local = [];
+    try { local = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]'); } catch(e) {}
+    if (!gistData.sessions) gistData.sessions = [];
+    var known = {};
+    gistData.sessions.forEach(function(s) { known[s.end] = true; });
+    var added = false;
+    local.forEach(function(s) {
+      if (known[s.end]) return;
+      gistData.sessions.push(s);
+      applySessionToHistory(s);
+      added = true;
+    });
+    if (added) {
+      gistData.sessions.sort(function(a, b) { return a.end < b.end ? -1 : 1; });
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(pushToGist, 1200);
+    }
+  }
+
   injectAddButtons();
   addSelButtons();
   addMobSelButtons();
@@ -1512,6 +1936,8 @@
   addDeleteButtons();
   addDragHandles();
   addWeightSteppers();
+  addSetPanels();
+  initWorkoutBars();
   initExerciseSorting();
   initMobSorting();
 </script>
