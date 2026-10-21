@@ -88,6 +88,7 @@
   .ex { flex-wrap: wrap; }
   .ex-main { flex: 1 1 0; min-width: 0; cursor: pointer; }
   .ex-caret { color: var(--faint); font-size: 11px; margin-right: 5px; }
+  .ex-last { font-family: monospace; font-size: 11px; color: var(--faint); margin-left: 6px; }
   .ex-vol { font-family: monospace; font-size: 11px; font-weight: 700; color: var(--green); }
   .sets-panel { display: none; flex: 0 0 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px 10px; margin-top: 6px; }
   .sets-panel.open { display: block; }
@@ -1642,8 +1643,51 @@
 
   function readRows(p) {
     return Array.from(p.querySelectorAll('.set-row')).map(function(row) {
-      return { w: row.querySelector('.set-w').value, r: row.querySelector('.set-r').value };
+      return { w: effW(row), r: row.querySelector('.set-r').value };
     });
+  }
+
+  // Peso do set: o que está escrito, ou (se vazio) o peso a cinzento da última sessão
+  function effW(row) {
+    var inp = row.querySelector('.set-w');
+    var v = inp.value.trim();
+    if (v) return v;
+    var ph = inp.placeholder;
+    return parseNum(ph) > 0 ? ph : '';
+  }
+
+  function maxW(sets) {
+    var best = 0;
+    sets.forEach(function(s) { var w = parseNum(s.w); if (w > best) best = w; });
+    return best;
+  }
+
+  // Peso máximo da última sessão (ao lado do nome) e pesos a cinzento nos sets
+  function applyLastHints() {
+    document.querySelectorAll('.sets-panel').forEach(function(p) {
+      var key = p.dataset.key;
+      var last = lastSets(key);
+      var tag = document.getElementById('exl-' + key);
+      var m = last ? maxW(last) : 0;
+      if (tag) tag.textContent = m > 0 ? 'última: ' + fmtVol(m) + ' kg' : '';
+      if (p.dataset.built !== '1') return;
+      var input = document.getElementById('w-' + key);
+      p.querySelectorAll('.set-row').forEach(function(row, i) {
+        var w = last && last[i] ? last[i].w : '';
+        if (!(parseNum(w) > 0)) w = input && parseNum(input.value) > 0 ? input.value : '';
+        row.querySelector('.set-w').placeholder = w || 'kg';
+        var r = last && last[i] ? last[i].r : '';
+        row.querySelector('.set-r').placeholder = r || 'reps';
+      });
+      updateExTotal(key);
+    });
+  }
+
+  function lastW(key, i, last) {
+    var w = last && last[i] ? last[i].w : '';
+    if (parseNum(w) > 0) return w;
+    var input = document.getElementById('w-' + key);
+    return input && parseNum(input.value) > 0 ? input.value : '';
   }
 
   function lastSets(key) {
@@ -1655,12 +1699,12 @@
     return null;
   }
 
-  function setRowEl(n, w, r, ph) {
+  function setRowEl(n, w, r, ph, phW) {
     var row = document.createElement('div');
     row.className = 'set-row';
     row.innerHTML =
       '<span class="set-n">Set ' + n + '</span>' +
-      '<input class="set-input set-w" type="text" inputmode="decimal" placeholder="kg" value="' + esc(w) + '" aria-label="Peso do set ' + n + '">' +
+      '<input class="set-input set-w" type="text" inputmode="decimal" placeholder="' + esc(phW || 'kg') + '" value="' + esc(w) + '" aria-label="Peso do set ' + n + '">' +
       '<span class="set-x">×</span>' +
       '<input class="set-input set-r" type="text" inputmode="numeric" placeholder="' + esc(ph || 'reps') + '" value="' + esc(r) + '" aria-label="Repetições do set ' + n + '">' +
       '<span class="set-v">—</span>' +
@@ -1680,13 +1724,13 @@
     } else {
       var n = last ? last.length : 3;
       for (var i = 0; i < n; i++) {
-        rows.push({ w: input && input.value ? input.value : (last ? last[i].w : ''), r: '' });
+        rows.push({ w: '', r: '' });
       }
     }
     p.innerHTML = '<div class="set-rows"></div><div class="set-foot"><button type="button" class="set-add">+ Set</button><span class="set-total">Volume total: <b>0</b> kg</span></div>';
     var box = p.querySelector('.set-rows');
     rows.forEach(function(s, i) {
-      box.appendChild(setRowEl(i + 1, s.w, s.r, last && last[i] ? last[i].r : ''));
+      box.appendChild(setRowEl(i + 1, s.w, s.r, last && last[i] ? last[i].r : '', lastW(key, i, last)));
     });
     p.dataset.built = '1';
     updateExTotal(key);
@@ -1697,8 +1741,9 @@
     var p = ensurePanel(key);
     var rows = p.querySelectorAll('.set-row');
     var last = lastSets(key);
-    var prevW = rows.length ? rows[rows.length - 1].querySelector('.set-w').value : '';
-    p.querySelector('.set-rows').appendChild(setRowEl(rows.length + 1, prevW, '', last && last[rows.length] ? last[rows.length].r : ''));
+    var prevW = rows.length ? effW(rows[rows.length - 1]) : '';
+    var phW = last && last[rows.length] ? lastW(key, rows.length, last) : prevW;
+    p.querySelector('.set-rows').appendChild(setRowEl(rows.length + 1, '', '', last && last[rows.length] ? last[rows.length].r : '', phW));
     updateExTotal(key);
     saveDraft();
   }
@@ -1721,7 +1766,7 @@
     if (!p || p.dataset.built !== '1') return;
     var mult = getMult(key), total = 0;
     p.querySelectorAll('.set-row').forEach(function(row) {
-      var v = setVol(row.querySelector('.set-w').value, row.querySelector('.set-r').value, mult);
+      var v = setVol(effW(row), row.querySelector('.set-r').value, mult);
       row.querySelector('.set-v').textContent = v > 0 ? fmtVol(v) + ' kg' : '—';
       total += v;
     });
@@ -1757,6 +1802,10 @@
       var badge = document.createElement('span');
       badge.className = 'ex-vol';
       badge.id = 'exv-' + key;
+      var lt = document.createElement('span');
+      lt.className = 'ex-last';
+      lt.id = 'exl-' + key;
+      nr.appendChild(lt);
       nr.appendChild(badge);
       var p = document.createElement('div');
       p.className = 'sets-panel';
@@ -1771,6 +1820,7 @@
       row.appendChild(p);
     });
     Object.keys(workoutDraft.sets).forEach(function(k) { ensurePanel(k); });
+    applyLastHints();
   }
 
   // ── Começar / Acabar treino ────────────────────────────────
@@ -1792,6 +1842,7 @@
   }
 
   function renderWorkoutBars() {
+    applyLastHints();
     var today = todayStr();
     WORKOUT_DAYS.forEach(function(day) {
       var btn = document.getElementById('wk-btn-' + day);
