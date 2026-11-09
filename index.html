@@ -72,7 +72,8 @@
   .ex:last-child { border-bottom: none; }
   .ex-nr { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 2px; }
   .ex-n { color: var(--text); font-size: 13px; font-weight: 500; }
-  .ex-nt { color: var(--muted); font-size: 11px; line-height: 1.4; }
+  /* Descrições/dicas dos exercícios: escondidas (o texto continua no ficheiro e nas notas dos exercícios novos) */
+  .ex-nt { display: none; }
   .ex-s { color: var(--green); font-family: monospace; font-size: 13px; font-weight: 700; white-space: nowrap; padding-top: 2px; }
   .weight-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
   .weight-input { width: 58px; font-family: monospace; font-size: 13px; font-weight: 700; color: var(--green); background: var(--green-bg); border: 1.5px solid var(--green-bd); border-radius: 6px; padding: 4px 6px; text-align: center; outline: none; -webkit-appearance: none; }
