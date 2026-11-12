@@ -104,7 +104,16 @@
   .set-x { color: var(--faint); font-size: 12px; }
   .set-v { flex: 1; text-align: right; font-family: monospace; font-size: 12px; color: var(--muted); white-space: nowrap; }
   .set-rm { width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); font-size: 15px; line-height: 1; padding: 0; cursor: pointer; }
+  /* Exercícios sem peso: esconde-se a caixa que não faz sentido, em vez de
+     obrigar a inventar um valor. Os campos ficam no DOM para não partir a leitura. */
+  .set-row.mode-bw .set-w, .set-row.mode-bw .set-x { display: none; }
+  .set-row.mode-tempo .set-x, .set-row.mode-tempo .set-r { display: none; }
+  .set-u { font-family: monospace; font-size: 11px; color: var(--muted); flex-shrink: 0; }
+  /* Exercícios sem peso não precisam do campo de kg nem do ×1/×2 */
+  .ex.no-weight .weight-wrap { display: none; }
   .set-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 6px; padding-top: 8px; border-top: 1px solid var(--border); }
+  .set-foot-l { display: flex; align-items: center; gap: 6px; }
+  .set-addw { font-family: monospace; font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 6px; border: 1.5px dashed var(--border); background: var(--surface); color: var(--muted); cursor: pointer; }
   .set-add { font-family: monospace; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 6px; border: 1.5px solid var(--green-bd); background: var(--green-bg); color: var(--green); cursor: pointer; }
   .set-total { font-family: monospace; font-size: 12px; color: var(--muted); text-align: right; }
   .set-total b { color: var(--green); font-size: 13px; }
@@ -113,9 +122,6 @@
   .wk-btn.run { background: var(--amber); }
   .wk-btn:disabled { opacity: 0.4; cursor: default; }
   .wk-info { font-family: monospace; font-size: 11px; color: var(--muted); }
-  .p-ex-hdr { flex-wrap: wrap; }
-  .p-rec { flex: 0 0 100%; font-family: monospace; font-size: 11px; color: var(--muted); }
-  .p-rec:empty { display: none; }
   .bul { display: flex; gap: 9px; margin-bottom: 8px; font-size: 13px; }
   .bul-d { color: var(--green); flex-shrink: 0; }
   .bl { color: var(--text); font-weight: 500; }
@@ -146,11 +152,73 @@
   .ms-d { color: var(--muted); font-size: 12px; line-height: 1.5; }
   .sec { display: none; }
   .sec.active { display: block; }
-  .p-ex { padding: 12px 0; border-bottom: 1px solid var(--border); }
-  .p-ex:last-child { border-bottom: none; }
-  .p-ex-hdr { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; }
-  .p-chart-wrap { position: relative; height: 120px; }
-  .p-empty { display: flex; align-items: center; justify-content: center; height: 80px; color: var(--faint); font-size: 11px; font-family: monospace; background: var(--bg); border-radius: 8px; border: 1px dashed var(--border); }
+  /* ── Progress (nova página) ───────────────────────────────── */
+  /* No HTML só o #overview está dentro de .content, por isso as outras abas
+     ficavam coladas às margens. Dá-se à Progress o mesmo contentor. */
+  #progress { max-width: 720px; margin: 0 auto; padding: 0 14px 80px; }
+  .pr-note { font-size: 11px; color: var(--faint); line-height: 1.5; margin-top: 10px; }
+  .pr-sum { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
+  .pr-cell { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 8px; }
+  .pr-v { font-family: monospace; font-size: 17px; font-weight: 700; color: var(--text); }
+  .pr-l { font-size: 10px; color: var(--faint); margin-top: 2px; line-height: 1.3; }
+  .pr-d { font-family: monospace; font-size: 10px; margin-top: 4px; color: var(--muted); line-height: 1.35; }
+  .pr-up { color: var(--green); }
+  .pr-dn { color: var(--amber); }
+  .pr-flat { color: var(--faint); }
+  .pr-weeks { display: flex; align-items: flex-end; gap: 3px; height: 70px; }
+  .pr-wk { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; gap: 3px; }
+  .pr-wk-bar { width: 100%; background: var(--green); border-radius: 3px 3px 0 0; min-height: 2px; }
+  .pr-wk-bar.zero { background: var(--border); }
+  .pr-wk-bar.now { background: var(--amber); }
+  .pr-wk-n { font-family: monospace; font-size: 9px; color: var(--muted); }
+  .pr-wk-l { font-family: monospace; font-size: 8px; color: var(--faint); }
+  .pr-select { width: 100%; padding: 10px 11px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; font-family: inherit; margin-bottom: 10px; }
+  .pr-ctl { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .pr-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+  .pr-chip { padding: 6px 10px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: 11px; font-weight: 600; font-family: monospace; cursor: pointer; }
+  .pr-chip.on { background: var(--green); border-color: var(--green); color: #fff; }
+  .pr-chart-wrap { position: relative; height: 260px; }
+  .pr-recs { display: grid; grid-template-columns: repeat(2,1fr); gap: 7px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .pr-rec { background: var(--green-bg); border: 1px solid var(--green-bd); border-radius: 8px; padding: 8px 9px; }
+  .pr-rec-l { font-size: 9px; font-family: monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--faint); }
+  .pr-rec-v { font-family: monospace; font-size: 14px; font-weight: 700; color: var(--green); margin-top: 2px; }
+  .pr-rec-d { font-family: monospace; font-size: 9px; color: var(--faint); margin-top: 1px; }
+  .pr-deltas { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; }
+  .pr-delta { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+  .pr-delta.locked { opacity: 0.5; }
+  .pr-delta-v { font-family: monospace; font-size: 15px; font-weight: 700; }
+  .pr-delta-l { font-size: 10px; color: var(--faint); margin-top: 2px; }
+  .pr-delta-s { font-family: monospace; font-size: 9px; color: var(--faint); margin-top: 3px; }
+  .pr-row { display: flex; align-items: center; gap: 9px; padding: 10px 0; border-bottom: 1px solid var(--border); cursor: pointer; width: 100%; background: none; border-left: none; border-right: none; border-top: none; text-align: left; }
+  .pr-row:last-child { border-bottom: none; }
+  .pr-row.sel { background: var(--green-bg); }
+  .pr-row-n { flex: 1; min-width: 0; }
+  .pr-row-nm { font-size: 13px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pr-row-sub { font-family: monospace; font-size: 10px; color: var(--faint); margin-top: 3px; display: flex; align-items: center; flex-wrap: wrap; gap: 2px 5px; }
+  .pr-row-sub > span { white-space: nowrap; }
+  /* Uma cor por grupo muscular, para dar para ver de relance */
+  .mgt { font-size: 9px; padding: 1px 6px; border-radius: 4px; font-family: monospace; white-space: nowrap; border: 1px solid; }
+  .mgt-ombros  { background: #e8f0fb; color: #1a5cb8; border-color: #a3c0ef; }
+  .mgt-peito   { background: #f0eafb; color: #6b3fba; border-color: #c4a8ef; }
+  .mgt-pernas  { background: #e6f7f1; color: #0f7f56; border-color: #a8dfc9; }
+  .mgt-gluteos { background: #fff8e6; color: #92580a; border-color: #f5d08a; }
+  .mgt-bracos  { background: #fdeaf1; color: #a8316b; border-color: #f0b4ce; }
+  .mgt-core    { background: #e3f3f8; color: #0e6f8c; border-color: #a8d6e5; }
+  .mgt-outros  { background: var(--bg); color: var(--muted); border-color: var(--border); }
+  .pr-spark { width: 56px; height: 18px; flex-shrink: 0; color: var(--green); }
+  .pr-spark.none { color: var(--border); }
+  .pr-row-v { font-family: monospace; font-size: 12px; font-weight: 700; color: var(--text); text-align: right; flex-shrink: 0; min-width: 62px; }
+  .pr-row-d { font-family: monospace; font-size: 10px; font-weight: 400; margin-top: 1px; }
+  .pr-mg { margin-bottom: 9px; }
+  .pr-mg-hd { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .pr-mg-hd b { font-family: monospace; color: var(--text); }
+  .pr-mg-track { height: 7px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+  .pr-mg-bar { height: 100%; background: var(--green); }
+  .pr-empty { display: grid; place-items: center; height: 100%; color: var(--faint); font-size: 12px; font-family: monospace; background: var(--bg); border-radius: 8px; border: 1px dashed var(--border); text-align: center; padding: 14px; line-height: 1.6; }
+  .pr-demo { background: var(--amber-bg); border: 1px solid var(--amber-bd); color: var(--amber); border-radius: 8px; padding: 9px 11px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
+  @media (min-width: 480px) {
+    .pr-deltas { grid-template-columns: repeat(4,1fr); }
+  }
   .ex-thumb { width: 76px; height: 76px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); flex-shrink: 0; display: block; cursor: pointer; }
   .mob-card { background: var(--purple-bg); border: 1px solid var(--purple-bd); border-radius: 8px; padding: 12px; margin-top: 14px; }
   .mob-card-title { font-size: 9px; font-family: monospace; text-transform: uppercase; letter-spacing: 0.12em; color: var(--purple); margin-bottom: 8px; }
@@ -554,70 +622,58 @@
 
   <!-- PROGRESS -->
   <div id="progress" class="sec">
+    <div class="pr-demo" id="pr-demo-banner" style="display:none">Modo demonstração — dados falsos, nada é guardado no gist.</div>
+
+    <!-- Resumo do mês -->
     <div class="card">
-      <div class="stitle">Weight Progress Over Time</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
-        <div style="color:var(--muted);font-size:13px">Cada gráfico mostra o peso máximo (verde) e o volume máximo num set (âmbar) por semana ou mês. Atualiza quando acabas um treino na aba Training.</div>
+      <div class="stitle">Resumo · <span id="pr-month-label">—</span></div>
+      <div class="pr-sum" id="pr-summary"></div>
+      <div class="pr-note" id="pr-sum-note"></div>
+    </div>
+
+    <!-- Consistência -->
+    <div class="card">
+      <div class="stitle">Consistência · treinos por semana</div>
+      <div class="pr-weeks" id="pr-weeks"></div>
+      <div class="pr-note" id="pr-weeks-note"></div>
+    </div>
+
+    <!-- Lista de exercícios -->
+    <div class="card">
+      <div class="stitle">Todos os exercícios</div>
+      <div class="pr-chips" id="pr-list-range"></div>
+      <div id="pr-list"></div>
+      <div class="pr-note" id="pr-list-note"></div>
+    </div>
+
+    <!-- Gráfico grande + recordes -->
+    <div class="card" id="pr-chart-card">
+      <div class="stitle">Evolução por exercício</div>
+      <select class="pr-select" id="pr-ex" onchange="prSetExercise(this.value)"></select>
+      <div class="pr-chips" id="pr-metric-chips"></div>
+      <div class="pr-ctl">
+        <div class="pr-chips" id="pr-range-chips" style="margin-bottom:0"></div>
         <div class="mult-toggle" style="flex-shrink:0">
-          <button class="mult-btn" id="pg-week" onclick="setProgressGranularity('week')">Week</button>
-          <button class="mult-btn on" id="pg-month" onclick="setProgressGranularity('month')">Month</button>
+          <button class="mult-btn" id="pg-week" onclick="setProgressGranularity('week')">Sem</button>
+          <button class="mult-btn on" id="pg-month" onclick="setProgressGranularity('month')">Mês</button>
         </div>
       </div>
+      <div class="pr-chart-wrap"><canvas id="pr-chart"></canvas></div>
+      <div class="pr-note" id="pr-chart-note"></div>
+      <div class="pr-recs" id="pr-records"></div>
     </div>
-    <!-- Progress Day A -->
+
+    <!-- Diferenças 3/6/12 meses -->
     <div class="card">
-      <button class="w-hdr" onclick="tw('pA')">
-        <div class="w-tg"><span class="w-dl">Day A</span><span class="w-fc">Shoulders + Chest</span></div>
-        <span class="w-cv" id="pA-c">▼</span>
-      </button>
-      <div class="w-body" id="pA">
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Dumbbell OHP</span><span class="tag tb">Shoulders</span></div><div class="p-chart-wrap"><canvas id="chart-wC-0"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Lateral Raises</span><span class="tag tb">Shoulders</span></div><div class="p-chart-wrap"><canvas id="chart-wC-1"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Rear Delt Fly</span><span class="tag tb">Rear Delts</span></div><div class="p-chart-wrap"><canvas id="chart-wD-2"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Face Pulls</span><span class="tag tb">Rear Delts</span></div><div class="p-chart-wrap"><canvas id="chart-wD-fp"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Bench Press</span><span class="tag tb">Chest</span></div><div class="p-chart-wrap"><canvas id="chart-wA-bench"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Push-ups</span><span class="tag tb">Chest</span></div><div class="p-chart-wrap"><canvas id="chart-wA-pushup"></canvas></div></div>
-      </div>
+      <div class="stitle">Diferença · <span id="pr-delta-ex">—</span></div>
+      <div class="pr-deltas" id="pr-deltas"></div>
+      <div class="pr-note" id="pr-deltas-note"></div>
     </div>
-    <!-- Progress Day B -->
+
+    <!-- Volume por grupo muscular -->
     <div class="card">
-      <button class="w-hdr" onclick="tw('pB')">
-        <div class="w-tg"><span class="w-dl">Day B</span><span class="w-fc">Legs &amp; Glutes</span></div>
-        <span class="w-cv" id="pB-c">▼</span>
-      </button>
-      <div class="w-body" id="pB">
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Barbell Back Squat</span><span class="tag tb">Quads</span></div><div class="p-chart-wrap"><canvas id="chart-wB-0"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Romanian Deadlift</span><span class="tag tb">Hips/Lower Back</span></div><div class="p-chart-wrap"><canvas id="chart-wB-1"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Hip Thrust</span><span class="tag tb">Glutes/Hips</span></div><div class="p-chart-wrap"><canvas id="chart-wB-4"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Glute Step Downs</span><span class="tag tb">Glutes/Quads</span></div><div class="p-chart-wrap"><canvas id="chart-wB-sd"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Leg Press</span><span class="tag tb">Quads</span></div><div class="p-chart-wrap"><canvas id="chart-wB-lp"></canvas></div></div>
-      </div>
-    </div>
-    <!-- Progress Day C -->
-    <div class="card">
-      <button class="w-hdr" onclick="tw('pC')">
-        <div class="w-tg"><span class="w-dl">Day C</span><span class="w-fc">Arms</span></div>
-        <span class="w-cv" id="pC-c">▼</span>
-      </button>
-      <div class="w-body" id="pC">
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Barbell Bicep Curl</span><span class="tag tb">Biceps</span></div><div class="p-chart-wrap"><canvas id="chart-wD-0"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Hammer Curls</span><span class="tag tb">Biceps</span></div><div class="p-chart-wrap"><canvas id="chart-wD-1"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Skull Crushers</span><span class="tag tb">Triceps</span></div><div class="p-chart-wrap"><canvas id="chart-wC-3"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Tricep Dips</span><span class="tag tb">Triceps</span></div><div class="p-chart-wrap"><canvas id="chart-wC-dip"></canvas></div></div>
-      </div>
-    </div>
-    <!-- Progress Day D -->
-    <div class="card">
-      <button class="w-hdr" onclick="tw('pD')">
-        <div class="w-tg"><span class="w-dl">Day D</span><span class="w-fc">Shoulders + Quads + Core</span></div>
-        <span class="w-cv" id="pD-c">▼</span>
-      </button>
-      <div class="w-body" id="pD">
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Lateral Raises</span><span class="tag tb">Shoulders</span></div><div class="p-chart-wrap"><canvas id="chart-wD-lat"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Leg Press</span><span class="tag tb">Quads</span></div><div class="p-chart-wrap"><canvas id="chart-wB-2"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Hanging Leg Raises</span><span class="tag tb">Core</span></div><div class="p-chart-wrap"><canvas id="chart-wA-6"></canvas></div></div>
-        <div class="p-ex"><div class="p-ex-hdr"><span class="ex-n">Plank</span><span class="tag tb">Core</span></div><div class="p-chart-wrap"><canvas id="chart-wC-5"></canvas></div></div>
-      </div>
+      <div class="stitle">Volume por grupo muscular · últimas 8 semanas</div>
+      <div id="pr-muscle"></div>
     </div>
   </div>
 
@@ -982,6 +1038,10 @@
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     el.classList.add('active');
+    // .content só envolve o #overview; quando está escondido deixava um
+    // espaço vazio no topo de todas as outras abas.
+    var cont = document.querySelector('.content');
+    if (cont) cont.style.display = (id === 'overview') ? '' : 'none';
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (id === 'progress') renderAllCharts();
   }
@@ -994,6 +1054,13 @@
   var GIST_ID = '05158301a296e8d08403c8f70c2df299';
   var saveTimer = null;
   var gistData = {};
+
+  // ── Modo demonstração (?demo=1) ─────────────────────────────
+  // Carrega treinos falsos SÓ EM MEMÓRIA para se poder ver e testar a aba
+  // Progress sem o token do gist. A escrita no gist fica bloqueada: este modo
+  // nunca toca em dados reais.
+  var DEMO = false;
+  try { DEMO = /[?&]demo=1(&|$)/.test(location.search); } catch(e) {}
   var charts = {};
   var EXERCISES = [
     { key: 'wC-0', name: 'Dumbbell OHP' },
@@ -1018,6 +1085,7 @@
   ];
 
   function getToken() {
+    if (DEMO) return null; // no modo demonstração nunca se fala com o gist
     var t = null;
     try { t = localStorage.getItem('gh-token'); } catch(e) {}
     if (!t) {
@@ -1035,7 +1103,13 @@
   }
 
   function saveW(key, val) {
-    try { localStorage.setItem('fp-w-' + key, val); } catch(e) {}
+    // O mesmo exercício noutro dia do plano partilha o peso
+    exGroup(key).forEach(function(k) {
+      try { localStorage.setItem('fp-w-' + k, val); } catch(e) {}
+      if (k === key) return;
+      var other = document.getElementById('w-' + k);
+      if (other && other.value !== val) { other.value = val; updateExTotal(k); }
+    });
     clearTimeout(saveTimer);
     saveTimer = setTimeout(pushToGist, 1200);
     showSyncStatus('saving…', 'var(--amber)');
@@ -1072,13 +1146,19 @@
     var b1 = document.getElementById('m-' + key + '-1');
     var b2 = document.getElementById('m-' + key + '-2');
     if (!b1 || !b2) return;
-    b1.classList.toggle('on', val === 1);
-    b2.classList.toggle('on', val === 2);
-    try { localStorage.setItem('fp-m-' + key, val); } catch(e) {}
+    // O ×1/×2 também é partilhado pelo mesmo exercício noutro dia
+    exGroup(key).forEach(function(k) {
+      var a = document.getElementById('m-' + k + '-1');
+      var b = document.getElementById('m-' + k + '-2');
+      if (!a || !b) return;
+      a.classList.toggle('on', val === 1);
+      b.classList.toggle('on', val === 2);
+      try { localStorage.setItem('fp-m-' + k, val); } catch(e) {}
+      updateExTotal(k);
+    });
     clearTimeout(saveTimer);
     saveTimer = setTimeout(pushToGist, 1200);
     showSyncStatus('saving…', 'var(--amber)');
-    updateExTotal(key);
   }
 
   function collectWeights() {
@@ -1134,6 +1214,7 @@
   }
 
   function pushToGist() {
+    if (DEMO) { showSyncStatus('demo — nada é guardado', 'var(--amber)'); return; }
     var token = getToken();
     if (!token) { showSyncStatus('no token — not saved', 'var(--amber)'); return; }
     var weights = collectWeights();
@@ -1150,6 +1231,89 @@
     }).catch(function() { showSyncStatus('offline — saved locally', 'var(--faint)'); });
   }
 
+  // Treinos falsos para o modo demonstração. Inclui de propósito: exercícios
+  // sem dados nenhuns, um mês inteiro sem treinos, sets em kg / repetições /
+  // segundos, durações absurdas, histórico antigo antes do primeiro treino, e
+  // um exercício de peso do corpo (dips) que passa a ter peso a meio.
+  function buildDemoData() {
+    var PLAN = {
+      A: ['wC-0', 'wC-1', 'wD-2', 'wD-fp', 'wA-pushup'],
+      B: ['wB-0', 'wB-1', 'wB-4', 'wB-sd'],
+      C: ['wD-0', 'wD-1', 'wC-3', 'wC-dip'],
+      D: ['wD-lat', 'wB-2', 'wA-6', 'wC-5']
+    };
+    // wA-bench e wB-lp ficam de fora — servem para testar o estado "sem dados"
+    var BASE = { 'wC-0': 20, 'wC-1': 12, 'wD-2': 16, 'wD-fp': 0, 'wA-pushup': 0,
+      'wB-0': 25, 'wB-1': 30, 'wB-4': 25, 'wB-sd': 20, 'wD-0': 22, 'wD-1': 18,
+      'wC-3': 20, 'wC-dip': 0, 'wD-lat': 10, 'wB-2': 120, 'wA-6': 1, 'wC-5': 40 };
+    var seed = 7;
+    function rnd() { seed = (seed * 1103515 + 12345) % 2147483648; return seed / 2147483648; }
+    function iso(dt) { return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0'); }
+
+    var first = new Date(); first.setMonth(first.getMonth() - 8);
+    var gapMonth = new Date(); gapMonth.setMonth(gapMonth.getMonth() - 4);
+    var gapKey = iso(gapMonth).slice(0, 7);
+    var totalDays = Math.round((new Date() - first) / 86400000);
+    var cycle = ['A', 'B', 'C', 'D'], ci = 0, n = 0;
+    var sessions = [];
+
+    for (var d = 0; d <= totalDays; d++) {
+      var dt = new Date(first.getTime() + d * 86400000);
+      var dow = dt.getDay();
+      if (dow !== 1 && dow !== 4) continue;              // 2 treinos por semana
+      var date = iso(dt);
+      if (date.slice(0, 7) === gapKey) continue;          // mês inteiro sem treinos
+      var day = cycle[ci % 4]; ci++; n++;
+      var p = d / Math.max(totalDays, 1);                 // 0 → 1 ao longo do tempo
+      var exs = {}, total = 0;
+      PLAN[day].forEach(function(key) {
+        var mult = (key === 'wB-2' || key === 'wD-lat' || key === 'wC-3') ? 1 : 2;
+        var sets = [], vol = 0;
+        for (var s = 0; s < 3; s++) {
+          var w, r;
+          if (key === 'wC-5') {                           // prancha: segundos
+            w = Math.round((BASE[key] * (1 + 0.8 * p) + rnd() * 6) / 5) * 5;
+            r = 1; mult = 1;
+          } else if (key === 'wC-dip') {                  // peso do corpo → com peso a meio
+            w = p < 0.55 ? 0 : Math.round((5 + 12 * (p - 0.55)) * 2) / 2;
+            r = Math.round(8 + 7 * p + rnd() * 3);
+          } else if (BASE[key] === 0) {                   // só repetições
+            w = 0;
+            r = Math.round(10 + 12 * p + rnd() * 4);
+          } else {
+            w = Math.round((BASE[key] * (1 + 0.3 * p) + rnd() * 2) * 2) / 2;
+            r = Math.round(8 + 5 * rnd() + 4 * p);
+          }
+          sets.push({ w: String(w), r: String(r), vol: Math.round(w * r * mult * 10) / 10 });
+          vol += w * r * mult;
+        }
+        exs[key] = { mult: mult, sets: sets, vol: Math.round(vol * 10) / 10 };
+        total += vol;
+      });
+      var start = new Date(dt); start.setHours(10, 0, 0, 0);
+      var mins = 35 + Math.round(rnd() * 20);
+      if (n === 4) mins = 14 * 60;                        // esqueceu-se de acabar
+      if (n === 9) mins = 0.5;                            // acabou logo por engano
+      var end = new Date(start.getTime() + mins * 60000);
+      sessions.push({ date: date, day: day, start: start.toISOString(), end: end.toISOString(),
+                      vol: Math.round(total * 10) / 10, exercises: exs });
+    }
+
+    // Histórico antigo (datas pouco fiáveis), nos meses ANTES do primeiro treino
+    var history = {};
+    Object.keys(BASE).forEach(function(key) {
+      if (!BASE[key]) return;
+      history[key] = {};
+      for (var m = 14; m >= 9; m--) {
+        var md = new Date(); md.setMonth(md.getMonth() - m); md.setDate(10);
+        var f = 0.78 + (14 - m) * 0.03;
+        history[key][iso(md)] = String(Math.round(BASE[key] * f * 2) / 2);
+      }
+    });
+
+    return { sessions: sessions, history: history };
+  }
+
   function loadWeights() {
     // Seed from localStorage immediately for instant display
     document.querySelectorAll('.weight-input').forEach(function(el) {
@@ -1161,9 +1325,17 @@
         if (m !== null) setMult(key, parseInt(m));
       } catch(e) {}
     });
+    if (DEMO) {
+      gistData = buildDemoData();
+      var banner = document.getElementById('pr-demo-banner');
+      if (banner) banner.style.display = '';
+      showSyncStatus('DEMO — gist bloqueado', 'var(--amber)');
+      gistReady = true;
+      return;
+    }
     // Then fetch latest from Gist
     var token = getToken();
-    if (!token) return;
+    if (!token) { gistReady = true; autoCloseStaleWorkout(); return; }
     showSyncStatus('loading…', 'var(--faint)');
     fetch('https://api.github.com/gists/' + GIST_ID, {
       headers: { Authorization: 'token ' + token }
@@ -1185,7 +1357,12 @@
       addSetPanels();
       addWeightSteppers();
       mergeLocalSessions();
+      gistReady = true;
+      autoCloseStaleWorkout();
       renderWorkoutBars();
+      // Se já estiveres na aba Progress quando os dados chegam, redesenha
+      var pg = document.getElementById('progress');
+      if (pg && pg.classList.contains('active')) renderAllCharts();
       showSyncStatus('synced ✓', 'var(--green)');
     }).catch(function() { showSyncStatus('offline', 'var(--faint)'); });
   }
@@ -1341,6 +1518,250 @@
     pushToGist();
   }
 
+  // ══ PROGRESS ════════════════════════════════════════════════
+  // Fonte de verdade: gistData.sessions — escrito SÓ em finishWorkout().
+  // gistData.history é usado apenas para leitura, como linha esbatida dos meses
+  // anteriores ao primeiro treino gravado: as datas antigas não são de confiança
+  // (até 2026-11-09 o campo de peso escrevia no histórico mesmo sem treino).
+  // NUNCA escrever em gistData.history fora de applySessionToHistory().
+
+  // Tipo de cada exercício:
+  //   kg    — peso × repetições
+  //   bw    — peso do corpo: conta repetições, e passa sozinho a kg assim que
+  //           houver sets com peso > 0 (ex.: dips com cinto no futuro)
+  //   tempo — segundos (o campo "peso" são segundos; o ×2 não conta)
+  var EX_META = {
+    'wC-0':      { type: 'kg',    mg: 'Ombros' },
+    'wC-1':      { type: 'kg',    mg: 'Ombros' },
+    'wD-2':      { type: 'kg',    mg: 'Ombros' },
+    'wD-fp':     { type: 'bw',    mg: 'Ombros' },
+    'wD-lat':    { type: 'kg',    mg: 'Ombros' },
+    'wA-bench':  { type: 'kg',    mg: 'Peito' },
+    'wA-pushup': { type: 'bw',    mg: 'Peito' },
+    'wB-0':      { type: 'kg',    mg: 'Pernas' },
+    'wB-1':      { type: 'kg',    mg: 'Pernas' },
+    'wB-2':      { type: 'kg',    mg: 'Pernas' },
+    'wB-lp':     { type: 'kg',    mg: 'Pernas' },
+    'wB-4':      { type: 'kg',    mg: 'Glúteos' },
+    'wB-sd':     { type: 'kg',    mg: 'Glúteos' },
+    'wD-0':      { type: 'kg',    mg: 'Braços' },
+    'wD-1':      { type: 'kg',    mg: 'Braços' },
+    'wC-3':      { type: 'kg',    mg: 'Braços' },
+    'wC-dip':    { type: 'bw',    mg: 'Braços' },
+    'wA-6':      { type: 'kg',    mg: 'Core' },
+    'wC-5':      { type: 'tempo', mg: 'Core' }
+  };
+
+  function exMeta(key) { return EX_META[key] || { type: 'kg', mg: 'Outros' }; }
+
+  function exName(key) {
+    for (var i = 0; i < EXERCISES.length; i++) if (EXERCISES[i].key === key) return EXERCISES[i].name;
+    return key;
+  }
+
+  // Exercícios com o mesmo nome são O MESMO exercício, mesmo estando em dias
+  // diferentes do plano: partilham peso, séries e histórico. O sufixo "(Day X)"
+  // é só uma etiqueta do plano, não faz deles exercícios diferentes.
+  function exBaseName(n) {
+    return String(n || '').replace(/\s*\([^)]*\)\s*$/, '').trim().toLowerCase();
+  }
+
+  // Todas as chaves que são o mesmo exercício que esta
+  function exGroup(key) {
+    var base = exBaseName(exName(key)), out = [];
+    EXERCISES.forEach(function(e) { if (exBaseName(e.name) === base) out.push(e.key); });
+    return out.length ? out : [key];
+  }
+
+  // Um item por exercício, sem nomes repetidos — é esta a lista que a Progress usa
+  function exListGrouped() {
+    var seen = {}, out = [];
+    EXERCISES.forEach(function(e) {
+      var b = exBaseName(e.name);
+      if (seen[b]) return;
+      seen[b] = 1;
+      out.push({ key: e.key, name: e.name.replace(/\s*\([^)]*\)\s*$/, '').trim(), keys: exGroup(e.key) });
+    });
+    return out;
+  }
+
+  // Tipo efetivo: um 'bw' passa a 'kg' quando aparecer peso nos sets gravados
+  function effType(key) {
+    var keys = exGroup(key);
+    var m = exMeta(keys[0]);
+    if (m.type === 'tempo') return 'tempo';
+    if (m.type === 'kg') return 'kg';
+    var sess = gistData.sessions || [];
+    for (var i = 0; i < sess.length; i++) {
+      for (var g = 0; g < keys.length; g++) {
+        var e = sess[i].exercises && sess[i].exercises[keys[g]];
+        if (!e) continue;
+        for (var j = 0; j < (e.sets || []).length; j++) {
+          if (parseNum(e.sets[j].w) > 0) return 'kg';
+        }
+      }
+    }
+    return 'reps';
+  }
+
+  var PR_METRICS = {
+    e1rm:    { label: '1RM estim.',  unit: 'kg',   field: 'e1rm' },
+    maxW:    { label: 'Peso máx',    unit: 'kg',   field: 'maxW' },
+    bestSet: { label: 'Melhor set',  unit: 'kg',   field: 'bestSet' },
+    total:   { label: 'Volume',      unit: 'kg',   field: 'total' },
+    maxReps: { label: 'Reps máx',    unit: 'reps', field: 'maxReps' },
+    reps:    { label: 'Reps total',  unit: 'reps', field: 'reps' },
+    maxSec:  { label: 'Tempo máx',   unit: 's',    field: 'maxSec' },
+    totSec:  { label: 'Tempo total', unit: 's',    field: 'total' }
+  };
+
+  function metricsFor(type) {
+    if (type === 'reps') return ['maxReps', 'reps'];
+    if (type === 'tempo') return ['maxSec', 'totSec'];
+    return ['maxW', 'e1rm', 'bestSet', 'total']; // Peso máx é o que vem escolhido
+  }
+
+  function fmtMetric(v, metric) {
+    if (v === null || v === undefined) return '—';
+    var u = (PR_METRICS[metric] || {}).unit || 'kg';
+    if (u === 'kg') return fmtVol(v) + ' kg';
+    return Math.round(v) + ' ' + u;
+  }
+
+  // Um registo por treino em que o exercício aparece, já com as métricas feitas.
+  // Junta todas as chaves do mesmo exercício (ex.: Leg Press do Dia B e do Dia D).
+  function exPoints(key) {
+    var keys = exGroup(key);
+    var type = effType(key);
+    var out = [];
+    (gistData.sessions || []).forEach(function(s) {
+      var sets = [];
+      keys.forEach(function(k) {
+        var e = s.exercises && s.exercises[k];
+        if (!e || !e.sets) return;
+        e.sets.forEach(function(st) { sets.push({ w: st.w, r: st.r, mult: e.mult || 1 }); });
+      });
+      if (!sets.length) return;
+      var p = { date: s.date, maxW: 0, maxReps: 0, bestSet: 0, total: 0, e1rm: 0, maxSec: 0, reps: 0, nsets: 0, bestSetTxt: '' };
+      sets.forEach(function(st) {
+        var w = parseNum(st.w), r = parseNum(st.r);
+        if (type === 'tempo') {
+          if (w > p.maxSec) p.maxSec = w;
+          p.total += w * Math.max(r, 1);
+          p.nsets++;
+          return;
+        }
+        var load = w * st.mult;
+        if (r <= 0) return;
+        p.nsets++;
+        p.reps += r;
+        if (r > p.maxReps) p.maxReps = r;
+        if (load > p.maxW) p.maxW = load;
+        var v = load * r;
+        if (v > p.bestSet) { p.bestSet = v; p.bestSetTxt = fmtVol(load) + ' kg × ' + r; }
+        p.total += v;
+        if (load > 0) {
+          var est = load * (1 + r / 30); // Epley
+          if (est > p.e1rm) p.e1rm = est;
+        }
+      });
+      if (!p.nsets) return;
+      out.push(p);
+    });
+    out.sort(function(a, b) { return a.date < b.date ? -1 : (a.date > b.date ? 1 : 0); });
+    return out;
+  }
+
+  // ── Datas ───────────────────────────────────────────────────
+  var MONTH_ABBR = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+  function isoDate(dt) {
+    return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
+  }
+
+  // Segunda-feira da semana desta data, como YYYY-MM-DD
+  function weekStart(d) {
+    var dt = new Date(d + 'T00:00:00');
+    var day = dt.getDay() || 7; // Dom=0 -> 7
+    if (day !== 1) dt.setDate(dt.getDate() - (day - 1));
+    return isoDate(dt);
+  }
+
+  function daysAgoStr(n) {
+    var dt = new Date();
+    dt.setDate(dt.getDate() - n);
+    return isoDate(dt);
+  }
+
+  function monthsAgoStr(n) {
+    var dt = new Date();
+    dt.setMonth(dt.getMonth() - n);
+    return isoDate(dt);
+  }
+
+  function addMonths(dateStr, n) {
+    var dt = new Date(dateStr + 'T00:00:00');
+    dt.setMonth(dt.getMonth() + n);
+    return isoDate(dt);
+  }
+
+  function periodKey(d, gran) {
+    return gran === 'week' ? weekStart(d) : d.slice(0, 7);
+  }
+
+  function periodLabel(k, gran) {
+    if (gran === 'week') { var p = k.split('-'); return p[2] + '/' + p[1]; }
+    var p2 = k.split('-');
+    return MONTH_ABBR[parseInt(p2[1], 10) - 1] + " '" + p2[0].slice(2);
+  }
+
+  // Sequência completa de períodos (sem saltos) entre duas datas
+  function periodSeq(firstDate, lastDate, gran) {
+    var out = [], guard = 0;
+    if (gran === 'week') {
+      var cur = weekStart(firstDate), end = weekStart(lastDate);
+      while (cur <= end && guard++ < 400) {
+        out.push(cur);
+        var dt = new Date(cur + 'T00:00:00');
+        dt.setDate(dt.getDate() + 7);
+        cur = isoDate(dt);
+      }
+    } else {
+      var y = parseInt(firstDate.slice(0, 4), 10), m = parseInt(firstDate.slice(5, 7), 10);
+      var ey = parseInt(lastDate.slice(0, 4), 10), em = parseInt(lastDate.slice(5, 7), 10);
+      while ((y < ey || (y === ey && m <= em)) && guard++ < 200) {
+        out.push(y + '-' + String(m).padStart(2, '0'));
+        m++; if (m > 12) { m = 1; y++; }
+      }
+    }
+    return out;
+  }
+
+  function firstSessionDate() {
+    var ds = (gistData.sessions || []).map(function(s) { return s.date; }).sort();
+    return ds.length ? ds[0] : null;
+  }
+
+  // ── Histórico antigo: 1 ponto por mês, só ANTES do primeiro treino gravado ──
+  function legacyMonthly(key) {
+    var fs = firstSessionDate();
+    var limit = fs ? fs.slice(0, 7) : null;
+    var byMonth = {};
+    exGroup(key).forEach(function(k) {
+      var hist = (gistData.history || {})[k] || {};
+      var mult = getMult(k);
+      Object.keys(hist).forEach(function(d) {
+        var m = d.slice(0, 7);
+        if (limit && m >= limit) return; // o período com treinos reais manda
+        var v = parseNum(hist[d]) * mult;
+        if (v <= 0) return;
+        if (!(m in byMonth) || v > byMonth[m]) byMonth[m] = v;
+      });
+    });
+    return Object.keys(byMonth).sort().map(function(m) { return { month: m, v: byMonth[m] }; });
+  }
+
+  // ── Estado da página ────────────────────────────────────────
   var progressGranularity = 'month';
   try { progressGranularity = localStorage.getItem('fp-progress-gran') || 'month'; } catch(e) {}
   if (progressGranularity === 'week') {
@@ -1348,167 +1769,597 @@
     document.getElementById('pg-month').classList.remove('on');
   }
 
+  var PR_RANGES = { '3M': 3, '6M': 6, '12M': 12, 'Tudo': 0 };
+  var prRange = '12M', prListRange = '3M', prExercise = null, prMetric = null;
+  try {
+    prRange = localStorage.getItem('fp-pr-range') || '12M';
+    prListRange = localStorage.getItem('fp-pr-list-range') || '3M';
+    prExercise = localStorage.getItem('fp-pr-ex') || null;
+    prMetric = localStorage.getItem('fp-pr-metric') || null;
+  } catch(e) {}
+
   function setProgressGranularity(g) {
     progressGranularity = g;
     try { localStorage.setItem('fp-progress-gran', g); } catch(e) {}
     document.getElementById('pg-week').classList.toggle('on', g === 'week');
     document.getElementById('pg-month').classList.toggle('on', g === 'month');
-    renderAllCharts();
+    renderBigChart();
   }
 
-  var MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-  // Monday of the ISO week containing this date, as YYYY-MM-DD
-  function weekStart(d) {
-    var dt = new Date(d + 'T00:00:00');
-    var day = dt.getDay() || 7; // Sun=0 -> 7
-    if (day !== 1) dt.setDate(dt.getDate() - (day - 1));
-    var y = dt.getFullYear(), m = String(dt.getMonth() + 1).padStart(2, '0'), dd = String(dt.getDate()).padStart(2, '0');
-    return y + '-' + m + '-' + dd;
+  function prSetRange(r) {
+    prRange = r;
+    try { localStorage.setItem('fp-pr-range', r); } catch(e) {}
+    renderRangeChips();
+    renderBigChart();
   }
 
-  // Period bucket (week or month) for a YYYY-MM-DD date
-  function periodOf(d, granularity) {
-    if (granularity === 'week') {
-      var k = weekStart(d);
-      var p = k.split('-');
-      return { key: k, label: p[2] + '/' + p[1] };
-    }
-    var p2 = d.split('-');
-    return { key: p2[0] + '-' + p2[1], label: MONTH_ABBR[parseInt(p2[1], 10) - 1] + " '" + p2[0].slice(2) };
+  function prSetMetric(m) {
+    prMetric = m;
+    try { localStorage.setItem('fp-pr-metric', m); } catch(e) {}
+    renderMetricChips();
+    renderBigChart();
+    renderDeltas();
+    renderExList();
   }
 
-  // Max value per period from [[date, value], ...]; fills `labels` {periodKey: label}
-  function bucketMax(pairs, granularity, labels) {
-    var out = {};
-    pairs.forEach(function(pr) {
-      var pd = periodOf(pr[0], granularity);
-      labels[pd.key] = pd.label;
-      if (!(pd.key in out) || pr[1] > out[pd.key]) out[pd.key] = pr[1];
+  function prSetExercise(key) {
+    prExercise = key;
+    try { localStorage.setItem('fp-pr-ex', key); } catch(e) {}
+    var sel = document.getElementById('pr-ex');
+    if (sel && sel.value !== key) sel.value = key;
+    var allowed = metricsFor(effType(key));
+    if (allowed.indexOf(prMetric) === -1) prMetric = allowed[0];
+    renderMetricChips();
+    renderBigChart();
+    renderRecords();
+    renderDeltas();
+    renderExList();
+  }
+
+  // Nome limpo, sem o sufixo "(Day X)"
+  function exShortName(key) {
+    return exName(key).replace(/\s*\([^)]*\)\s*$/, '').trim();
+  }
+
+  function prPickExercise(key) {
+    prSetExercise(key);
+    var card = document.getElementById('pr-chart-card');
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Exercício escolhido por omissão: o que tem mais treinos gravados
+  function defaultExercise() {
+    var best = null, bestN = -1;
+    exListGrouped().forEach(function(ex) {
+      var n = exPoints(ex.key).length;
+      if (n > bestN) { bestN = n; best = ex.key; }
     });
-    return out;
+    var first = exListGrouped()[0];
+    return best || (first && first.key);
   }
 
-  // [[date, max single-set volume in that session]] for one exercise
-  function sessionVolPairs(key) {
-    var pairs = [];
-    (gistData.sessions || []).forEach(function(s) {
-      var e = s.exercises && s.exercises[key];
-      if (!e) return;
-      var best = 0;
+  // ── Resumo do mês ───────────────────────────────────────────
+  // Volume só dos exercícios medidos em kg — somar segundos de prancha
+  // com quilos não dá nenhum número com sentido.
+  function sessionKgVolume(s) {
+    var tot = 0;
+    Object.keys(s.exercises || {}).forEach(function(key) {
+      if (effType(key) !== 'kg') return;
+      var e = s.exercises[key], mult = e.mult || 1;
       (e.sets || []).forEach(function(st) {
-        var v = setVol(st.w, st.r, e.mult || 1);
-        if (v > best) best = v;
+        tot += parseNum(st.w) * mult * parseNum(st.r);
       });
-      if (best > 0) pairs.push([s.date, best]);
     });
-    return pairs;
+    return tot;
   }
 
-  function renderRecords(canvas, wPairs, vPairs) {
-    var hdr = canvas.closest('.p-ex').querySelector('.p-ex-hdr');
-    if (!hdr) return;
-    var rec = hdr.querySelector('.p-rec');
-    if (!rec) {
-      rec = document.createElement('span');
-      rec.className = 'p-rec';
-      hdr.appendChild(rec);
+  // Um recorde conta quando um treino bate tudo o que veio antes.
+  // O primeiro treino de um exercício não é recorde — é o ponto de partida.
+  function prsBetween(from, to) {
+    var n = 0;
+    exListGrouped().forEach(function(ex) {
+      var pts = exPoints(ex.key);
+      var field = PR_METRICS[metricsFor(effType(ex.key))[0]].field;
+      var best = 0, hit = false;
+      pts.forEach(function(p) {
+        if (p[field] > best) {
+          if (best > 0 && p.date >= from && p.date <= to) hit = true;
+          best = p[field];
+        }
+      });
+      if (hit) n++;
+    });
+    return n;
+  }
+
+  function deltaPct(cur, prev, suffix) {
+    if (!prev) return '<div class="pr-d pr-flat">—</div>';
+    var d = cur - prev;
+    var cls = d > 0 ? 'pr-up' : (d < 0 ? 'pr-dn' : 'pr-flat');
+    var arrow = d > 0 ? '▲' : (d < 0 ? '▼' : '=');
+    var pct = Math.round(d / prev * 100);
+    return '<div class="pr-d ' + cls + '">' + arrow + ' ' + (pct > 0 ? '+' : '') + pct + '%' + (suffix || '') + '</div>';
+  }
+
+  // Janela de 30 dias a correr, comparada com os 30 dias anteriores.
+  // Comparar "este mês" com "o mês passado" no dia 5 do mês dava sempre uma
+  // queda enorme só porque o mês ainda mal começou.
+  function renderSummary() {
+    var box = document.getElementById('pr-summary');
+    if (!box) return;
+    var today = todayStr(), d30 = daysAgoStr(30), d60 = daysAgoStr(60);
+    var sess = gistData.sessions || [];
+    var a = sess.filter(function(s) { return s.date > d30 && s.date <= today; });
+    var b = sess.filter(function(s) { return s.date > d60 && s.date <= d30; });
+    var volA = a.reduce(function(t, s) { return t + sessionKgVolume(s); }, 0);
+    var volB = b.reduce(function(t, s) { return t + sessionKgVolume(s); }, 0);
+    var prs = prsBetween(d30, today);
+
+    var lbl = document.getElementById('pr-month-label');
+    if (lbl) lbl.textContent = 'últimos 30 dias';
+
+    box.innerHTML =
+      '<div class="pr-cell"><div class="pr-v">' + a.length + '</div><div class="pr-l">treinos</div>' +
+        deltaCount(a.length, b.length) + '</div>' +
+      '<div class="pr-cell"><div class="pr-v">' + (Math.round(volA / 100) / 10) + 't</div><div class="pr-l">volume</div>' +
+        deltaPct(volA, volB, ' vs 30d') + '</div>' +
+      '<div class="pr-cell"><div class="pr-v">' + prs + '</div><div class="pr-l">recordes novos</div>' +
+        '<div class="pr-d pr-flat">exercícios</div></div>';
+
+    var note = document.getElementById('pr-sum-note');
+    if (note) note.textContent = 'Volume = peso × repetições, só dos exercícios medidos em quilos.';
+  }
+
+  function deltaCount(cur, prev) {
+    if (!prev) return '<div class="pr-d pr-flat">—</div>';
+    var d = cur - prev;
+    if (d === 0) return '<div class="pr-d pr-flat">= igual</div>';
+    var cls = d > 0 ? 'pr-up' : 'pr-dn';
+    return '<div class="pr-d ' + cls + '">' + (d > 0 ? '▲ +' : '▼ ') + d + ' vs 30d</div>';
+  }
+
+  // ── Consistência: treinos por semana, últimas 12 semanas ────
+  function renderWeeks() {
+    var box = document.getElementById('pr-weeks');
+    if (!box) return;
+    var thisWeek = weekStart(todayStr());
+    var weeks = [];
+    for (var i = 11; i >= 0; i--) {
+      var dt = new Date(thisWeek + 'T00:00:00');
+      dt.setDate(dt.getDate() - i * 7);
+      weeks.push(isoDate(dt));
     }
-    var parts = [];
-    if (wPairs.length) parts.push('Máx ' + fmtVol(Math.max.apply(null, wPairs.map(function(p) { return p[1]; }))) + ' kg');
-    if (vPairs.length) parts.push('Vol. máx/set ' + fmtVol(Math.max.apply(null, vPairs.map(function(p) { return p[1]; }))) + ' kg');
-    rec.textContent = parts.join(' · ');
+    var counts = {};
+    (gistData.sessions || []).forEach(function(s) {
+      var w = weekStart(s.date);
+      counts[w] = (counts[w] || 0) + 1;
+    });
+    var max = Math.max(1, Math.max.apply(null, weeks.map(function(w) { return counts[w] || 0; })));
+    box.innerHTML = weeks.map(function(w, i) {
+      var n = counts[w] || 0;
+      var h = n ? Math.max(8, Math.round(n / max * 44)) : 2;
+      var cls = n === 0 ? 'zero' : (w === thisWeek ? 'now' : '');
+      var p = w.split('-');
+      return '<div class="pr-wk" title="semana de ' + p[2] + '/' + p[1] + ': ' + n + ' treino(s)">' +
+             '<div class="pr-wk-n">' + (n || '') + '</div>' +
+             '<div class="pr-wk-bar ' + cls + '" style="height:' + h + 'px"></div>' +
+             '<div class="pr-wk-l">' + (i % 2 === 0 ? p[2] + '/' + p[1] : '') + '</div></div>';
+    }).join('');
+
+    var done = weeks.filter(function(w) { return counts[w]; }).length;
+    var total = weeks.reduce(function(t, w) { return t + (counts[w] || 0); }, 0);
+    var note = document.getElementById('pr-weeks-note');
+    if (note) {
+      note.textContent = total
+        ? total + ' treinos em ' + done + ' das últimas 12 semanas · ' + (Math.round(total / 12 * 10) / 10) + ' por semana em média. A barra âmbar é a semana atual, ainda a contar.'
+        : 'Ainda não há treinos gravados nas últimas 12 semanas.';
+    }
   }
 
-  function renderChart(key) {
-    var canvas = document.getElementById('chart-' + key);
-    if (!canvas) return;
-    var hist = (gistData.history || {})[key] || {};
-    var wPairs = Object.keys(hist).sort().map(function(d) { return [d, parseNum(hist[d])]; })
-      .filter(function(p) { return p[1] > 0; });
-    var vPairs = sessionVolPairs(key);
+  // ── Seletores ───────────────────────────────────────────────
+  function renderExSelect() {
+    var sel = document.getElementById('pr-ex');
+    if (!sel) return;
+    sel.innerHTML = exListGrouped().map(function(ex) {
+      var n = exPoints(ex.key).length;
+      return '<option value="' + ex.key + '">' + ex.name + (n ? ' (' + n + ')' : ' — sem dados') + '</option>';
+    }).join('');
+    sel.value = prExercise;
+  }
+
+  function renderMetricChips() {
+    var box = document.getElementById('pr-metric-chips');
+    if (!box) return;
+    var allowed = metricsFor(effType(prExercise));
+    if (allowed.indexOf(prMetric) === -1) prMetric = allowed[0];
+    box.innerHTML = allowed.map(function(m) {
+      return '<button class="pr-chip' + (m === prMetric ? ' on' : '') + '" onclick="prSetMetric(\'' + m + '\')">' + PR_METRICS[m].label + '</button>';
+    }).join('');
+  }
+
+  function renderRangeChips() {
+    var box = document.getElementById('pr-range-chips');
+    if (!box) return;
+    box.innerHTML = Object.keys(PR_RANGES).map(function(r) {
+      return '<button class="pr-chip' + (r === prRange ? ' on' : '') + '" onclick="prSetRange(\'' + r + '\')">' + r + '</button>';
+    }).join('');
+  }
+
+  // ── Gráfico grande ──────────────────────────────────────────
+  function renderBigChart() {
+    var canvas = document.getElementById('pr-chart');
+    if (!canvas || !prExercise) return;
     var wrap = canvas.parentElement;
-    // Remove existing empty state if any
-    var existing = wrap.querySelector('.p-empty');
-    if (existing) existing.remove();
-    renderRecords(canvas, wPairs, vPairs);
-    if (wPairs.length === 0 && vPairs.length === 0) {
-      if (charts[key]) { charts[key].destroy(); delete charts[key]; }
+    var old = wrap.querySelector('.pr-empty');
+    if (old) old.remove();
+
+    var gran = progressGranularity;
+    var field = PR_METRICS[prMetric].field;
+    var cutoff = PR_RANGES[prRange] ? monthsAgoStr(PR_RANGES[prRange]) : null;
+    var pts = exPoints(prExercise).filter(function(p) { return !cutoff || p.date >= cutoff; });
+
+    // A linha esbatida só aparece na vista Mês e na métrica Peso máx:
+    // o histórico antigo não tem repetições, por isso não dá 1RM nem volume.
+    var showLegacy = (gran === 'month' && prMetric === 'maxW');
+    var leg = showLegacy ? legacyMonthly(prExercise).filter(function(m) {
+      return !cutoff || m.month >= cutoff.slice(0, 7);
+    }) : [];
+
+    // Um 0 não é um valor baixo, é "esta métrica não se aplica a esse treino"
+    // (ex.: dips sem peso antes de começares a usar cinto). Fica como buraco.
+    var valid = pts.filter(function(p) { return p[field] > 0; });
+    var zeros = pts.length - valid.length;
+
+    var note = document.getElementById('pr-chart-note');
+    if (!valid.length && !leg.length) {
+      if (charts.main) { charts.main.destroy(); delete charts.main; }
       canvas.style.display = 'none';
       var msg = document.createElement('div');
-      msg.className = 'p-empty';
-      msg.textContent = 'No history yet — log a workout first';
+      msg.className = 'pr-empty';
+      msg.innerHTML = '<div>Sem treinos gravados para <b>' + exShortName(prExercise) + '</b>' + (cutoff ? ' neste intervalo' : '') +
+        '.<br>Aparece aqui depois de acabares um treino com este exercício.</div>';
       wrap.appendChild(msg);
+      if (note) note.textContent = '';
       return;
     }
     canvas.style.display = '';
-    var labelMap = {};
-    var wm = bucketMax(wPairs, progressGranularity, labelMap);
-    var vm = bucketMax(vPairs, progressGranularity, labelMap);
-    var periods = Object.keys(labelMap).sort();
-    var labels = periods.map(function(k) { return labelMap[k]; });
-    var wVals = periods.map(function(k) { return k in wm ? Math.round(wm[k] * 10) / 10 : null; });
-    var vVals = periods.map(function(k) { return k in vm ? Math.round(vm[k] * 10) / 10 : null; });
-    var hasVol = vPairs.length > 0;
-    var wList = wVals.filter(function(v) { return v !== null; });
-    var datasets = [{
-      label: 'Peso máx (kg)',
-      data: wVals,
-      yAxisID: 'y',
-      borderColor: '#0f7f56',
-      backgroundColor: 'rgba(15,127,86,0.08)',
-      borderWidth: 2,
-      pointRadius: periods.length === 1 ? 5 : 4,
-      pointBackgroundColor: '#0f7f56',
-      fill: true,
-      spanGaps: true,
-      tension: 0.3
-    }];
-    if (hasVol) {
+
+    var firstDate = valid.length ? valid[0].date : (leg[0].month + '-01');
+    if (leg.length && leg[0].month + '-01' < firstDate) firstDate = leg[0].month + '-01';
+    var periods = periodSeq(firstDate, todayStr(), gran);
+    var labels = periods.map(function(k) { return periodLabel(k, gran); });
+
+    var realMap = {}, legMap = {};
+    valid.forEach(function(p) {
+      var k = periodKey(p.date, gran);
+      if (!(k in realMap) || p[field] > realMap[k]) realMap[k] = p[field];
+    });
+    leg.forEach(function(m) { legMap[m.month] = m.v; });
+
+    var realVals = periods.map(function(k) { return k in realMap ? Math.round(realMap[k] * 10) / 10 : null; });
+    var legVals = periods.map(function(k) { return k in legMap ? Math.round(legMap[k] * 10) / 10 : null; });
+
+    var datasets = [];
+    if (leg.length) {
       datasets.push({
-        label: 'Vol. máx/set (kg)',
-        data: vVals,
-        yAxisID: 'y2',
-        borderColor: '#c77d0a',
+        label: 'Antes (aproximado)',
+        data: legVals,
+        borderColor: '#b6bccd',
         backgroundColor: 'transparent',
         borderWidth: 2,
-        pointRadius: periods.length === 1 ? 5 : 3,
-        pointBackgroundColor: '#c77d0a',
+        borderDash: [4, 3],
+        pointRadius: 2.5,
+        pointBackgroundColor: '#b6bccd',
         fill: false,
         spanGaps: true,
         tension: 0.3
       });
     }
+    datasets.push({
+      label: PR_METRICS[prMetric].label,
+      data: realVals,
+      borderColor: '#0f7f56',
+      backgroundColor: 'rgba(15,127,86,0.10)',
+      borderWidth: 2.5,
+      pointRadius: periods.length > 26 ? 2.5 : 4,
+      pointBackgroundColor: '#0f7f56',
+      fill: true,
+      spanGaps: true,
+      tension: 0.3
+    });
+
+    var allVals = realVals.concat(legVals).filter(function(v) { return v !== null; });
     var tickStyle = { font: { size: 10, family: 'monospace' }, color: '#8a91aa' };
-    var scales = {
-      x: { grid: { color: '#dde2ec' }, ticks: tickStyle },
-      y: { grid: { color: '#dde2ec' }, ticks: tickStyle,
-           suggestedMin: wList.length ? Math.max(0, Math.min.apply(null, wList) - 5) : undefined }
-    };
-    if (hasVol) {
-      scales.y2 = { position: 'right', grid: { drawOnChartArea: false },
-                    ticks: { font: tickStyle.font, color: '#c77d0a' }, suggestedMin: 0 };
-    }
-    if (charts[key]) charts[key].destroy();
-    charts[key] = new Chart(canvas, {
+    if (charts.main) charts.main.destroy();
+    charts.main = new Chart(canvas, {
       type: 'line',
       data: { labels: labels, datasets: datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
         plugins: {
-          legend: { display: hasVol, labels: { boxWidth: 10, font: { size: 10 } } },
+          legend: { display: datasets.length > 1, labels: { boxWidth: 10, font: { size: 10 } } },
           tooltip: { callbacks: { label: function(ctx) {
-            return ctx.dataset.label.split(' (')[0] + ': ' + ctx.parsed.y + ' kg';
+            return ctx.dataset.label + ': ' + fmtMetric(ctx.parsed.y, prMetric);
           } } }
         },
-        scales: scales
+        scales: {
+          x: { grid: { color: '#dde2ec' }, ticks: Object.assign({ autoSkip: true, maxTicksLimit: 8, maxRotation: 0 }, tickStyle) },
+          y: { grid: { color: '#dde2ec' }, ticks: tickStyle,
+               suggestedMin: allVals.length ? Math.max(0, Math.min.apply(null, allVals) * 0.9) : undefined }
+        }
       }
     });
+
+    if (note) {
+      var parts = [];
+      if (prMetric === 'e1rm') parts.push('1RM estimado = peso × (1 + reps/30). Sobe quando fazes mais repetições com o mesmo peso.');
+      if (leg.length) parts.push('A linha cinzenta tracejada é o histórico antigo, 1 ponto por mês — as datas de antes de outubro não são de confiança, serve só como referência.');
+      if (zeros) parts.push(zeros + ' treino(s) deste intervalo não entram nesta métrica — foram feitos sem peso.');
+      var shown = valid.length;
+      if (shown === 1) parts.push('Só há 1 treino com esta métrica no intervalo — ainda não há linha, só um ponto.');
+      else if (shown > 1 && shown < 4) parts.push('Só ' + shown + ' treinos neste intervalo: a linha ainda diz pouco.');
+      note.textContent = parts.join(' ');
+    }
   }
 
+  // ── Recordes do exercício escolhido ─────────────────────────
+  function renderRecords() {
+    var box = document.getElementById('pr-records');
+    if (!box || !prExercise) return;
+    var type = effType(prExercise);
+    var pts = exPoints(prExercise);
+    if (!pts.length) { box.innerHTML = ''; return; }
+
+    function bestOf(field) {
+      var v = 0, d = null, txt = null;
+      pts.forEach(function(p) {
+        if (p[field] > v) { v = p[field]; d = p.date; txt = p.bestSetTxt; }
+      });
+      return { v: v, date: d, txt: txt };
+    }
+    function cell(label, value, date) {
+      return '<div class="pr-rec"><div class="pr-rec-l">' + label + '</div>' +
+             '<div class="pr-rec-v">' + value + '</div>' +
+             '<div class="pr-rec-d">' + (date ? date.split('-').reverse().slice(0, 2).join('/') + '/' + date.slice(2, 4) : '') + '</div></div>';
+    }
+
+    var html = '';
+    if (type === 'kg') {
+      var w = bestOf('maxW'), bs = bestOf('bestSet'), e = bestOf('e1rm'), t = bestOf('total');
+      html += cell('Peso máx', fmtMetric(w.v, 'maxW'), w.date);
+      html += cell('Melhor set', bs.txt || fmtMetric(bs.v, 'bestSet'), bs.date);
+      html += cell('1RM estim.', fmtMetric(e.v, 'e1rm'), e.date);
+      html += cell('Melhor treino', fmtMetric(t.v, 'total'), t.date);
+    } else if (type === 'reps') {
+      var mr = bestOf('maxReps'), tr = bestOf('reps');
+      html += cell('Reps máx num set', fmtMetric(mr.v, 'maxReps'), mr.date);
+      html += cell('Reps máx num treino', fmtMetric(tr.v, 'reps'), tr.date);
+    } else {
+      var ms = bestOf('maxSec'), ts = bestOf('total');
+      html += cell('Tempo máx', fmtMetric(ms.v, 'maxSec'), ms.date);
+      html += cell('Tempo máx num treino', fmtMetric(ts.v, 'totSec'), ts.date);
+    }
+    box.innerHTML = html;
+  }
+
+  // ── Diferenças 3 / 6 / 12 meses ─────────────────────────────
+  function bestIn(pts, from, to, field) {
+    var v = null;
+    pts.forEach(function(p) {
+      if (!(p[field] > 0)) return;
+      if (p.date >= from && p.date <= to && (v === null || p[field] > v)) v = p[field];
+    });
+    return v;
+  }
+
+  function weeksUntil(dateStr) {
+    var d = (new Date(dateStr + 'T00:00:00') - new Date(todayStr() + 'T00:00:00')) / 86400000;
+    return Math.max(1, Math.ceil(d / 7));
+  }
+
+  function renderDeltas() {
+    var box = document.getElementById('pr-deltas');
+    if (!box || !prExercise) return;
+    var lbl = document.getElementById('pr-delta-ex');
+    if (lbl) lbl.textContent = exShortName(prExercise) + ' · ' + PR_METRICS[prMetric].label;
+
+    var field = PR_METRICS[prMetric].field;
+    var pts = exPoints(prExercise);
+    var fs = firstSessionDate();
+    var today = todayStr();
+    var html = '';
+
+    if (!pts.length) {
+      box.innerHTML = '<div class="pr-delta locked" style="grid-column:1/-1"><div class="pr-delta-v">—</div>' +
+        '<div class="pr-delta-l">sem treinos gravados para este exercício</div></div>';
+      var n0 = document.getElementById('pr-deltas-note');
+      if (n0) n0.textContent = '';
+      return;
+    }
+
+    // Desde o primeiro treino gravado
+    var fv = pts[0][field], lv = pts[pts.length - 1][field];
+    html += deltaCard('desde o início', fv, lv);
+
+    // Últimos 30 dias vs os 30 dias anteriores
+    var curM = bestIn(pts, daysAgoStr(30), today, field);
+    var prevM = bestIn(pts, daysAgoStr(60), daysAgoStr(30), field);
+    if (curM !== null && prevM !== null) html += deltaCard('vs 30 dias antes', prevM, curM);
+    else html += lockedCard('vs 30 dias antes', 'faltam treinos em dois períodos seguidos');
+
+    // 3, 6 e 12 meses
+    [3, 6, 12].forEach(function(n) {
+      var now = bestIn(pts, daysAgoStr(30), today, field);
+      var thenFrom = daysAgoStr(n * 30 + 20), thenTo = daysAgoStr(n * 30 - 20);
+      var then = bestIn(pts, thenFrom, thenTo, field);
+      if (now !== null && then !== null) {
+        html += deltaCard(n + ' meses', then, now);
+      } else if (fs) {
+        var ready = addMonths(fs, n);
+        if (ready > today) html += lockedCard(n + ' meses', 'faltam ' + weeksUntil(ready) + ' semanas');
+        else html += lockedCard(n + ' meses', 'sem treinos nessa altura');
+      } else {
+        html += lockedCard(n + ' meses', 'sem dados');
+      }
+    });
+
+    box.innerHTML = html;
+    var note = document.getElementById('pr-deltas-note');
+    if (note) {
+      note.textContent = 'Compara o teu melhor dos últimos 30 dias com o melhor de há 3, 6 e 12 meses. ' +
+        'Os cartões a cinzento desbloqueiam sozinhos quando houver treinos dessa altura — não vale inventar uma tendência com 3 pontos.';
+    }
+  }
+
+  function deltaCard(label, from, to) {
+    var d = to - from;
+    var cls = d > 0 ? 'pr-up' : (d < 0 ? 'pr-dn' : 'pr-flat');
+    var arrow = d > 0 ? '▲' : (d < 0 ? '▼' : '=');
+    var pct = from ? Math.round(d / from * 100) : 0;
+    return '<div class="pr-delta"><div class="pr-delta-v ' + cls + '">' + arrow + ' ' +
+           (d > 0 ? '+' : (d < 0 ? '−' : '')) + fmtMetric(Math.abs(d), prMetric) + '</div>' +
+           '<div class="pr-delta-l">' + label + '</div>' +
+           '<div class="pr-delta-s">' + fmtMetric(from, prMetric) + ' → ' + fmtMetric(to, prMetric) +
+           (from ? ' · ' + (pct > 0 ? '+' : '') + pct + '%' : '') + '</div></div>';
+  }
+
+  function lockedCard(label, msg) {
+    return '<div class="pr-delta locked"><div class="pr-delta-v pr-flat">—</div>' +
+           '<div class="pr-delta-l">' + label + '</div>' +
+           '<div class="pr-delta-s">' + msg + '</div></div>';
+  }
+
+  // ── Lista de todos os exercícios, com mini-linha ────────────
+  function sparkSVG(vals, none) {
+    var w = 56, h = 18;
+    if (vals.length < 2) {
+      return '<svg class="pr-spark none" viewBox="0 0 ' + w + ' ' + h + '"><line x1="1" y1="' + (h / 2) +
+             '" x2="' + (w - 1) + '" y2="' + (h / 2) + '" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 3"/></svg>';
+    }
+    var min = Math.min.apply(null, vals), max = Math.max.apply(null, vals);
+    var span = (max - min) || 1;
+    var pts = vals.map(function(v, i) {
+      return (i / (vals.length - 1) * (w - 2) + 1).toFixed(1) + ',' + (h - 1 - (v - min) / span * (h - 2)).toFixed(1);
+    }).join(' ');
+    return '<svg class="pr-spark" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
+           '<polyline points="' + pts + '" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
+  }
+
+  // Intervalo próprio da tabela: mostra a evolução dentro do período escolhido
+  function renderListRangeChips() {
+    var box = document.getElementById('pr-list-range');
+    if (!box) return;
+    box.innerHTML = Object.keys(PR_RANGES).map(function(r) {
+      return '<button class="pr-chip' + (r === prListRange ? ' on' : '') + '" onclick="prSetListRange(\'' + r + '\')">' + r + '</button>';
+    }).join('');
+  }
+
+  function prSetListRange(r) {
+    prListRange = r;
+    try { localStorage.setItem('fp-pr-list-range', r); } catch(e) {}
+    renderListRangeChips();
+    renderExList();
+  }
+
+  function mgClass(mg) {
+    return 'mgt mgt-' + mg.toLowerCase()
+      .replace('ú', 'u').replace('ç', 'c').replace('á', 'a').replace('ó', 'o');
+  }
+
+  function renderExList() {
+    var box = document.getElementById('pr-list');
+    if (!box) return;
+    var cutoff = PR_RANGES[prListRange] ? monthsAgoStr(PR_RANGES[prListRange]) : null;
+
+    box.innerHTML = exListGrouped().map(function(ex) {
+      var type = effType(ex.key);
+      var metric = metricsFor(type)[0];
+      var field = PR_METRICS[metric].field;
+      var pts = exPoints(ex.key).filter(function(p) {
+        return p[field] > 0 && (!cutoff || p.date >= cutoff);
+      });
+      var vals = pts.map(function(p) { return p[field]; });
+      var cur = pts.length ? vals[vals.length - 1] : null;
+      // Diferença ao longo de TODO o período escolhido, não só vs o treino anterior
+      var first = pts.length > 1 ? vals[0] : null;
+      var dHtml;
+      if (cur !== null && first !== null && first) {
+        var d = cur - first;
+        var cls = d > 0 ? 'pr-up' : (d < 0 ? 'pr-dn' : 'pr-flat');
+        dHtml = '<div class="pr-row-d ' + cls + '">' + (d > 0 ? '▲ +' : (d < 0 ? '▼ −' : '= ')) +
+                fmtMetric(Math.abs(d), metric) + '</div>';
+      } else {
+        dHtml = '<div class="pr-row-d pr-flat">' + (pts.length === 1 ? '1 treino' : '') + '</div>';
+      }
+      var mg = exMeta(ex.key).mg;
+      var sub = '<span class="' + mgClass(mg) + '">' + mg + '</span>' +
+                '<span>' + PR_METRICS[metric].label +
+                (pts.length ? ' · ' + pts.length + ' treino' + (pts.length > 1 ? 's' : '') : '') + '</span>';
+      return '<button class="pr-row' + (ex.key === prExercise ? ' sel' : '') + '" onclick="prPickExercise(\'' + ex.key + '\')">' +
+             '<div class="pr-row-n"><div class="pr-row-nm">' + ex.name + '</div><div class="pr-row-sub">' + sub + '</div></div>' +
+             sparkSVG(vals) +
+             '<div class="pr-row-v">' + (cur !== null ? fmtMetric(cur, metric) : '—') + dHtml + '</div></button>';
+    }).join('');
+
+    var note = document.getElementById('pr-list-note');
+    if (note) {
+      note.textContent = 'A seta é a diferença entre o primeiro e o último treino ' +
+        (prListRange === 'Tudo' ? 'de que há registo' : 'dos últimos ' + PR_RANGES[prListRange] + ' meses') +
+        '. Toca num exercício para o abrir no gráfico grande.';
+    }
+  }
+
+  // ── Volume por grupo muscular (últimas 8 semanas) ───────────
+  function renderMuscle() {
+    var box = document.getElementById('pr-muscle');
+    if (!box) return;
+    var from = daysAgoStr(56);
+    var byMg = {};
+    (gistData.sessions || []).forEach(function(s) {
+      if (s.date < from) return;
+      Object.keys(s.exercises || {}).forEach(function(key) {
+        if (effType(key) !== 'kg') return; // só o que é medido em quilos
+        var e = s.exercises[key], mult = e.mult || 1, v = 0;
+        (e.sets || []).forEach(function(st) { v += parseNum(st.w) * mult * parseNum(st.r); });
+        if (v <= 0) return;
+        var mg = exMeta(key).mg;
+        byMg[mg] = (byMg[mg] || 0) + v;
+      });
+    });
+    var keys = Object.keys(byMg).sort(function(a, b) { return byMg[b] - byMg[a]; });
+    if (!keys.length) {
+      box.innerHTML = '<div class="pr-note">Sem treinos gravados nas últimas 8 semanas.</div>';
+      return;
+    }
+    var total = keys.reduce(function(t, k) { return t + byMg[k]; }, 0);
+    var max = byMg[keys[0]];
+    box.innerHTML = keys.map(function(k) {
+      var pct = Math.round(byMg[k] / total * 100);
+      return '<div class="pr-mg"><div class="pr-mg-hd"><span>' + k + '</span><b>' + fmtVol(Math.round(byMg[k])) + ' kg · ' + pct + '%</b></div>' +
+             '<div class="pr-mg-track"><div class="pr-mg-bar" style="width:' + Math.round(byMg[k] / max * 100) + '%"></div></div></div>';
+    }).join('') +
+    '<div class="pr-note">Só conta exercícios medidos em quilos — prancha, push-ups e face pulls ficam de fora porque não há quilos para somar.</div>';
+  }
+
+  // ── Entrada única ───────────────────────────────────────────
   function renderAllCharts() {
-    EXERCISES.forEach(function(ex) { renderChart(ex.key); });
+    if (!EXERCISES.length) return;
+    if (!prExercise || !exListGrouped().some(function(e) { return e.key === prExercise; })) prExercise = defaultExercise();
+    var allowed = metricsFor(effType(prExercise));
+    if (allowed.indexOf(prMetric) === -1) prMetric = allowed[0];
+    renderSummary();
+    renderWeeks();
+    renderExSelect();
+    renderMetricChips();
+    renderRangeChips();
+    renderListRangeChips();
+    renderBigChart();
+    renderRecords();
+    renderDeltas();
+    renderExList();
+    renderMuscle();
   }
 
   // ── Drag handle (shared by Training + Flexibility) ──────────
@@ -1621,10 +2472,11 @@
   function loadDraft() {
     try {
       var d = JSON.parse(localStorage.getItem(DRAFT_KEY));
-      if (d && typeof d === 'object') workoutDraft = { day: d.day || null, start: d.start || null, sets: d.sets || {} };
+      if (d && typeof d === 'object') workoutDraft = { day: d.day || null, start: d.start || null, touch: d.touch || null, sets: d.sets || {} };
     } catch(e) {}
   }
   function saveDraft() {
+    workoutDraft.touch = new Date().toISOString(); // última vez que mexeste no treino
     var sets = {};
     Object.keys(workoutDraft.sets).forEach(function(k) { sets[k] = workoutDraft.sets[k]; });
     document.querySelectorAll('.sets-panel[data-built="1"]').forEach(function(p) {
@@ -1637,6 +2489,38 @@
   }
 
   // O que foi mesmo escrito (para o rascunho — o cinzento continua cinzento ao reabrir)
+  // Como se registam os sets deste exercício na aba Training:
+  //   kg    — peso × repetições
+  //   bw    — só repetições (peso do corpo)
+  //   tempo — só segundos
+  // Um 'bw' passa a 'kg' assim que registares peso, ou se carregares em "+ peso".
+  function inputMode(key) {
+    var t = exMeta(exGroup(key)[0]).type;
+    if (t === 'tempo') return 'tempo';
+    if (t === 'kg') return 'kg';
+    if (effType(key) === 'kg') return 'kg';
+    var keys = exGroup(key);
+    for (var i = 0; i < keys.length; i++) {
+      try { if (localStorage.getItem('fp-wk-' + keys[i]) === '1') return 'kg'; } catch(e) {}
+    }
+    return 'bw';
+  }
+
+  // Passa um exercício de peso do corpo a "com peso"
+  function addWeightToBw(key) {
+    // vale para o mesmo exercício em todos os dias do plano
+    exGroup(key).forEach(function(k) {
+      try { localStorage.setItem('fp-wk-' + k, '1'); } catch(e) {}
+    });
+    saveDraft();
+    var p = document.getElementById('sp-' + key);
+    if (!p) return;
+    p.dataset.built = '0';
+    p.innerHTML = '';
+    ensurePanel(key);
+    applyWeightVisibility();
+  }
+
   function readRaw(p) {
     return Array.from(p.querySelectorAll('.set-row')).map(function(row) {
       return { w: row.querySelector('.set-w').value.trim(), r: row.querySelector('.set-r').value.trim() };
@@ -1658,8 +2542,14 @@
     return parseNum(ph) > 0 ? ph : '';
   }
   function effW(row) { return effVal(row.querySelector('.set-w')); }
-  function effR(row) { return effVal(row.querySelector('.set-r')); }
+  function effR(row) {
+    // Nos exercícios de tempo os segundos ficam no campo do peso e as
+    // repetições são sempre 1, para o set contar como um set.
+    if (row.dataset.mode === 'tempo') return effVal(row.querySelector('.set-w')) ? '1' : '';
+    return effVal(row.querySelector('.set-r'));
+  }
   function isTouched(row) {
+    if (row.dataset.mode === 'tempo') return !!row.querySelector('.set-w').value.trim();
     return !!(row.querySelector('.set-w').value.trim() || row.querySelector('.set-r').value.trim());
   }
 
@@ -1669,19 +2559,51 @@
     return best;
   }
 
+  // Esconde o campo de kg e o ×1/×2 nos exercícios que não usam peso
+  function applyWeightVisibility() {
+    document.querySelectorAll('.weight-input').forEach(function(inp) {
+      var key = inp.id.replace('w-', '');
+      var row = inp.closest('.ex');
+      if (!row) return;
+      row.classList.toggle('no-weight', inputMode(key) !== 'kg');
+    });
+  }
+
   // Peso máximo da última sessão (ao lado do nome) e pesos a cinzento nos sets
   function applyLastHints() {
+    applyWeightVisibility();
     document.querySelectorAll('.sets-panel').forEach(function(p) {
       var key = p.dataset.key;
+      var mode = inputMode(key);
       var last = lastSets(key);
       var tag = document.getElementById('exl-' + key);
-      var m = last ? maxW(last) : 0;
-      if (!(m > 0)) { var old = document.getElementById('w-' + key); m = old ? parseNum(old.value) : 0; }
-      if (tag) tag.textContent = m > 0 ? 'última: ' + fmtVol(m) + ' kg' : '';
+      if (tag) {
+        // A unidade da última sessão segue o tipo do exercício
+        if (mode === 'tempo') {
+          var sec = last ? maxW(last) : 0;
+          tag.textContent = sec > 0 ? 'última: ' + fmtVol(sec) + ' s' : '';
+        } else if (mode === 'bw') {
+          var reps = 0;
+          (last || []).forEach(function(st) { var r = parseNum(st.r); if (r > reps) reps = r; });
+          tag.textContent = reps > 0 ? 'última: ' + reps + ' reps' : '';
+        } else {
+          var m = last ? maxW(last) : 0;
+          if (!(m > 0)) { var old = document.getElementById('w-' + key); m = old ? parseNum(old.value) : 0; }
+          tag.textContent = m > 0 ? 'última: ' + fmtVol(m) + ' kg' : '';
+        }
+      }
       if (p.dataset.built !== '1') return;
       p.querySelectorAll('.set-row').forEach(function(row, i) {
-        row.querySelector('.set-w').placeholder = lastW(key, i, last) || 'kg';
-        row.querySelector('.set-r').placeholder = lastR(i, last) || 'reps';
+        if (mode === 'bw') {
+          row.querySelector('.set-w').placeholder = '';
+          row.querySelector('.set-r').placeholder = lastR(i, last) || 'reps';
+        } else if (mode === 'tempo') {
+          row.querySelector('.set-w').placeholder = lastW(key, i, last) || 'seg';
+          row.querySelector('.set-r').placeholder = '';
+        } else {
+          row.querySelector('.set-w').placeholder = lastW(key, i, last) || 'kg';
+          row.querySelector('.set-r').placeholder = lastR(i, last) || 'reps';
+        }
       });
       updateExTotal(key);
     });
@@ -1705,22 +2627,30 @@
   }
 
   function lastSets(key) {
-    var s = gistData.sessions || [];
+    var s = gistData.sessions || [], keys = exGroup(key);
     for (var i = s.length - 1; i >= 0; i--) {
-      var e = s[i].exercises && s[i].exercises[key];
-      if (e && e.sets && e.sets.length) return e.sets;
+      for (var g = 0; g < keys.length; g++) {
+        var e = s[i].exercises && s[i].exercises[keys[g]];
+        if (e && e.sets && e.sets.length) return e.sets;
+      }
     }
     return null;
   }
 
-  function setRowEl(n, w, r, ph, phW) {
+  function setRowEl(n, w, r, ph, phW, mode) {
+    mode = mode || 'kg';
     var row = document.createElement('div');
-    row.className = 'set-row';
+    row.className = 'set-row mode-' + mode;
+    row.dataset.mode = mode;
+    var phPeso = mode === 'tempo' ? (phW || 'seg') : (mode === 'bw' ? '' : (phW || 'kg'));
+    var phReps = mode === 'tempo' ? '' : (ph || 'reps');
+    var unit = mode === 'tempo' ? 's' : (mode === 'bw' ? 'reps' : '');
     row.innerHTML =
       '<span class="set-n">Set ' + n + '</span>' +
-      '<input class="set-input set-w" type="text" inputmode="decimal" placeholder="' + esc(phW || 'kg') + '" value="' + esc(w) + '" aria-label="Peso do set ' + n + '">' +
+      '<input class="set-input set-w" type="text" inputmode="decimal" placeholder="' + esc(phPeso) + '" value="' + esc(w) + '" aria-label="' + (mode === 'tempo' ? 'Segundos' : 'Peso') + ' do set ' + n + '">' +
       '<span class="set-x">×</span>' +
-      '<input class="set-input set-r" type="text" inputmode="numeric" placeholder="' + esc(ph || 'reps') + '" value="' + esc(r) + '" aria-label="Repetições do set ' + n + '">' +
+      '<input class="set-input set-r" type="text" inputmode="numeric" placeholder="' + esc(phReps) + '" value="' + esc(r) + '" aria-label="Repetições do set ' + n + '">' +
+      (unit ? '<span class="set-u">' + unit + '</span>' : '') +
       '<span class="set-v">—</span>' +
       '<button type="button" class="set-rm" title="Remover set">−</button>';
     return row;
@@ -1742,10 +2672,17 @@
         rows.push({ w: '', r: '' });
       }
     }
-    p.innerHTML = '<div class="set-rows"></div><div class="set-foot"><button type="button" class="set-add">+ Set</button><span class="set-total">Volume total: <b>0</b> kg</span></div>';
+    var mode = inputMode(key);
+    p.dataset.mode = mode;
+    var foot = mode === 'bw' ? 'Total: <b>0</b> reps'
+             : (mode === 'tempo' ? 'Tempo total: <b>0</b> s' : 'Volume total: <b>0</b> kg');
+    var addW = mode === 'bw' ? '<button type="button" class="set-addw">+ peso</button>' : '';
+    p.innerHTML = '<div class="set-rows"></div><div class="set-foot">' +
+      '<div class="set-foot-l"><button type="button" class="set-add">+ Set</button>' + addW + '</div>' +
+      '<span class="set-total">' + foot + '</span></div>';
     var box = p.querySelector('.set-rows');
     rows.forEach(function(s, i) {
-      box.appendChild(setRowEl(i + 1, s.w, s.r, lastR(i, last), lastW(key, i, last)));
+      box.appendChild(setRowEl(i + 1, s.w, s.r, lastR(i, last), lastW(key, i, last), mode));
     });
     p.dataset.built = '1';
     updateExTotal(key);
@@ -1760,7 +2697,7 @@
     var n = rows.length;
     var phW = last && last[n] ? lastW(key, n, last) : (prev ? effW(prev) : lastW(key, n, last));
     var phR = last && last[n] ? lastR(n, last) : (prev ? effR(prev) : lastR(n, last));
-    p.querySelector('.set-rows').appendChild(setRowEl(n + 1, '', '', phR, phW));
+    p.querySelector('.set-rows').appendChild(setRowEl(n + 1, '', '', phR, phW, p.dataset.mode || 'kg'));
     updateExTotal(key);
     saveDraft();
   }
@@ -1782,16 +2719,29 @@
   function updateExTotal(key) {
     var p = document.getElementById('sp-' + key);
     if (!p || p.dataset.built !== '1') return;
-    var mult = getMult(key), total = 0;
+    var mode = p.dataset.mode || 'kg';
+    var mult = mode === 'tempo' ? 1 : getMult(key);
+    var total = 0;
     p.querySelectorAll('.set-row').forEach(function(row) {
-      var v = isTouched(row) ? setVol(effW(row), effR(row), mult) : 0;
-      row.querySelector('.set-v').textContent = v > 0 ? fmtVol(v) + ' kg' : '—';
+      var t = isTouched(row), v = 0, txt = '—';
+      if (mode === 'bw') {
+        v = t ? parseNum(effR(row)) : 0;
+        if (v > 0) txt = v + ' reps';
+      } else if (mode === 'tempo') {
+        v = t ? parseNum(effW(row)) : 0;
+        if (v > 0) txt = v + ' s';
+      } else {
+        v = t ? setVol(effW(row), effR(row), mult) : 0;
+        if (v > 0) txt = fmtVol(v) + ' kg';
+      }
+      row.querySelector('.set-v').textContent = txt;
       total += v;
     });
     total = Math.round(total * 10) / 10;
     p.querySelector('.set-total b').textContent = fmtVol(total);
+    var unit = mode === 'bw' ? ' reps' : (mode === 'tempo' ? ' s' : ' kg');
     var badge = document.getElementById('exv-' + key);
-    if (badge) badge.textContent = total > 0 ? fmtVol(total) + ' kg' : '';
+    if (badge) badge.textContent = total > 0 ? fmtVol(total) + unit : '';
   }
 
   function toggleSets(key) {
@@ -1832,7 +2782,8 @@
       p.addEventListener('input', function() { updateExTotal(key); saveDraft(); });
       p.addEventListener('click', function(e) {
         var t = e.target;
-        if (t.classList.contains('set-add')) addSetRow(key);
+        if (t.classList.contains('set-addw')) addWeightToBw(key);
+        else if (t.classList.contains('set-add')) addSetRow(key);
         else if (t.classList.contains('set-rm')) removeSetRow(key, t.closest('.set-row'));
       });
       row.appendChild(p);
@@ -1880,11 +2831,36 @@
           info.textContent = 'Treino do Dia ' + running + ' em curso';
         } else {
           var s = (gistData.sessions || []).filter(function(x) { return x.day === day && x.date === today; }).pop();
-          info.textContent = s ? 'Gravado ✓ ' + hhmm(s.end) + ' · ' + Object.keys(s.exercises).length + ' exercícios · ' + fmtVol(s.vol || 0) + ' kg' : '';
+          info.textContent = s ? 'Gravado ✓ ' + hhmm(s.end) + (s.auto ? ' (automático)' : '') + ' · ' + Object.keys(s.exercises).length + ' exercícios · ' + fmtVol(s.vol || 0) + ' kg' : '';
         }
       }
     });
   }
+
+  // Se te esqueceres de carregar em acabar, o treino fecha-se sozinho na próxima
+  // vez que abrires a app: fica gravado no dia em que começou, com 1 h de duração.
+  var AUTO_CLOSE_MS = 60 * 60 * 1000;
+  var gistReady = false;
+
+  function autoCloseStaleWorkout() {
+    if (!gistReady || !workoutDraft.day || !workoutDraft.start) return;
+    var now = Date.now();
+    var start = new Date(workoutDraft.start).getTime();
+    var touch = workoutDraft.touch ? new Date(workoutDraft.touch).getTime() : start;
+    if (isNaN(start)) return;
+    if (now - start < AUTO_CLOSE_MS) return;  // ainda agora começou
+    if (now - touch < AUTO_CLOSE_MS) return;  // ainda estás a treinar, não corta
+    var day = workoutDraft.day;
+    // Os painéis podem ainda não estar abertos: constrói-os a partir do rascunho
+    Object.keys(workoutDraft.sets || {}).forEach(function(k) { ensurePanel(k); });
+    finishWorkout(day, true);
+    showSyncStatus('treino do Dia ' + day + ' fechado automaticamente', 'var(--amber)');
+  }
+
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) autoCloseStaleWorkout();
+  });
+  window.addEventListener('focus', autoCloseStaleWorkout);
 
   function toggleWorkout(day) {
     if (workoutDraft.day === day) { finishWorkout(day); return; }
@@ -1918,7 +2894,7 @@
     });
   }
 
-  function finishWorkout(day) {
+  function finishWorkout(day, auto) {
     var container = document.getElementById('w' + day);
     var exs = {}, count = 0, total = 0;
     container.querySelectorAll(':scope > .ex').forEach(function(row) {
@@ -1928,7 +2904,9 @@
       var key = inp.id.replace('w-', '');
       var p = document.getElementById('sp-' + key);
       if (!p || p.dataset.built !== '1') return;
-      var mult = getMult(key), sets = [], vol = 0;
+      var mode = p.dataset.mode || 'kg';
+      var mult = mode === 'tempo' ? 1 : getMult(key); // nos segundos o ×2 não conta
+      var sets = [], vol = 0;
       readRows(p).forEach(function(s) {
         if (!s.touched || parseNum(s.r) <= 0) return;
         var v = setVol(s.w, s.r, mult);
@@ -1942,10 +2920,26 @@
       total += vol;
     });
     if (!count) {
+      if (auto) { // nada registado: deita fora o rascunho em vez de gravar um treino vazio
+        workoutDraft.day = null; workoutDraft.start = null; workoutDraft.sets = {};
+        saveDraft();
+        renderWorkoutBars();
+        return;
+      }
       alert('Preenche o peso ou as repetições de pelo menos um set antes de acabar o treino.');
       return;
     }
-    var session = { date: todayStr(), day: day, start: workoutDraft.start, end: new Date().toISOString(), vol: Math.round(total * 10) / 10, exercises: exs };
+    var startISO = workoutDraft.start || new Date().toISOString();
+    // O treino conta para o dia em que COMEÇOU, não para o dia em que foi gravado
+    var session = {
+      date: isoDate(new Date(startISO)),
+      day: day,
+      start: startISO,
+      end: auto ? new Date(new Date(startISO).getTime() + AUTO_CLOSE_MS).toISOString() : new Date().toISOString(),
+      vol: Math.round(total * 10) / 10,
+      exercises: exs
+    };
+    if (auto) session.auto = true;
     if (!gistData.sessions) gistData.sessions = [];
     gistData.sessions.push(session);
     applySessionToHistory(session);
@@ -2009,6 +3003,7 @@
   initWorkoutBars();
   initExerciseSorting();
   initMobSorting();
+  if (DEMO) { renderWorkoutBars(); renderAllCharts(); }
 </script>
 
 
