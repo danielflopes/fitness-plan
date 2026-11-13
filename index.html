@@ -1343,6 +1343,7 @@
       var file = data.files && data.files['weights.json'];
       if (!file) return;
       gistData = JSON.parse(file.content || '{}');
+      var fixed = fixGistData(gistData);
       applyWeights(gistData);
       applyDeletions();
       renderCustomExercises();
@@ -1358,6 +1359,7 @@
       addWeightSteppers();
       mergeLocalSessions();
       gistReady = true;
+      if (fixed) pushToGist();
       autoCloseStaleWorkout();
       renderWorkoutBars();
       // Se já estiveres na aba Progress quando os dados chegam, redesenha
@@ -1413,6 +1415,57 @@
         if (row) row.style.display = 'none';
       }
     });
+  }
+
+  // ── Correções aos dados do gist ─────────────────────────────
+  // Corre sempre que os dados chegam e só muda o que ainda estiver por corrigir,
+  // por isso um telemóvel com dados antigos que volte a gravar é corrigido no
+  // carregamento seguinte. Devolve true se mudou alguma coisa.
+  function fixGistData(d) {
+    var changed = false;
+    var norm = function(n) { return String(n || '').toLowerCase().replace(/[\s\-_]+/g, ''); };
+    var dropKey = function(key) {
+      Object.keys(d.order || {}).forEach(function(day) {
+        var i = (d.order[day] || []).indexOf(key);
+        if (i !== -1) d.order[day].splice(i, 1);
+      });
+    };
+    // Passa sets, histórico e peso de um exercício repetido para o original
+    var mergeInto = function(from, to) {
+      (d.sessions || []).forEach(function(s) {
+        if (s.exercises && s.exercises[from]) {
+          if (!s.exercises[to]) s.exercises[to] = s.exercises[from];
+          delete s.exercises[from];
+        }
+      });
+      if (d.history && d.history[from]) {
+        d.history[to] = d.history[to] || {};
+        Object.keys(d.history[from]).forEach(function(dt) {
+          if (!(dt in d.history[to])) d.history[to][dt] = d.history[from][dt];
+        });
+        delete d.history[from];
+      }
+      ['w-', 'm-', 'sel-'].forEach(function(p) {
+        if ((p + from) in d) { if (!((p + to) in d)) d[p + to] = d[p + from]; delete d[p + from]; }
+      });
+      dropKey(from);
+    };
+    d.custom = (d.custom || []).filter(function(ex) {
+      var n = norm(ex.name);
+      if (n === 'inclinedbenchpress') { dropKey(ex.key); changed = true; return false; }
+      if (n === 'pushups') { mergeInto(ex.key, 'wA-pushup'); changed = true; return false; }
+      if (n === 'benchpress' && (ex.name !== 'Bench Press' || ex.mg !== 'Peito')) {
+        // Mesmo exercício que o Bench Press do dia A: mesmo nome, mesmo grupo
+        ex.name = 'Bench Press'; ex.tag = 'Chest'; ex.tagColor = 'tb'; ex.mg = 'Peito';
+        changed = true;
+      }
+      if (n === 'calfraises' && (ex.name !== 'Calf-raises' || ex.mg !== 'Pernas')) {
+        ex.name = 'Calf-raises'; ex.tag = 'Legs'; ex.tagColor = 'tb'; ex.mg = 'Pernas';
+        changed = true;
+      }
+      return true;
+    });
+    return changed;
   }
 
   // ── Custom exercises ────────────────────────────────────────
@@ -1552,7 +1605,11 @@
     'wC-5':      { type: 'tempo', mg: 'Core' }
   };
 
-  function exMeta(key) { return EX_META[key] || { type: 'kg', mg: 'Outros' }; }
+  function exMeta(key) {
+    if (EX_META[key]) return EX_META[key];
+    var c = (gistData.custom || []).filter(function(ex) { return ex.key === key; })[0];
+    return { type: (c && c.type) || 'kg', mg: (c && c.mg) || 'Outros' };
+  }
 
   function exName(key) {
     for (var i = 0; i < EXERCISES.length; i++) if (EXERCISES[i].key === key) return EXERCISES[i].name;
@@ -1563,7 +1620,8 @@
   // diferentes do plano: partilham peso, séries e histórico. O sufixo "(Day X)"
   // é só uma etiqueta do plano, não faz deles exercícios diferentes.
   function exBaseName(n) {
-    return String(n || '').replace(/\s*\([^)]*\)\s*$/, '').trim().toLowerCase();
+    // "Push ups", "Push-ups" e "pushups" contam como o mesmo nome
+    return String(n || '').replace(/\s*\([^)]*\)\s*$/, '').trim().toLowerCase().replace(/[\s\-_]+/g, '');
   }
 
   // Todas as chaves que são o mesmo exercício que esta
