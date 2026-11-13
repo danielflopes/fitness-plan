@@ -110,7 +110,7 @@
   .set-row.mode-tempo .set-x, .set-row.mode-tempo .set-r { display: none; }
   .set-u { font-family: monospace; font-size: 11px; color: var(--muted); flex-shrink: 0; }
   /* Exercícios sem peso não precisam do campo de kg nem do ×1/×2 */
-  .ex.no-weight .weight-wrap { display: none; }
+  .ex.no-weight .weight-wrap { visibility: hidden; } /* reserva o espaço para as imagens ficarem alinhadas */
   .set-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 6px; padding-top: 8px; border-top: 1px solid var(--border); }
   .set-foot-l { display: flex; align-items: center; gap: 6px; }
   .set-addw { font-family: monospace; font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 6px; border: 1.5px dashed var(--border); background: var(--surface); color: var(--muted); cursor: pointer; }
