@@ -701,6 +701,12 @@
     'wD-lat': 'Alternating_Deltoid_Raise/0.jpg'
   };
 
+  // Exercícios criados na app (custom-…) não têm chave fixa: procura-se pelo nome
+  var EX_IMAGES_BY_NAME = {
+    'benchpress': 'Barbell_Bench_Press_-_Medium_Grip/0.jpg',
+    'calfraises': 'Standing_Calf_Raises/0.jpg'
+  };
+
   var MOB_IMAGES = {
     'mob-f-hinge': 'icons/mobility/rotational-hinge.png',
     'mob-f-hang': 'One_Handed_Hang/0.jpg',
@@ -771,9 +777,13 @@
   function addExerciseImages() {
     document.querySelectorAll('.weight-input').forEach(function(el) {
       var key = el.id.replace('w-', '');
-      var imgPath = EX_IMAGES[key];
-      if (!imgPath) return;
       var exRow = el.closest('.ex');
+      var imgPath = EX_IMAGES[key];
+      if (!imgPath && exRow) {
+        var nm = exRow.querySelector('.ex-n');
+        imgPath = nm && EX_IMAGES_BY_NAME[nm.textContent.replace(/[^a-z]/gi, '').toLowerCase()];
+      }
+      if (!imgPath) return;
       if (!exRow || exRow.querySelector('.ex-thumb')) return;
       var img = document.createElement('img');
       img.src = BASE_IMG + imgPath;
@@ -1347,6 +1357,7 @@
       applyWeights(gistData);
       applyDeletions();
       renderCustomExercises();
+      addExerciseImages();
       applyOrder();
       applyMobOrder();
       Object.keys(gistData).forEach(function(k) {
@@ -1566,6 +1577,7 @@
     addDragHandle(row);
     addWeightSteppers();
     addSetPanels();
+    addExerciseImages();
     closeAdd(day);
     clearTimeout(saveTimer);
     pushToGist();
@@ -1587,7 +1599,7 @@
     'wC-0':      { type: 'kg',    mg: 'Ombros' },
     'wC-1':      { type: 'kg',    mg: 'Ombros' },
     'wD-2':      { type: 'kg',    mg: 'Ombros' },
-    'wD-fp':     { type: 'bw',    mg: 'Ombros' },
+    'wD-fp':     { type: 'reps',  mg: 'Ombros' }, // só repetições, sem peso (por agora)
     'wD-lat':    { type: 'kg',    mg: 'Ombros' },
     'wA-bench':  { type: 'kg',    mg: 'Peito' },
     'wA-pushup': { type: 'bw',    mg: 'Peito' },
@@ -1649,6 +1661,7 @@
     var m = exMeta(keys[0]);
     if (m.type === 'tempo') return 'tempo';
     if (m.type === 'kg') return 'kg';
+    if (m.type === 'reps') return 'bw'; // fixo: nunca passa a kg, mesmo com peso nos sets antigos
     var sess = gistData.sessions || [];
     for (var i = 0; i < sess.length; i++) {
       for (var g = 0; g < keys.length; g++) {
@@ -2556,6 +2569,7 @@
     var t = exMeta(exGroup(key)[0]).type;
     if (t === 'tempo') return 'tempo';
     if (t === 'kg') return 'kg';
+    if (t === 'reps') return 'bw';
     if (effType(key) === 'kg') return 'kg';
     var keys = exGroup(key);
     for (var i = 0; i < keys.length; i++) {
@@ -2734,7 +2748,7 @@
     p.dataset.mode = mode;
     var foot = mode === 'bw' ? 'Total: <b>0</b> reps'
              : (mode === 'tempo' ? 'Tempo total: <b>0</b> s' : 'Volume total: <b>0</b> kg');
-    var addW = mode === 'bw' ? '<button type="button" class="set-addw">+ peso</button>' : '';
+    var addW = (mode === 'bw' && exMeta(exGroup(key)[0]).type !== 'reps') ? '<button type="button" class="set-addw">+ peso</button>' : '';
     p.innerHTML = '<div class="set-rows"></div><div class="set-foot">' +
       '<div class="set-foot-l"><button type="button" class="set-add">+ Set</button>' + addW + '</div>' +
       '<span class="set-total">' + foot + '</span></div>';
