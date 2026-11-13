@@ -50,8 +50,8 @@ Once Achilles cleared: reintroduce explosive work (vertical jump pairing on Day 
 | Mon | **Day A** — Chest + Back |
 | Tue | **Day C** — Shoulders + Triceps |
 | Wed | Rest (Alfredson AM + PM only) |
-| Thu | **Day B** — Legs |
-| Fri | **Day D** — Biceps + Rear Delts + Core |
+| Thu | **Day B** — Legs & Lower Back |
+| Fri | **Day D** — Shoulders + Legs + Core |
 | Sat | Cardio — phase-gated (see Cardio section) |
 | Sun | Full rest (Alfredson AM + PM only) |
 | Daily AM + PM | **Alfredson eccentrics** — non-negotiable. See REHAB.md. |
@@ -83,7 +83,7 @@ Exercises and working weights below are **unchanged from the prior plan** (legac
 
 Press cue: push upper back into bench; let shoulders come slightly forward at lockout.
 
-### Day B — Legs
+### Day B — Legs & Lower Back
 
 | # | Exercise | Working Weight | Note |
 |---|---|---|---|
@@ -106,7 +106,7 @@ Press cue: push upper back into bench; let shoulders come slightly forward at lo
 
 Shoulder cue: let blades move naturally on OHP, don't force-pin.
 
-### Day D — Biceps + Rear Delts + Core
+### Day D — Shoulders + Legs + Core
 
 Optional Power Primer (3–4×3–5, pick one): MB Chest Pass · Band Punch / Light DB Push Press · Plyo Push-ups (knees OK).
 
