@@ -712,7 +712,9 @@
   var EX_IMAGES_BY_NAME = {
     'benchpress': 'Barbell_Bench_Press_-_Medium_Grip/0.jpg',
     'calfraises': 'Standing_Calf_Raises/0.jpg',
-    'scissorkicks': 'Scissor_Kick/0.jpg'
+    'twistedlegraise': 'Scissor_Kick/0.jpg',
+    'barbellbicepcurl': 'Barbell_Curl/0.jpg',
+    'skullcrushers': 'EZ-Bar_Skullcrusher/0.jpg'
   };
 
   var MOB_IMAGES = {
@@ -1469,16 +1471,24 @@
       });
       dropKey(from);
     };
-    var hasScissor = false;
+    var twisted = [];
     d.custom = (d.custom || []).filter(function(ex) {
       var n = norm(ex.name);
-      // "Cross leg raises" = o exercício que na verdade se chama Scissor Kicks
-      if (n.indexOf('crossleg') !== -1 || n === 'scissorkicks' || n === 'scissorkick') {
-        hasScissor = true;
-        if (ex.name !== 'Scissor Kicks' || ex.mg !== 'Core') {
-          ex.name = 'Scissor Kicks'; ex.tag = 'Core'; ex.tagColor = 'tb'; ex.mg = 'Core';
+      // "Cross leg raises" / "Scissor Kicks" = o mesmo exercício: Twisted Leg Raise
+      if (n.indexOf('crossleg') !== -1 || n.indexOf('scissorkick') === 0 || n === 'twistedlegraise') {
+        twisted.push(ex);
+        if (ex.name !== 'Twisted Leg Raise' || ex.mg !== 'Core') {
+          ex.name = 'Twisted Leg Raise'; ex.tag = 'Core'; ex.tagColor = 'tb'; ex.mg = 'Core';
           changed = true;
         }
+      }
+      // Barbell Bicep Curl e Skull Crushers criados num dia: passam a ser os exercícios normais,
+      // com o mesmo nome (e por isso ligados aos dos outros dias: peso, séries e histórico)
+      var std = /^barbell(bicep|biceps)?curls?$/.test(n) ? ['Barbell Bicep Curl', 'Biceps']
+              : /^(ez(bar)?)?skullcrushers?$/.test(n) ? ['Skull Crushers', 'Triceps'] : null;
+      if (std && (ex.name !== std[0] || ex.mg !== 'Braços' || ex.tag !== std[1])) {
+        ex.name = std[0]; ex.tag = std[1]; ex.tagColor = 'tb'; ex.mg = 'Braços'; ex.type = 'kg';
+        changed = true;
       }
       if (n === 'inclinedbenchpress') { dropKey(ex.key); changed = true; return false; }
       if (n === 'pushups') { mergeInto(ex.key, 'wA-pushup'); changed = true; return false; }
@@ -1493,8 +1503,18 @@
       }
       return true;
     });
-    if (!hasScissor && !d.seedScissor) {
-      d.custom.push({ day: 'D', key: 'custom-scissor', name: 'Scissor Kicks', tag: 'Core', tagColor: 'tb',
+    // Se houver mais do que um, junta tudo no que tem dados reais (não no semeado)
+    if (twisted.length > 1) {
+      var main = twisted.filter(function(e) { return e.key !== 'custom-scissor'; })[0] || twisted[0];
+      twisted.forEach(function(e) {
+        if (e === main) return;
+        mergeInto(e.key, main.key);
+        d.custom.splice(d.custom.indexOf(e), 1);
+        changed = true;
+      });
+    }
+    if (!twisted.length && !d.seedScissor) {
+      d.custom.push({ day: 'D', key: 'custom-scissor', name: 'Twisted Leg Raise', tag: 'Core', tagColor: 'tb',
         notes: 'Deitado, pernas esticadas e baixas; cruza-as alternadamente sem arquear as costas.', mg: 'Core' });
       changed = true;
     }
