@@ -1547,9 +1547,10 @@
     ],
     "D": [
       "custom-1791566829233",
-      "wD-lat",
       "wB-2",
+      "custom-1794921283418",
       "wA-6",
+      "wD-lat",
       "wC-5"
     ]
   },
@@ -1574,6 +1575,30 @@
       "notes": "",
       "tagColor": "tb",
       "mg": "Pernas"
+    },
+    {
+      "day": "D",
+      "key": "custom-1794921283418",
+      "name": "Crossed leg raises",
+      "tag": "Abs",
+      "notes": "",
+      "tagColor": "tp"
+    },
+    {
+      "day": "D",
+      "key": "custom-1794922624021",
+      "name": "Barbell bicep curl",
+      "tag": "Custom",
+      "notes": "",
+      "tagColor": "tp"
+    },
+    {
+      "day": "D",
+      "key": "custom-1794922872264",
+      "name": "Skull crushers",
+      "tag": "Custom",
+      "notes": "",
+      "tagColor": "tp"
     }
   ],
   "m-custom-1776166834487": "1",
@@ -1867,7 +1892,7 @@
   "m-wD-lat": "1",
   "sel-wA-bench": "0",
   "sel-wA-pushup": "0",
-  "sel-wD-lat": "1",
+  "sel-wD-lat": "0",
   "m-wB-lp": "1",
   "sel-wB-lp": "1",
   "w-wC-dip": "20",
@@ -2673,5 +2698,11 @@
   ],
   "m-custom-1792582421262": "1",
   "sel-custom-1792582421262": "1",
-  "w-wD-lat": "24"
+  "w-wD-lat": "24",
+  "m-custom-1794921283418": "1",
+  "sel-custom-1794921283418": "1",
+  "m-custom-1794922624021": "1",
+  "sel-custom-1794922624021": "0",
+  "m-custom-1794922872264": "1",
+  "sel-custom-1794922872264": "0"
 }
