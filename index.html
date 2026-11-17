@@ -1472,6 +1472,25 @@
       dropKey(from);
     };
     var twisted = [];
+    // Lateral Raises são sempre ×1: sessões antigas gravadas com ×2 passam a ×1 (uma só vez)
+    if (!d.fixLatMult) {
+      (d.sessions || []).forEach(function(se) {
+        ['wC-1', 'wD-lat'].forEach(function(k) {
+          var e = se.exercises && se.exercises[k];
+          if (!e || !e.mult || e.mult === 1) return;
+          var f = e.mult;
+          (e.sets || []).forEach(function(st) { if (typeof st.vol === 'number') st.vol = st.vol / f; });
+          if (typeof e.vol === 'number') {
+            var nv = e.vol / f;
+            if (typeof se.vol === 'number') se.vol = se.vol - e.vol + nv;
+            e.vol = nv;
+          }
+          e.mult = 1;
+        });
+      });
+      d.fixLatMult = true;
+      changed = true;
+    }
     d.custom = (d.custom || []).filter(function(ex) {
       var n = norm(ex.name);
       // "Cross leg raises" / "Scissor Kicks" = o mesmo exercício: Twisted Leg Raise
