@@ -225,7 +225,7 @@
   .mob-ex { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--purple-bd); font-size: 12px; color: var(--muted); }
   .mob-ex:last-child { border-bottom: none; }
   .mob-ex-rp { font-family: monospace; font-size: 11px; color: var(--purple); white-space: nowrap; }
-  .del-btn { display: none; width: 22px; height: 22px; background: none; border: 1.5px solid var(--border); border-radius: 50%; color: var(--faint); font-size: 14px; line-height: 1; cursor: pointer; flex-shrink: 0; align-items: center; justify-content: center; padding: 0; }
+  .del-btn { display: flex; width: 22px; height: 22px; background: none; border: 1.5px solid var(--border); border-radius: 50%; color: var(--faint); font-size: 14px; line-height: 1; cursor: pointer; flex-shrink: 0; align-items: center; justify-content: center; padding: 0; }
   .del-btn:hover, .del-btn:active { background: #fee2e2; border-color: #f87171; color: #dc2626; }
   .row-handle-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
   .drag-handle { width: 22px; height: 22px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: grab; color: var(--faint); touch-action: none; }
@@ -240,6 +240,13 @@
   .add-ex-form.open { display: block; }
   .add-ex-form input { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 13px; margin-bottom: 8px; background: var(--surface); color: var(--text); outline: none; font-family: inherit; }
   .add-ex-form input:focus { border-color: var(--green); }
+  .add-ex-wrap { position: relative; }
+  .add-ex-sug { display: none; position: absolute; left: 0; right: 0; top: 100%; margin-top: -6px; z-index: 20; background: var(--surface); border: 1.5px solid var(--green); border-radius: 6px; max-height: 220px; overflow-y: auto; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+  .add-ex-sug.open { display: block; }
+  .add-ex-sug div { padding: 9px 10px; font-size: 13px; color: var(--text); display: flex; justify-content: space-between; gap: 8px; cursor: pointer; border-bottom: 1px solid var(--border); }
+  .add-ex-sug div:last-child { border-bottom: none; }
+  .add-ex-sug div:active, .add-ex-sug div:hover { background: var(--green-bg); }
+  .add-ex-sug small { color: var(--faint); font-size: 11px; white-space: nowrap; }
   .add-ex-form-btns { display: flex; gap: 8px; }
   .add-ex-form-btns button { flex: 1; padding: 8px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; font-family: inherit; }
   /* Selection toggle */
@@ -704,7 +711,8 @@
   // Exercícios criados na app (custom-…) não têm chave fixa: procura-se pelo nome
   var EX_IMAGES_BY_NAME = {
     'benchpress': 'Barbell_Bench_Press_-_Medium_Grip/0.jpg',
-    'calfraises': 'Standing_Calf_Raises/0.jpg'
+    'calfraises': 'Standing_Calf_Raises/0.jpg',
+    'scissorkicks': 'Scissor_Kick/0.jpg'
   };
 
   var MOB_IMAGES = {
@@ -1461,8 +1469,17 @@
       });
       dropKey(from);
     };
+    var hasScissor = false;
     d.custom = (d.custom || []).filter(function(ex) {
       var n = norm(ex.name);
+      // "Cross leg raises" = o exercício que na verdade se chama Scissor Kicks
+      if (n.indexOf('crossleg') !== -1 || n === 'scissorkicks' || n === 'scissorkick') {
+        hasScissor = true;
+        if (ex.name !== 'Scissor Kicks' || ex.mg !== 'Core') {
+          ex.name = 'Scissor Kicks'; ex.tag = 'Core'; ex.tagColor = 'tb'; ex.mg = 'Core';
+          changed = true;
+        }
+      }
       if (n === 'inclinedbenchpress') { dropKey(ex.key); changed = true; return false; }
       if (n === 'pushups') { mergeInto(ex.key, 'wA-pushup'); changed = true; return false; }
       if (n === 'benchpress' && (ex.name !== 'Bench Press' || ex.mg !== 'Peito')) {
@@ -1476,6 +1493,12 @@
       }
       return true;
     });
+    if (!hasScissor && !d.seedScissor) {
+      d.custom.push({ day: 'D', key: 'custom-scissor', name: 'Scissor Kicks', tag: 'Core', tagColor: 'tb',
+        notes: 'Deitado, pernas esticadas e baixas; cruza-as alternadamente sem arquear as costas.', mg: 'Core' });
+      changed = true;
+    }
+    if (!d.seedScissor) { d.seedScissor = true; changed = true; }
     return changed;
   }
 
@@ -1485,6 +1508,7 @@
       if (document.getElementById('w-' + ex.key)) return;
       var container = document.getElementById('w' + ex.day);
       if (!container) return;
+      if (ex.img) EX_IMAGES_BY_NAME[ex.name.replace(/[^a-z]/gi, '').toLowerCase()] = ex.img;
       var row = buildExRow(ex);
       var addForm = document.getElementById('add-form-' + ex.day);
       container.insertBefore(row, addForm || container.querySelector('.mob-card') || null);
@@ -1505,7 +1529,7 @@
       '<span class="tag ' + tc + '">' + (ex.tag || 'Custom') + '</span></div>' +
       '<div class="ex-nt">' + (ex.notes || '') + '</div></div>' +
       '<div class="weight-wrap">' +
-      '<input class="weight-input" id="w-' + ex.key + '" placeholder="— kg" oninput="saveW(\'' + ex.key + '\',this.value)">' +
+      '<input class="weight-input" id="w-' + ex.key + '" placeholder="' + (ex.type === 'tempo' ? '— s' : '— kg') + '" oninput="saveW(\'' + ex.key + '\',this.value)">' +
       '<div class="mult-toggle">' +
       '<button class="mult-btn on" id="m-' + ex.key + '-1" onclick="setMult(\'' + ex.key + '\',1)">×1</button>' +
       '<button class="mult-btn" id="m-' + ex.key + '-2" onclick="setMult(\'' + ex.key + '\',2)">×2</button>' +
@@ -1525,7 +1549,8 @@
       form.className = 'add-ex-form';
       form.id = 'add-form-' + day;
       form.innerHTML =
-        '<input type="text" id="anm-' + day + '" placeholder="Exercise name *" autocomplete="off">' +
+        '<div class="add-ex-wrap"><input type="text" id="anm-' + day + '" placeholder="Exercise name *" autocomplete="off" oninput="showSug(\'' + day + '\')" onfocus="showSug(\'' + day + '\')">' +
+        '<div class="add-ex-sug" id="asg-' + day + '"></div></div>' +
         '<input type="text" id="atg-' + day + '" placeholder="Muscle group (e.g. Chest)" autocomplete="off">' +
         '<input type="text" id="ant-' + day + '" placeholder="Notes (optional)" autocomplete="off">' +
         '<div class="add-ex-form-btns">' +
@@ -1550,7 +1575,74 @@
     document.getElementById('anm-' + day).focus();
   }
 
+  // ── Autocomplete: sugere exercícios que já existem em qualquer dia ──
+  function exNorm(n) { return String(n || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+
+  function exCandidates() {
+    var seen = {}, out = [];
+    document.querySelectorAll('.ex .weight-input').forEach(function(inp) {
+      var key = inp.id.replace('w-', '');
+      var row = inp.closest('.ex');
+      var nm = row.querySelector('.ex-n');
+      var name = exName(key);
+      if (name === key) {
+        var c = nm && nm.cloneNode(true);
+        if (c) { var cr = c.querySelector('.ex-caret'); if (cr) cr.remove(); name = c.textContent; }
+      }
+      name = String(name).replace(/\s*\([^)]*\)\s*$/, '').trim();
+      var b = exBaseName(name);
+      if (!b || seen[b]) return;
+      seen[b] = 1;
+      var tagEl = row.querySelector('.tag');
+      var tcm = tagEl && tagEl.className.match(/tag\s+(\w+)/);
+      var m = exMeta(key);
+      out.push({
+        name: name, key: key,
+        tag: tagEl ? tagEl.textContent : 'Custom',
+        tagColor: tcm ? tcm[1] : 'tp',
+        notes: (row.querySelector('.ex-nt') || {}).textContent || '',
+        mg: m.mg, type: m.type,
+        img: EX_IMAGES[key] || EX_IMAGES_BY_NAME[exNorm(name)] || ''
+      });
+    });
+    return out;
+  }
+
+  function findCandidate(name) {
+    var b = exBaseName(name);
+    return exCandidates().filter(function(c) { return exBaseName(c.name) === b; })[0];
+  }
+
+  function showSug(day) {
+    var box = document.getElementById('asg-' + day);
+    var q = exNorm(document.getElementById('anm-' + day).value);
+    box.innerHTML = '';
+    if (!q) { box.classList.remove('open'); return; }
+    var list = exCandidates().filter(function(c) { return exNorm(c.name).indexOf(q) !== -1; }).slice(0, 6);
+    list.forEach(function(c) {
+      var d = document.createElement('div');
+      d.innerHTML = '<span></span><small></small>';
+      d.firstChild.textContent = c.name;
+      d.lastChild.textContent = c.tag;
+      d.addEventListener('mousedown', function(e) { e.preventDefault(); pickSug(day, c.name); });
+      d.addEventListener('touchstart', function(e) { e.preventDefault(); pickSug(day, c.name); }, { passive: false });
+      box.appendChild(d);
+    });
+    box.classList.toggle('open', list.length > 0);
+  }
+
+  function pickSug(day, name) {
+    var c = findCandidate(name);
+    document.getElementById('anm-' + day).value = c ? c.name : name;
+    if (c) {
+      document.getElementById('atg-' + day).value = c.tag;
+      document.getElementById('ant-' + day).value = c.notes;
+    }
+    document.getElementById('asg-' + day).classList.remove('open');
+  }
+
   function closeAdd(day) {
+    document.getElementById('asg-' + day).classList.remove('open');
     document.getElementById('add-form-' + day).classList.remove('open');
     document.getElementById('add-btn-' + day).style.display = '';
     ['anm','atg','ant'].forEach(function(p) {
@@ -1564,9 +1656,26 @@
     var notes = document.getElementById('ant-' + day).value.trim();
     if (!name) { document.getElementById('anm-' + day).focus(); return; }
 
+    // Já existe noutro dia? Reutiliza-o: mesmo nome = mesmo exercício
+    // (partilha peso, séries e histórico) e copia grupo, tipo e imagem.
+    var cand = findCandidate(name);
+    var b = exBaseName(name);
+    var dup = Array.from(document.querySelectorAll('#w' + day + ' > .ex')).some(function(r) {
+      if (r.style.display === 'none') return false;
+      var inp = r.querySelector('.weight-input');
+      return inp && exBaseName(exName(inp.id.replace('w-', '')).replace(/\s*\([^)]*\)\s*$/, '')) === b;
+    });
+    if (dup) { alert('"' + (cand ? cand.name : name) + '" already in this day.'); return; }
+
     if (!gistData.custom) gistData.custom = [];
     var key = 'custom-' + Date.now();
     var ex = { day: day, key: key, name: name, tag: tag, notes: notes, tagColor: 'tp' };
+    if (cand) {
+      ex.name = cand.name; ex.tag = cand.tag; ex.tagColor = cand.tagColor; ex.notes = cand.notes;
+      ex.mg = cand.mg; ex.type = cand.type;
+      if (cand.img) { ex.img = cand.img; EX_IMAGES_BY_NAME[exNorm(cand.name)] = cand.img; }
+      name = cand.name;
+    }
     gistData.custom.push(ex);
     EXERCISES.push({ key: key, name: name });
 
