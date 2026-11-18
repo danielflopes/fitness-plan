@@ -3146,13 +3146,12 @@
       total += vol;
     });
     if (!count) {
-      if (auto) { // nada registado: deita fora o rascunho em vez de gravar um treino vazio
-        workoutDraft.day = null; workoutDraft.start = null; workoutDraft.sets = {};
-        saveDraft();
-        renderWorkoutBars();
-        return;
-      }
-      alert('Preenche o peso ou as repetições de pelo menos um set antes de acabar o treino.');
+      // Nada preenchido: assume que foi engano e não regista nada — nem no
+      // histórico nem nos gráficos (era isto que o defeito antigo sujava).
+      workoutDraft.day = null; workoutDraft.start = null; workoutDraft.sets = {};
+      saveDraft();
+      renderWorkoutBars();
+      if (!auto) showSyncStatus('treino vazio — não foi gravado', 'var(--amber)');
       return;
     }
     var startISO = workoutDraft.start || new Date().toISOString();
