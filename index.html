@@ -1401,7 +1401,13 @@
     btn.onclick = function(e) {
       e.stopPropagation();
       var nameEl = exRow.querySelector('.ex-n');
-      var name = nameEl ? nameEl.textContent : 'this exercise';
+      var name = 'this exercise';
+      if (nameEl) {
+        var clone = nameEl.cloneNode(true);
+        var caret = clone.querySelector('.ex-caret');
+        if (caret) caret.remove();
+        name = clone.textContent.trim();
+      }
       if (confirm('Remove "' + name + '"?')) deleteExercise(key, exRow);
     };
     exRow.appendChild(btn);
