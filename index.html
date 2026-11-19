@@ -156,7 +156,6 @@
   /* No HTML só o #overview está dentro de .content, por isso as outras abas
      ficavam coladas às margens. Dá-se à Progress o mesmo contentor. */
   #progress { max-width: 720px; margin: 0 auto; padding: 0 14px 80px; }
-  .pr-note { font-size: 11px; color: var(--faint); line-height: 1.5; margin-top: 10px; }
   .pr-sum { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
   .pr-cell { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 8px; }
   .pr-v { font-family: monospace; font-size: 17px; font-weight: 700; color: var(--text); }
@@ -280,20 +279,20 @@
     </div>
   </div>
   <div class="tabs">
-    <button class="tab active" onclick="showTab(&#39;overview&#39;,this)">◎ Overview</button>
-    <button class="tab" onclick="showTab(&#39;progress&#39;,this)">◑ Progress</button>
+    <button class="tab active" onclick="showTab(&#39;progress&#39;,this)">◑ Progress</button>
     <button class="tab" onclick="showTab(&#39;training&#39;,this)">▲ Training</button>
     <button class="tab" onclick="showTab(&#39;flexibility&#39;,this)">🧘 Flexibility</button>
+    <button class="tab" onclick="showTab(&#39;overview&#39;,this)">◎ Overview</button>
     <button class="tab" onclick="showTab(&#39;achilles&#39;,this)">🦵 Achilles</button>
     <button class="tab" onclick="showTab(&#39;power&#39;,this)">⚡ Power</button>
     <button class="tab" onclick="showTab(&#39;nutrition&#39;,this)">◇ Nutrition</button>
   </div>
 </div>
 
-<div class="content">
+<div class="content" style="display:none">
 
   <!-- OVERVIEW -->
-  <div id="overview" class="sec active">
+  <div id="overview" class="sec">
     <div class="card">
       <div class="stitle">3-Month Goals</div>
       <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
@@ -624,21 +623,19 @@
   </div>
 
   <!-- PROGRESS -->
-  <div id="progress" class="sec">
+  <div id="progress" class="sec active">
     <div class="pr-demo" id="pr-demo-banner" style="display:none">Modo demonstração — dados falsos, nada é guardado no gist.</div>
 
     <!-- Resumo do mês -->
     <div class="card">
       <div class="stitle">Resumo · <span id="pr-month-label">—</span></div>
       <div class="pr-sum" id="pr-summary"></div>
-      <div class="pr-note" id="pr-sum-note"></div>
     </div>
 
     <!-- Consistência -->
     <div class="card">
       <div class="stitle">Consistência · treinos por semana</div>
       <div class="pr-weeks" id="pr-weeks"></div>
-      <div class="pr-note" id="pr-weeks-note"></div>
     </div>
 
     <!-- Volume por grupo muscular -->
@@ -658,7 +655,6 @@
       <div class="stitle">Todos os exercícios</div>
       <div class="pr-chips" id="pr-list-range"></div>
       <div id="pr-list"></div>
-      <div class="pr-note" id="pr-list-note"></div>
     </div>
 
     <!-- Gráfico grande + recordes -->
@@ -674,7 +670,6 @@
         </div>
       </div>
       <div class="pr-chart-wrap"><canvas id="pr-chart"></canvas></div>
-      <div class="pr-note" id="pr-chart-note"></div>
       <div class="pr-recs" id="pr-records"></div>
     </div>
 
@@ -682,7 +677,6 @@
     <div class="card">
       <div class="stitle">Diferença · <span id="pr-delta-ex">—</span></div>
       <div class="pr-deltas" id="pr-deltas"></div>
-      <div class="pr-note" id="pr-deltas-note"></div>
     </div>
   </div>
 
@@ -2137,9 +2131,6 @@
         deltaPct(volA, volB, ' vs 30d') + '</div>' +
       '<div class="pr-cell"><div class="pr-v">' + prs + '</div><div class="pr-l">recordes novos</div>' +
         '<div class="pr-d pr-flat">exercícios</div></div>';
-
-    var note = document.getElementById('pr-sum-note');
-    if (note) note.textContent = 'Volume = peso × repetições, só dos exercícios medidos em quilos.';
   }
 
   function deltaCount(cur, prev) {
@@ -2177,15 +2168,6 @@
              '<div class="pr-wk-bar ' + cls + '" style="height:' + h + 'px"></div>' +
              '<div class="pr-wk-l">' + (i % 2 === 0 ? p[2] + '/' + p[1] : '') + '</div></div>';
     }).join('');
-
-    var done = weeks.filter(function(w) { return counts[w]; }).length;
-    var total = weeks.reduce(function(t, w) { return t + (counts[w] || 0); }, 0);
-    var note = document.getElementById('pr-weeks-note');
-    if (note) {
-      note.textContent = total
-        ? total + ' treinos em ' + done + ' das últimas 12 semanas · ' + (Math.round(total / 12 * 10) / 10) + ' por semana em média. A barra âmbar é a semana atual, ainda a contar.'
-        : 'Ainda não há treinos gravados nas últimas 12 semanas.';
-    }
   }
 
   // ── Seletores ───────────────────────────────────────────────
@@ -2240,9 +2222,7 @@
     // Um 0 não é um valor baixo, é "esta métrica não se aplica a esse treino"
     // (ex.: dips sem peso antes de começares a usar cinto). Fica como buraco.
     var valid = pts.filter(function(p) { return p[field] > 0; });
-    var zeros = pts.length - valid.length;
 
-    var note = document.getElementById('pr-chart-note');
     if (!valid.length && !leg.length) {
       if (charts.main) { charts.main.destroy(); delete charts.main; }
       canvas.style.display = 'none';
@@ -2251,7 +2231,6 @@
       msg.innerHTML = '<div>Sem treinos gravados para <b>' + exShortName(prExercise) + '</b>' + (cutoff ? ' neste intervalo' : '') +
         '.<br>Aparece aqui depois de acabares um treino com este exercício.</div>';
       wrap.appendChild(msg);
-      if (note) note.textContent = '';
       return;
     }
     canvas.style.display = '';
@@ -2323,17 +2302,6 @@
         }
       }
     });
-
-    if (note) {
-      var parts = [];
-      if (prMetric === 'e1rm') parts.push('1RM estimado = peso × (1 + reps/30). Sobe quando fazes mais repetições com o mesmo peso.');
-      if (leg.length) parts.push('A linha cinzenta tracejada é o histórico antigo, 1 ponto por mês — as datas de antes de outubro não são de confiança, serve só como referência.');
-      if (zeros) parts.push(zeros + ' treino(s) deste intervalo não entram nesta métrica — foram feitos sem peso.');
-      var shown = valid.length;
-      if (shown === 1) parts.push('Só há 1 treino com esta métrica no intervalo — ainda não há linha, só um ponto.');
-      else if (shown > 1 && shown < 4) parts.push('Só ' + shown + ' treinos neste intervalo: a linha ainda diz pouco.');
-      note.textContent = parts.join(' ');
-    }
   }
 
   // ── Recordes do exercício escolhido ─────────────────────────
@@ -2406,8 +2374,6 @@
     if (!pts.length) {
       box.innerHTML = '<div class="pr-delta locked" style="grid-column:1/-1"><div class="pr-delta-v">—</div>' +
         '<div class="pr-delta-l">sem treinos gravados para este exercício</div></div>';
-      var n0 = document.getElementById('pr-deltas-note');
-      if (n0) n0.textContent = '';
       return;
     }
 
@@ -2438,11 +2404,6 @@
     });
 
     box.innerHTML = html;
-    var note = document.getElementById('pr-deltas-note');
-    if (note) {
-      note.textContent = 'Compara o teu melhor dos últimos 30 dias com o melhor de há 3, 6 e 12 meses. ' +
-        'Os cartões a cinzento desbloqueiam sozinhos quando houver treinos dessa altura — não vale inventar uma tendência com 3 pontos.';
-    }
   }
 
   function deltaCard(label, from, to) {
@@ -2534,13 +2495,6 @@
              sparkSVG(vals) +
              '<div class="pr-row-v">' + (cur !== null ? fmtMetric(cur, metric) : '—') + dHtml + '</div></button>';
     }).join('');
-
-    var note = document.getElementById('pr-list-note');
-    if (note) {
-      note.textContent = 'A seta é a diferença entre o primeiro e o último treino ' +
-        (prListRange === 'Tudo' ? 'de que há registo' : 'dos últimos ' + PR_RANGES[prListRange] + ' meses') +
-        '. Toca num exercício para o abrir no gráfico grande.';
-    }
   }
 
   // ── Volume por grupo muscular, por semana ───────────────────
