@@ -679,6 +679,13 @@
       <div class="pr-mg-wrap"><canvas id="pr-muscle-chart"></canvas></div>
       <div class="pr-note" id="pr-muscle-note"></div>
     </div>
+
+    <!-- Repetições por grupo muscular (exercícios sem peso) -->
+    <div class="card">
+      <div class="stitle">Repetições por grupo muscular · por semana</div>
+      <div class="pr-mg-wrap"><canvas id="pr-muscle-reps-chart"></canvas></div>
+      <div class="pr-note" id="pr-muscle-reps-note"></div>
+    </div>
   </div>
 
 <script>
@@ -1806,13 +1813,18 @@
     return out;
   }
 
-  // Tipo efetivo: um 'bw' passa a 'kg' quando aparecer peso nos sets gravados
+  // Tipo efetivo — fonte única da verdade, usada em todo o Progress (gráficos,
+  // lista de exercícios, recordes, resumo e volume por grupo muscular):
+  //   'kg'    — peso × reps.
+  //   'reps'  — sem quilos: mostra repetições em vez de peso. Um 'bw' passa
+  //             sozinho a 'kg' quando aparecer peso nos sets gravados.
+  //   'tempo' — segundos (prancha).
   function effType(key) {
     var keys = exGroup(key);
     var m = exMeta(keys[0]);
     if (m.type === 'tempo') return 'tempo';
     if (m.type === 'kg') return 'kg';
-    if (m.type === 'reps') return 'bw'; // fixo: nunca passa a kg, mesmo com peso nos sets antigos
+    if (m.type === 'reps') return 'reps'; // fixo: nunca passa a kg, mesmo com peso nos sets antigos
     var sess = gistData.sessions || [];
     for (var i = 0; i < sess.length; i++) {
       for (var g = 0; g < keys.length; g++) {
@@ -2540,14 +2552,7 @@
   var MG_ORDER = ['Ombros', 'Peito', 'Pernas', 'Glúteos', 'Braços', 'Core', 'Outros'];
   var MUSCLE_WEEKS = 8;
 
-  function renderMuscle() {
-    var canvas = document.getElementById('pr-muscle-chart');
-    var note = document.getElementById('pr-muscle-note');
-    if (!canvas) return;
-    var wrap = canvas.parentElement;
-    var old = wrap.querySelector('.pr-empty');
-    if (old) old.remove();
-
+  function weeklyBuckets() {
     var thisWeek = weekStart(todayStr());
     var weeks = [];
     for (var i = MUSCLE_WEEKS - 1; i >= 0; i--) {
@@ -2555,31 +2560,51 @@
       dt.setDate(dt.getDate() - i * 7);
       weeks.push(isoDate(dt));
     }
+    return weeks;
+  }
 
-    // byMg[grupo][índice da semana] = kg levantados — só sessions, nunca o history antigo
+  // kg levantados ou reps feitas, por grupo muscular e por semana — só sessions,
+  // nunca o history antigo. filterType vem de effType(): 'kg' ou 'reps'.
+  function volumeByMgPerWeek(weeks, filterType) {
     var byMg = {};
     (gistData.sessions || []).forEach(function(s) {
       var idx = weeks.indexOf(weekStart(s.date));
       if (idx === -1) return;
       Object.keys(s.exercises || {}).forEach(function(key) {
-        if (effType(key) !== 'kg') return; // só o que é medido em quilos (prancha, push-ups e face pulls ficam de fora)
+        if (effType(key) !== filterType) return;
         var e = s.exercises[key], mult = e.mult || 1, v = 0;
-        (e.sets || []).forEach(function(st) { v += parseNum(st.w) * mult * parseNum(st.r); });
+        (e.sets || []).forEach(function(st) {
+          v += filterType === 'kg' ? parseNum(st.w) * mult * parseNum(st.r) : parseNum(st.r);
+        });
         if (v <= 0) return;
         var mg = exMeta(key).mg;
         if (!byMg[mg]) byMg[mg] = weeks.map(function() { return 0; });
         byMg[mg][idx] += v;
       });
     });
+    return byMg;
+  }
 
+  // Gráfico de barras empilhadas, por grupo muscular e por semana — usado tanto
+  // para o volume em kg como para as repetições dos exercícios sem peso.
+  function renderMgBarChart(chartKey, canvasId, noteId, filterType, unit, exclusionNote, emptyMsg) {
+    var canvas = document.getElementById(canvasId);
+    var note = document.getElementById(noteId);
+    if (!canvas) return;
+    var wrap = canvas.parentElement;
+    var old = wrap.querySelector('.pr-empty');
+    if (old) old.remove();
+
+    var weeks = weeklyBuckets();
+    var byMg = volumeByMgPerWeek(weeks, filterType);
     var present = MG_ORDER.filter(function(mg) { return byMg[mg] && byMg[mg].some(function(v) { return v > 0; }); });
 
-    if (charts.muscle) { charts.muscle.destroy(); delete charts.muscle; }
+    if (charts[chartKey]) { charts[chartKey].destroy(); delete charts[chartKey]; }
     if (!present.length) {
       canvas.style.display = 'none';
       var msg = document.createElement('div');
       msg.className = 'pr-empty';
-      msg.innerHTML = 'Sem treinos gravados com peso nas últimas ' + MUSCLE_WEEKS + ' semanas.<br>Aparece aqui depois de acabares um treino.';
+      msg.innerHTML = emptyMsg;
       wrap.appendChild(msg);
       if (note) note.textContent = '';
       return;
@@ -2598,7 +2623,7 @@
       };
     });
 
-    charts.muscle = new Chart(canvas, {
+    charts[chartKey] = new Chart(canvas, {
       type: 'bar',
       data: { labels: labels, datasets: datasets },
       options: {
@@ -2606,7 +2631,7 @@
         maintainAspectRatio: false,
         plugins: {
           legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 }, padding: 8 } },
-          tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + fmtVol(ctx.parsed.y) + ' kg'; } } }
+          tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + fmtVol(ctx.parsed.y) + ' ' + unit; } } }
         },
         scales: {
           x: { stacked: true, grid: { display: false }, ticks: tickStyle },
@@ -2616,7 +2641,7 @@
     });
 
     if (note) {
-      var parts = ['Só conta exercícios medidos em quilos — prancha, push-ups e face pulls ficam de fora porque não há quilos para somar.'];
+      var parts = [exclusionNote];
       var fs = firstSessionDate();
       if (fs && fs > weeks[0]) {
         var p = fs.split('-');
@@ -2624,6 +2649,15 @@
       }
       note.textContent = parts.join(' ');
     }
+  }
+
+  function renderMuscle() {
+    renderMgBarChart('muscle', 'pr-muscle-chart', 'pr-muscle-note', 'kg', 'kg',
+      'Só conta exercícios medidos em quilos. A prancha e os exercícios sem peso (push-ups, face pulls) têm o gráfico de repetições a seguir.',
+      'Sem treinos gravados com peso nas últimas ' + MUSCLE_WEEKS + ' semanas.<br>Aparece aqui depois de acabares um treino.');
+    renderMgBarChart('muscleReps', 'pr-muscle-reps-chart', 'pr-muscle-reps-note', 'reps', 'reps',
+      'Repetições dos exercícios sem peso — push-ups, face pulls, etc. A prancha fica de fora: é medida em segundos, não dá para comparar com repetições.',
+      'Sem exercícios sem peso gravados nas últimas ' + MUSCLE_WEEKS + ' semanas.');
   }
 
   // ── Entrada única ───────────────────────────────────────────
