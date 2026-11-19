@@ -209,11 +209,7 @@
   .pr-spark.none { color: var(--border); }
   .pr-row-v { font-family: monospace; font-size: 12px; font-weight: 700; color: var(--text); text-align: right; flex-shrink: 0; min-width: 62px; }
   .pr-row-d { font-family: monospace; font-size: 10px; font-weight: 400; margin-top: 1px; }
-  .pr-mg { margin-bottom: 9px; }
-  .pr-mg-hd { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
-  .pr-mg-hd b { font-family: monospace; color: var(--text); }
-  .pr-mg-track { height: 7px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
-  .pr-mg-bar { height: 100%; background: var(--green); }
+  .pr-mg-wrap { position: relative; height: 210px; }
   .pr-empty { display: grid; place-items: center; height: 100%; color: var(--faint); font-size: 12px; font-family: monospace; background: var(--bg); border-radius: 8px; border: 1px dashed var(--border); text-align: center; padding: 14px; line-height: 1.6; }
   .pr-demo { background: var(--amber-bg); border: 1px solid var(--amber-bd); color: var(--amber); border-radius: 8px; padding: 9px 11px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
   @media (min-width: 480px) {
@@ -679,8 +675,9 @@
 
     <!-- Volume por grupo muscular -->
     <div class="card">
-      <div class="stitle">Volume por grupo muscular · últimas 8 semanas</div>
-      <div id="pr-muscle"></div>
+      <div class="stitle">Volume por grupo muscular · por semana</div>
+      <div class="pr-mg-wrap"><canvas id="pr-muscle-chart"></canvas></div>
+      <div class="pr-note" id="pr-muscle-note"></div>
     </div>
   </div>
 
@@ -2536,36 +2533,97 @@
     }
   }
 
-  // ── Volume por grupo muscular (últimas 8 semanas) ───────────
+  // ── Volume por grupo muscular, por semana ───────────────────
+  // Cores alinhadas com as etiquetas .mgt-* da tabela de exercícios.
+  var MG_COLORS = { 'Ombros': '#1a5cb8', 'Peito': '#6b3fba', 'Pernas': '#0f7f56',
+    'Glúteos': '#92580a', 'Braços': '#a8316b', 'Core': '#0e6f8c', 'Outros': '#8a91aa' };
+  var MG_ORDER = ['Ombros', 'Peito', 'Pernas', 'Glúteos', 'Braços', 'Core', 'Outros'];
+  var MUSCLE_WEEKS = 8;
+
   function renderMuscle() {
-    var box = document.getElementById('pr-muscle');
-    if (!box) return;
-    var from = daysAgoStr(56);
+    var canvas = document.getElementById('pr-muscle-chart');
+    var note = document.getElementById('pr-muscle-note');
+    if (!canvas) return;
+    var wrap = canvas.parentElement;
+    var old = wrap.querySelector('.pr-empty');
+    if (old) old.remove();
+
+    var thisWeek = weekStart(todayStr());
+    var weeks = [];
+    for (var i = MUSCLE_WEEKS - 1; i >= 0; i--) {
+      var dt = new Date(thisWeek + 'T00:00:00');
+      dt.setDate(dt.getDate() - i * 7);
+      weeks.push(isoDate(dt));
+    }
+
+    // byMg[grupo][índice da semana] = kg levantados — só sessions, nunca o history antigo
     var byMg = {};
     (gistData.sessions || []).forEach(function(s) {
-      if (s.date < from) return;
+      var idx = weeks.indexOf(weekStart(s.date));
+      if (idx === -1) return;
       Object.keys(s.exercises || {}).forEach(function(key) {
-        if (effType(key) !== 'kg') return; // só o que é medido em quilos
+        if (effType(key) !== 'kg') return; // só o que é medido em quilos (prancha, push-ups e face pulls ficam de fora)
         var e = s.exercises[key], mult = e.mult || 1, v = 0;
         (e.sets || []).forEach(function(st) { v += parseNum(st.w) * mult * parseNum(st.r); });
         if (v <= 0) return;
         var mg = exMeta(key).mg;
-        byMg[mg] = (byMg[mg] || 0) + v;
+        if (!byMg[mg]) byMg[mg] = weeks.map(function() { return 0; });
+        byMg[mg][idx] += v;
       });
     });
-    var keys = Object.keys(byMg).sort(function(a, b) { return byMg[b] - byMg[a]; });
-    if (!keys.length) {
-      box.innerHTML = '<div class="pr-note">Sem treinos gravados nas últimas 8 semanas.</div>';
+
+    var present = MG_ORDER.filter(function(mg) { return byMg[mg] && byMg[mg].some(function(v) { return v > 0; }); });
+
+    if (charts.muscle) { charts.muscle.destroy(); delete charts.muscle; }
+    if (!present.length) {
+      canvas.style.display = 'none';
+      var msg = document.createElement('div');
+      msg.className = 'pr-empty';
+      msg.innerHTML = 'Sem treinos gravados com peso nas últimas ' + MUSCLE_WEEKS + ' semanas.<br>Aparece aqui depois de acabares um treino.';
+      wrap.appendChild(msg);
+      if (note) note.textContent = '';
       return;
     }
-    var total = keys.reduce(function(t, k) { return t + byMg[k]; }, 0);
-    var max = byMg[keys[0]];
-    box.innerHTML = keys.map(function(k) {
-      var pct = Math.round(byMg[k] / total * 100);
-      return '<div class="pr-mg"><div class="pr-mg-hd"><span>' + k + '</span><b>' + fmtVol(Math.round(byMg[k])) + ' kg · ' + pct + '%</b></div>' +
-             '<div class="pr-mg-track"><div class="pr-mg-bar" style="width:' + Math.round(byMg[k] / max * 100) + '%"></div></div></div>';
-    }).join('') +
-    '<div class="pr-note">Só conta exercícios medidos em quilos — prancha, push-ups e face pulls ficam de fora porque não há quilos para somar.</div>';
+    canvas.style.display = '';
+
+    var labels = weeks.map(function(w) { var p = w.split('-'); return p[2] + '/' + p[1]; });
+    var tickStyle = { font: { size: 10, family: 'monospace' }, color: '#8a91aa' };
+    var datasets = present.map(function(mg) {
+      return {
+        label: mg,
+        data: byMg[mg].map(function(v) { return Math.round(v * 10) / 10; }),
+        backgroundColor: MG_COLORS[mg] || MG_COLORS.Outros,
+        borderRadius: 2,
+        stack: 'vol'
+      };
+    });
+
+    charts.muscle = new Chart(canvas, {
+      type: 'bar',
+      data: { labels: labels, datasets: datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 }, padding: 8 } },
+          tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + fmtVol(ctx.parsed.y) + ' kg'; } } }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: tickStyle },
+          y: { stacked: true, grid: { color: '#dde2ec' }, ticks: tickStyle }
+        }
+      }
+    });
+
+    if (note) {
+      var parts = ['Só conta exercícios medidos em quilos — prancha, push-ups e face pulls ficam de fora porque não há quilos para somar.'];
+      var fs = firstSessionDate();
+      if (fs && fs > weeks[0]) {
+        var p = fs.split('-');
+        parts.push('Os treinos gravados só começam em ' + p[2] + '/' + p[1] + ', por isso as semanas antes disso aparecem vazias — é só o início, vai enchendo.');
+      }
+      note.textContent = parts.join(' ');
+    }
   }
 
   // ── Entrada única ───────────────────────────────────────────
