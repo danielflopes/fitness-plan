@@ -641,6 +641,18 @@
       <div class="pr-note" id="pr-weeks-note"></div>
     </div>
 
+    <!-- Volume por grupo muscular -->
+    <div class="card">
+      <div class="stitle">Volume por grupo muscular · por semana</div>
+      <div class="pr-mg-wrap"><canvas id="pr-muscle-chart"></canvas></div>
+    </div>
+
+    <!-- Repetições por grupo muscular (exercícios sem peso) -->
+    <div class="card">
+      <div class="stitle">Repetições por grupo muscular · por semana</div>
+      <div class="pr-mg-wrap"><canvas id="pr-muscle-reps-chart"></canvas></div>
+    </div>
+
     <!-- Lista de exercícios -->
     <div class="card">
       <div class="stitle">Todos os exercícios</div>
@@ -671,20 +683,6 @@
       <div class="stitle">Diferença · <span id="pr-delta-ex">—</span></div>
       <div class="pr-deltas" id="pr-deltas"></div>
       <div class="pr-note" id="pr-deltas-note"></div>
-    </div>
-
-    <!-- Volume por grupo muscular -->
-    <div class="card">
-      <div class="stitle">Volume por grupo muscular · por semana</div>
-      <div class="pr-mg-wrap"><canvas id="pr-muscle-chart"></canvas></div>
-      <div class="pr-note" id="pr-muscle-note"></div>
-    </div>
-
-    <!-- Repetições por grupo muscular (exercícios sem peso) -->
-    <div class="card">
-      <div class="stitle">Repetições por grupo muscular · por semana</div>
-      <div class="pr-mg-wrap"><canvas id="pr-muscle-reps-chart"></canvas></div>
-      <div class="pr-note" id="pr-muscle-reps-note"></div>
     </div>
   </div>
 
@@ -2587,9 +2585,8 @@
 
   // Gráfico de barras empilhadas, por grupo muscular e por semana — usado tanto
   // para o volume em kg como para as repetições dos exercícios sem peso.
-  function renderMgBarChart(chartKey, canvasId, noteId, filterType, unit, exclusionNote, emptyMsg) {
+  function renderMgBarChart(chartKey, canvasId, filterType, unit, emptyMsg) {
     var canvas = document.getElementById(canvasId);
-    var note = document.getElementById(noteId);
     if (!canvas) return;
     var wrap = canvas.parentElement;
     var old = wrap.querySelector('.pr-empty');
@@ -2606,7 +2603,6 @@
       msg.className = 'pr-empty';
       msg.innerHTML = emptyMsg;
       wrap.appendChild(msg);
-      if (note) note.textContent = '';
       return;
     }
     canvas.style.display = '';
@@ -2639,24 +2635,12 @@
         }
       }
     });
-
-    if (note) {
-      var parts = [exclusionNote];
-      var fs = firstSessionDate();
-      if (fs && fs > weeks[0]) {
-        var p = fs.split('-');
-        parts.push('Os treinos gravados só começam em ' + p[2] + '/' + p[1] + ', por isso as semanas antes disso aparecem vazias — é só o início, vai enchendo.');
-      }
-      note.textContent = parts.join(' ');
-    }
   }
 
   function renderMuscle() {
-    renderMgBarChart('muscle', 'pr-muscle-chart', 'pr-muscle-note', 'kg', 'kg',
-      'Só conta exercícios medidos em quilos. A prancha e os exercícios sem peso (push-ups, face pulls) têm o gráfico de repetições a seguir.',
+    renderMgBarChart('muscle', 'pr-muscle-chart', 'kg', 'kg',
       'Sem treinos gravados com peso nas últimas ' + MUSCLE_WEEKS + ' semanas.<br>Aparece aqui depois de acabares um treino.');
-    renderMgBarChart('muscleReps', 'pr-muscle-reps-chart', 'pr-muscle-reps-note', 'reps', 'reps',
-      'Repetições dos exercícios sem peso — push-ups, face pulls, etc. A prancha fica de fora: é medida em segundos, não dá para comparar com repetições.',
+    renderMgBarChart('muscleReps', 'pr-muscle-reps-chart', 'reps', 'reps',
       'Sem exercícios sem peso gravados nas últimas ' + MUSCLE_WEEKS + ' semanas.');
   }
 
