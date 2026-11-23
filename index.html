@@ -1493,6 +1493,29 @@
       d.fixLatMult = true;
       changed = true;
     }
+    // Bench Press é com dois halteres: o peso gravado (ex.: 26.5) é de UM lado.
+    // Sessões gravadas com ×1 passam a ×2 (o peso guardado não muda, só a marca "por lado"),
+    // e o botão fica em ×2 para os treinos futuros. Uma só vez.
+    if (!d.fixBenchMult) {
+      var benchKeys = ['wA-bench'];
+      (d.custom || []).forEach(function(ex) { if (norm(ex.name) === 'benchpress') benchKeys.push(ex.key); });
+      (d.sessions || []).forEach(function(se) {
+        benchKeys.forEach(function(k) {
+          var e = se.exercises && se.exercises[k];
+          if (!e || e.mult === 2) return;
+          (e.sets || []).forEach(function(st) { if (typeof st.vol === 'number') st.vol = st.vol * 2; });
+          if (typeof e.vol === 'number') {
+            var nv = e.vol * 2;
+            if (typeof se.vol === 'number') se.vol = se.vol - e.vol + nv;
+            e.vol = nv;
+          }
+          e.mult = 2;
+        });
+      });
+      benchKeys.forEach(function(k) { d['m-' + k] = '2'; });
+      d.fixBenchMult = true;
+      changed = true;
+    }
     d.custom = (d.custom || []).filter(function(ex) {
       var n = norm(ex.name);
       // "Cross leg raises" / "Scissor Kicks" = o mesmo exercício: Twisted Leg Raise
