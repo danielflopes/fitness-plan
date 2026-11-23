@@ -2092,7 +2092,7 @@
       var best = 0, hit = null;
       pts.forEach(function(p) {
         if (p[field] > best) {
-          if (best > 0 && p.date >= from && p.date <= to) hit = { name: ex.name || exName(ex.key), date: p.date, value: p[field], metric: metric };
+          if (best > 0 && p.date >= from && p.date <= to) hit = { name: ex.name || exName(ex.key), date: p.date, value: p[field], first: pts[0][field], metric: metric };
           best = p[field];
         }
       });
@@ -2112,10 +2112,14 @@
   function openPrModal() {
     var list = prsListBetween(daysAgoStr(30), todayStr());
     var rows = list.map(function(r) {
-      return '<div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">' +
-        '<div style="min-width:0"><div style="font-size:14px;color:var(--text)">' + r.name + '</div>' +
-        '<div style="font-size:11px;color:var(--faint);margin-top:2px">' + fmtPrDate(r.date) + '</div></div>' +
-        '<div style="font-family:monospace;font-size:14px;font-weight:700;color:var(--green);white-space:nowrap">' + fmtMetric(r.value, r.metric) + '</div></div>';
+      var u = (PR_METRICS[r.metric] || {}).unit || 'kg';
+      var diff = r.value - r.first;
+      var dtxt = (diff > 0 ? '+' : '') + (u === 'kg' ? fmtVol(diff) : Math.round(diff)) + ' ' + u;
+      return '<div style="padding:10px 0;border-bottom:1px solid var(--border)">' +
+        '<div style="display:flex;justify-content:space-between;gap:12px"><div style="font-size:14px;color:var(--text)">' + r.name + '</div>' +
+        '<div style="font-family:monospace;font-size:14px;font-weight:700;color:var(--green);white-space:nowrap">' + dtxt + '</div></div>' +
+        '<div style="font-size:12px;color:var(--muted);margin-top:3px;font-family:monospace">' + fmtMetric(r.first, r.metric) + ' → ' + fmtMetric(r.value, r.metric) + '</div>' +
+        '<div style="font-size:11px;color:var(--faint);margin-top:2px">recorde em ' + fmtPrDate(r.date) + '</div></div>';
     }).join('');
     document.getElementById('pr-modal-list').innerHTML = rows || '<div style="color:var(--faint);padding:10px 0">Sem recordes novos.</div>';
     document.getElementById('pr-modal').style.display = 'flex';
